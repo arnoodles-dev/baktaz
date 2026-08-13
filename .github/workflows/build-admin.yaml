@@ -1,0 +1,94 @@
+name: 🚀 Build & Distribute (Admin App)
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Triggered manually via GitHub UI or API.
+# Builds the Flutter Web app, then uploads/deploys it.
+# ──────────────────────────────────────────────────────────────────────────────
+on:
+  workflow_dispatch:
+    inputs:
+      flavor:
+        description: "App flavor"
+        required: true
+        default: "development"
+        type: choice
+        options:
+          - development
+          - staging
+          - production
+
+      wasm:
+        description: "Build using WebAssembly (WASM)"
+        required: false
+        default: false
+        type: boolean
+
+      web_renderer:
+        description: "Web renderer"
+        required: false
+        default: "auto"
+        type: choice
+        options:
+          - auto
+          - canvaskit
+          - html
+
+      upload_to_firebase:
+        description: "Upload to Firebase App Distribution"
+        required: false
+        default: true
+        type: boolean
+
+      upload_artifact:
+        description: "Upload artifact to GitHub Actions"
+        required: false
+        default: false
+        type: boolean
+
+      tester_groups:
+        description: "Firebase tester groups (comma-separated, leave blank for all)"
+        required: false
+        default: ""
+        type: string
+
+concurrency:
+  group: "build-admin-${{ github.ref_name }}-${{ inputs.flavor }}"
+  cancel-in-progress: true
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Common environment variables
+# ──────────────────────────────────────────────────────────────────────────────
+env:
+  FLUTTER_VERSION_FILE: .fvm/fvm_config.json
+  TESTER_GROUPS: ${{ inputs.tester_groups }}
+
+jobs:
+  # ────────────────────────────────────────────────────────────────────────────
+  # Web build job
+  # ────────────────────────────────────────────────────────────────────────────
+  build-web:
+    name: "🌐 Web (${{ inputs.flavor }}) [wasm=${{ inputs.wasm }}, renderer=${{ inputs.web_renderer }}]"
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: "./paxa_admin"
+
+    environment: ${{ inputs.flavor }}
+
+    steps:
+      - name: ⚙️ Setup Project
+        uses: ./.github/actions/setup-flutter-project
+        with:
+          working-directory: paxa_admin
+
+      - name: 🔨 Build Web App
+        shell: bash
+        run: |
+          BUILD_CMD="bash ../scripts/build.sh --flavor ${{ inputs.flavor }} --build-number ${{ github.run_number }} --web-renderer ${{ inputs.web_renderer }}"
+          if [ "${{ inputs.wasm }}" = "true" ]; then
+            BUILD_CMD="$BUILD_CMD --wasm"
+          fi
+          eval $BUILD_CMD
+      # TODO: Update to auto deployment to a hosting server (e.g. Firebase Hosting, Netlify, Vercel, S3)
+

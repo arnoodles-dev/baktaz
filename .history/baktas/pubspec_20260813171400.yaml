@@ -1,0 +1,134 @@
+name: _
+publish_to: none
+
+environment:
+  sdk: ">=3.10.3 <4.0.0"
+
+workspace:
+  - baktas_client
+  - baktas_server
+  - baktas_flutter
+
+dev_dependencies:
+  melos: ^8.2.2
+  very_good_analysis: ^10.3.0
+
+dependency_overrides:
+  file_picker: ^12.0.0-beta.7
+
+melos:
+  command:
+    version:
+      hooks:
+        preCommit: |
+          melos format
+          melos fix_lint
+    bootstrap:
+      environment:
+        sdk: ">=3.10.3 <4.0.0"
+        flutter: ">=3.44.7"
+      hooks:
+        post: |
+          melos run setup:all
+          melos format
+  scripts:
+    setup:all:
+      run: |
+        melos exec -- "
+        if grep -q 'sdk. flutter' pubspec.yaml; then
+          fvm flutter pub get
+        else
+          fvm dart pub get
+        fi
+        if grep -q 'slang.' pubspec.yaml; then
+          fvm dart run slang
+        fi
+        if grep -q 'build_runner.' pubspec.yaml; then
+          fvm dart run build_runner build
+        fi
+        if grep -q 'serverpod.' pubspec.yaml; then
+          serverpod generate
+          serverpod create-migration
+        fi
+        "
+      packageFilters:
+        scope:
+          - "paxa"
+          - "paxa_admin"
+          - "paxa_server"
+          - "paxa_shared"
+          - "paxa_site"
+        ignore:
+          - "paxa_client"
+    setup:app:
+      run: |
+        melos exec --scope="paxa" -- "fvm flutter pub get"
+        melos exec --scope="paxa" -- "fvm dart run slang"
+        melos exec --scope="paxa" -- "fvm dart run build_runner build"
+      description: Setup the paxa_flutter mobile application
+    setup:admin:
+      run: |
+        melos exec --scope="paxa_admin" -- "fvm flutter pub get"
+        melos exec --scope="paxa_admin" -- "fvm dart run slang"
+        melos exec --scope="paxa_admin" -- "fvm dart run build_runner build"
+      description: Setup the paxa_admin web application
+    setup:server:
+      run: |
+        melos exec --scope="paxa_server" -- "fvm dart pub get"
+        melos exec --scope="paxa_server" -- "fvm dart run build_runner build"
+        melos exec --scope="paxa_server" -- "serverpod generate"
+        melos exec --scope="paxa_server" -- "serverpod create-migration"
+      description: Setup the paxa_server backend application
+    setup:site:
+      run: |
+        melos exec --scope="paxa_site" -- "fvm dart pub get"
+        melos exec --scope="paxa_site" -- "fvm dart run build_runner build"
+      description: Setup the paxa_site web application
+    setup:shared:
+      run: |
+        melos exec --scope="paxa_shared" -- "fvm dart pub get"
+        melos exec --scope="paxa_shared" -- "fvm dart run build_runner build"
+      description: Setup the paxa_shared shared application
+    clean:
+      run: melos exec --ignore="paxa_client" -- "fvm flutter clean"
+    pub_get:
+      run: melos exec --ignore="paxa_client" -- "fvm dart pub get"
+    pub_outdated:
+      run: melos exec -c 1  -- "fvm dart pub outdated"
+    pub_upgrade:
+      run: melos exec -c 1  -- "fvm dart pub upgrade --tighten"
+    slang:
+      run: melos exec --fail-fast --depends-on="slang" -- "fvm dart run slang"
+    build_runner:
+      run: melos exec --fail-fast --depends-on="build_runner" -- "fvm dart run build_runner build"
+      packageFilters:
+        scope:
+          - "paxa"
+          - "paxa_admin"
+          - "paxa_server"
+          - "paxa_shared"
+          - "paxa_site"
+        ignore:
+          - "paxa_client"
+    format:
+      run: melos exec --ignore="paxa_client" -- "fvm dart format lib && ( [ -d test ] && fvm dart format test || true )"
+    lint:all:
+      run: melos exec -c 1 --ignore="paxa_client" -- "fvm dart analyze --fatal-infos"
+    fix_lint:
+      run: melos exec --ignore="paxa_client" -- "fvm dart fix --apply"
+    test:
+      run: sh $MELOS_ROOT_PATH/scripts/run_tests.sh all
+      description: Run tests for all packages
+    goldens:
+      run: |
+        melos exec -- "\$MELOS_ROOT_PATH/scripts/update_goldens_version.sh"
+        melos exec --depends-on="alchemist" -- "fvm flutter test --update-goldens"
+      description: Update the goldens and the goldens version in all packages with alchemist golden tests
+      packageFilters:
+        dependsOn:
+          - alchemist
+        dirExists:
+          - test
+        ignore:
+          - paxa_client
+  sdkPath: .fvm/flutter_sdk

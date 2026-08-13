@@ -1,0 +1,45 @@
+name: Tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: '4.0.0-beta.2'
+      SERVERPOD_PASSWORD_database: 'izyi8R4u5GHu9OQeHP5vIC5_m6zCPenl'
+      SERVERPOD_PASSWORD_redis: 'n_AlDIA6buFYEVNPyB1nmBxrTh-ppXIj'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.38.4'
+
+      - name: Start containers
+        working-directory: baktas_server
+        run: docker compose up --quiet-pull --build -d
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install Serverpod CLI
+        run: dart install serverpod_cli $VERSION
+
+      - name: Run Serverpod generator
+        working-directory: baktas_server
+        run: serverpod generate
+
+      - name: Run tests
+        working-directory: baktas_server
+        run: dart test
+
+      - name: Stop containers
+        if: always()
+        working-directory: baktas_server
+        run: docker compose down -v

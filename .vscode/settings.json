@@ -1,0 +1,14 @@
+{
+  "dart.flutterSdkPath": ".fvm/versions/3.44.9",
+  "dart.analysisExcludedFolders": [
+    "**/build/**",
+    "build",
+    "baktas_flutter/build/**",
+    "**/ios/build/**",
+    "baktas_server/build/**",
+    "baktas_flutter/plugins/**/build/**",
+    "baktas_admin/build/**",
+    "baktas_shared/build/**",
+    "baktas_site/build/**"
+  ]
+}

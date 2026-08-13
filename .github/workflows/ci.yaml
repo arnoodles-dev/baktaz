@@ -1,0 +1,352 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+    inputs:
+      verify_flutter:
+        description: "Verify paxa_flutter"
+        type: boolean
+        default: true
+      verify_admin:
+        description: "Verify paxa_admin"
+        type: boolean
+        default: true
+      verify_site:
+        description: "Verify paxa_site"
+        type: boolean
+        default: true
+      verify_server:
+        description: "Verify paxa_server"
+        type: boolean
+        default: true
+      verify_shared:
+        description: "Verify paxa_shared"
+        type: boolean
+        default: true
+
+concurrency:
+  group: "ci-${{ github.ref_name }}"
+  cancel-in-progress: true
+
+permissions:
+  security-events: write
+  contents: read
+  actions: read
+
+jobs:
+  changes:
+    name: Detect Changes
+    runs-on: ubuntu-latest
+    outputs:
+      flutter: ${{ steps.set_outputs.outputs.flutter }}
+      admin: ${{ steps.set_outputs.outputs.admin }}
+      site: ${{ steps.set_outputs.outputs.site }}
+      server: ${{ steps.set_outputs.outputs.server }}
+      shared: ${{ steps.set_outputs.outputs.shared }}
+      flutter_projects: ${{ steps.set_matrix.outputs.flutter_projects }}
+      dart_projects: ${{ steps.set_matrix.outputs.dart_projects }}
+      all_projects: ${{ steps.set_matrix.outputs.all_projects }}
+      flutter_version: ${{ steps.flutter_version.outputs.version }}
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: 🔍 Filter Paths
+        uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            flutter:
+              - 'paxa_flutter/**'
+              - '.github/workflows/ci.yaml'
+              - '.github/actions/**'
+            admin:
+              - 'paxa_admin/**'
+              - '.github/workflows/ci.yaml'
+              - '.github/actions/**'
+            site:
+              - 'paxa_site/**'
+              - '.github/workflows/ci.yaml'
+              - '.github/actions/**'
+            server:
+              - 'paxa_server/**'
+              - 'paxa_client/**'
+              - '.github/workflows/ci.yaml'
+              - '.github/actions/**'
+            shared:
+              - 'paxa_shared/**'
+              - '.github/workflows/ci.yaml'
+              - '.github/actions/**'
+
+      - name: ⚙️ Set Final Outputs
+        id: set_outputs
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "flutter=${{ inputs.verify_flutter }}" >> $GITHUB_OUTPUT
+            echo "admin=${{ inputs.verify_admin }}" >> $GITHUB_OUTPUT
+            echo "site=${{ inputs.verify_site }}" >> $GITHUB_OUTPUT
+            echo "server=${{ inputs.verify_server }}" >> $GITHUB_OUTPUT
+            echo "shared=${{ inputs.verify_shared }}" >> $GITHUB_OUTPUT
+          else
+            echo "flutter=${{ steps.filter.outputs.flutter }}" >> $GITHUB_OUTPUT
+            echo "admin=${{ steps.filter.outputs.admin }}" >> $GITHUB_OUTPUT
+            echo "site=${{ steps.filter.outputs.site }}" >> $GITHUB_OUTPUT
+            echo "server=${{ steps.filter.outputs.server }}" >> $GITHUB_OUTPUT
+            echo "shared=${{ steps.filter.outputs.shared }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 🔖 Read Flutter Version
+        id: flutter_version
+        run: echo "version=$(jq -r '.flutterSdkVersion' .fvm/fvm_config.json)" >> $GITHUB_OUTPUT
+
+      - name: ⚙️ Set Projects Matrix
+        id: set_matrix
+        shell: bash
+        env:
+          FLUTTER: ${{ steps.set_outputs.outputs.flutter }}
+          ADMIN: ${{ steps.set_outputs.outputs.admin }}
+          SHARED: ${{ steps.set_outputs.outputs.shared }}
+          SERVER: ${{ steps.set_outputs.outputs.server }}
+          SITE: ${{ steps.set_outputs.outputs.site }}
+        run: bash scripts/set_projects_matrix.sh
+
+  verify-semantic-pull-request:
+    name: Semantic PR
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@v1
+    if: github.event_name == 'pull_request'
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Paxa Flutter Verification
+  # ────────────────────────────────────────────────────────────────────────────
+  verify-flutter:
+    name: Verify (Flutter App)
+    needs: changes
+    if: ${{ needs.changes.outputs.flutter == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./paxa_flutter"
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: ⚙️ Setup Project
+        uses: ./.github/actions/setup-project
+        with:
+          working-directory: paxa_flutter
+          type: flutter
+
+      - name: ✨ Check Formatting
+        run: dart format lib test
+
+      - name: 🕵️ Analyze
+        run: |
+          flutter analyze lib test
+          dart analyze lib test
+
+      - name: 🧪 Run Tests
+        run: flutter test --coverage --no-pub --test-randomize-ordering-seed random --dart-define=CI=true
+
+      - name: 📤 Upload Failed Goldens
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: goldens-failures
+          path: paxa_flutter/test/widget/**/failures
+
+      - name: 📉 Check Coverage
+        run: sh ${{ github.workspace }}/scripts/check_coverage.sh 80
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Paxa Admin Verification
+  # ────────────────────────────────────────────────────────────────────────────
+  verify-admin:
+    name: Verify (Admin App)
+    needs: changes
+    if: ${{ needs.changes.outputs.admin == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./paxa_admin"
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: ⚙️ Setup Project
+        uses: ./.github/actions/setup-project
+        with:
+          working-directory: paxa_admin
+          type: flutter
+
+      - name: ✨ Check Formatting
+        run: dart format lib test
+
+      - name: 🕵️ Analyze
+        run: |
+          flutter analyze lib test
+          dart analyze lib test
+
+      - name: 🧪 Run Tests
+        run: flutter test --dart-define=CI=true --coverage --no-pub --test-randomize-ordering-seed random
+
+      - name: 📤 Upload Failed Goldens
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: goldens-failures-admin
+          path: paxa_admin/test/widget/**/failures
+
+      - name: 📉 Check Coverage
+        run: sh ${{ github.workspace }}/scripts/check_coverage.sh 80
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Paxa Site Verification
+  # ────────────────────────────────────────────────────────────────────────────
+  verify-site:
+    name: Verify (Site)
+    needs: changes
+    if: ${{ needs.changes.outputs.site == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./paxa_site"
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: ⚙️ Setup Project
+        uses: ./.github/actions/setup-project
+        with:
+          working-directory: paxa_site
+          type: dart
+
+      - name: ✨ Check Formatting
+        run: dart format lib test
+
+      - name: 🕵️ Analyze
+        run: dart analyze lib test
+
+      - name: 🧪 Run Tests
+        run: dart test test/ --coverage=coverage
+
+      - name: 📉 Check Coverage
+        run: sh ${{ github.workspace }}/scripts/check_coverage.sh 80
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Paxa Shared Verification
+  # ────────────────────────────────────────────────────────────────────────────
+  verify-shared:
+    name: Verify (Shared)
+    needs: changes
+    if: ${{ needs.changes.outputs.shared == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./paxa_shared"
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: ⚙️ Setup Project
+        uses: ./.github/actions/setup-project
+        with:
+          working-directory: paxa_shared
+          type: flutter
+
+      - name: ✨ Check Formatting
+        run: dart format lib test
+
+      - name: 🕵️ Analyze
+        run: |
+          flutter analyze lib test
+          dart analyze lib test
+
+      - name: 🧪 Run Tests
+        run: flutter test --dart-define=CI=true --coverage --no-pub --test-randomize-ordering-seed random
+
+      - name: 📤 Upload Failed Goldens
+        uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: goldens-failures-shared
+          path: paxa_shared/test/widget/**/failures
+
+      - name: 📉 Check Coverage
+        run: sh ${{ github.workspace }}/scripts/check_coverage.sh 80
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Paxa Server Verification
+  # ────────────────────────────────────────────────────────────────────────────
+  verify-server:
+    name: Verify (Server)
+    needs: changes
+    if: ${{ needs.changes.outputs.server == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "./paxa_server"
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: ⚙️ Setup Project
+        uses: ./.github/actions/setup-project
+        with:
+          working-directory: paxa_server
+          type: dart
+
+      - name: 🚀 Install Serverpod CLI
+        run: dart pub global activate serverpod_cli 4.0.0-beta.1
+
+      - name: 🏗️ Generate Serverpod Code
+        run: serverpod generate
+
+      - name: ✨ Check Formatting
+        run: dart format lib test
+
+      - name: 🕵️ Analyze
+        run: dart analyze lib test
+
+      # ponytail: Server only has integration tests (require Docker/Postgres).
+      # Unit tests can be added under test/unit/ to enable this step.
+      # - name: 🧪 Run Tests
+      #   run: dart test test/unit --concurrency=1
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # License Check
+  # ────────────────────────────────────────────────────────────────────────────
+  # ponytail: pub workspace puts lockfile at root, so check from root
+  license-check:
+    name: License Check
+    needs: changes
+    if: ${{ needs.changes.outputs.all_projects != '[]' && needs.changes.outputs.all_projects != '' }}
+    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/license_check.yml@v1
+    with:
+      working_directory: .
+      allowed: "MIT,BSD-3-Clause,BSD-2-Clause,Apache-2.0,MPL-2.0,Zlib"
+      skip_packages: "pubspec_lock_parse,xmlstream,serverpod"
+      flutter_version: ${{ needs.changes.outputs.flutter_version }}
+      ignore_retrieval_failures: true
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # Vulnerability Check (OSV Scanner — no code-scanning feature required)
+  # ────────────────────────────────────────────────────────────────────────────
+  vulnerability-check:
+    name: Vulnerability Check
+    needs: changes
+    if: ${{ needs.changes.outputs.flutter == 'true' || needs.changes.outputs.admin == 'true' || needs.changes.outputs.server == 'true' || needs.changes.outputs.site == 'true' || needs.changes.outputs.shared == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 Git Checkout
+        uses: actions/checkout@v7
+
+      - name: 🔒 OSV Scanner
+        uses: google/osv-scanner-action/osv-scanner-action@v2.3.8
+        with:
+          scan-args: |-
+            --recursive
+            ./

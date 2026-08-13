@@ -1,0 +1,76 @@
+name: "Setup Project"
+description: "Checks out the repo, installs Flutter (or Dart-only), installs dependencies, and runs code generation. Supports both Flutter and plain Dart projects."
+inputs:
+  working-directory:
+    description: "Working directory of the project"
+    required: false
+    default: "."
+  type:
+    description: "Project type: 'flutter' or 'dart'"
+    required: false
+    default: "flutter"
+
+runs:
+  using: "composite"
+  steps:
+    # ponytail: checkout is done by calling workflow before using this action
+    - name: 🛠️ Get Flutter SDK version from fvm_config.json
+      uses: kuhnroyal/flutter-fvm-config-action@v3
+      with:
+        path: .fvm/fvm_config.json
+
+    - name: 🐦 Setup Flutter
+      uses: subosito/flutter-action@v2.17.0
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+
+    - name: 📊 Setup LCOV
+      uses: hrishikesh-kadam/setup-lcov@v1
+
+    # Flutter projects: pub get via flutter (resolves Flutter SDK deps)
+    - name: 📦 Install Dependencies (Flutter)
+      if: ${{ inputs.type == 'flutter' }}
+      run: flutter pub get --no-example
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    # Dart-only projects: pub get via dart (no Flutter SDK required)
+    - name: 📦 Install Dependencies (Dart)
+      if: ${{ inputs.type == 'dart' }}
+      run: dart pub get
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    # Install Tailwind standalone CLI (required by jaspr_tailwind).
+    # NOTE: Tailwind v4's `npm install -g tailwindcss` does NOT ship a `tailwindcss`
+    # binary (CLI moved to @tailwindcss/cli), so jaspr_tailwind's build_runner step
+    # cannot find it. Use the official standalone CLI instead. See:
+    # https://docs.jaspr.site/eco/tailwind
+    - name: 🎨 Install Tailwind CSS (standalone CLI)
+      if: ${{ inputs.working-directory == 'paxa_site' }}
+      run: |
+        curl -sL -o tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
+        chmod +x tailwindcss
+        mv tailwindcss /usr/local/bin/tailwindcss
+        tailwindcss -h
+      shell: bash
+
+    # Localization generation only for Flutter projects
+    - name: ⚙️ Run Slang
+      if: ${{ inputs.type == 'flutter' }}
+      run: dart run slang
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+
+    # Always run paxa_shared codegen (dependency of flutter apps)
+    - name: ⚙️ Run paxa_shared Code Generation
+      if: ${{ inputs.working-directory != 'paxa_shared' && inputs.working-directory != '.' }}
+      run: dart run build_runner build
+      shell: bash
+      working-directory: paxa_shared
+
+    # Always run build_runner for mocks, freezed, etc.
+    - name: ⚙️ Run build_runner
+      run: dart run build_runner build
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}

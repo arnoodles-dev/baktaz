@@ -1,0 +1,214 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "main",
+  "model": "omniroute/Auto",
+  "agent": {
+    "main": {
+      "description": "Full-Stack Orchestrator that coordinates task delegation and synthesizes output across mobile, web, and server",
+      "mode": "primary",
+      "model": "omniroute/Auto",
+      "prompt": "{file:.agents/agents/main.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "skill": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": {
+          "*": "deny",
+          "main": "deny",
+          "architect": "allow",
+          "developer": "allow",
+          "tester": "allow",
+          "reviewer": "allow",
+          "designer": "allow",
+          "writer": "allow",
+          "ask": "allow",
+          "general": "allow",
+          "debugger": "allow"
+        }
+      }
+    },
+    "architect": {
+      "description": "Read-only planner that maps codebases, defines Serverpod schemas, and creates structural specs",
+      "mode": "subagent",
+      "temperature": 0.1,
+      "prompt": "{file:.agents/agents/architect.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": "deny",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "skill": "allow",
+        "webfetch": "allow",
+        "task": "deny"
+      }
+    },
+    "developer": {
+      "description": "Full-stack Dart developer implementing specs with Serverpod, Flutter, and Jaspr code",
+      "mode": "subagent",
+      "temperature": 0.2,
+      "prompt": "{file:.agents/agents/developer.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "skill": "allow",
+        "task": "deny"
+      }
+    },
+    "tester": {
+      "description": "Test creation specialist for unit tests, widget/golden tests, integration tests, and coverage verification",
+      "mode": "subagent",
+      "temperature": 0,
+      "prompt": "{file:.agents/agents/tester.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "skill": "allow",
+        "task": "deny"
+      }
+    },
+    "reviewer": {
+      "description": "Adversarial reviewer that audits code quality, security, async errors, and hydration mismatches",
+      "mode": "subagent",
+      "steps": 25,
+      "temperature": 0.1,
+      "prompt": "{file:.agents/agents/reviewer.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "skill": "allow",
+        "webfetch": "allow",
+        "task": "deny"
+      }
+    },
+    "designer": {
+      "description": "Visual designer that translates design references into multi-platform UI blueprints for Flutter and Jaspr",
+      "mode": "subagent",
+      "temperature": 0.3,
+      "prompt": "{file:.agents/agents/designer.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": {
+          "*": "deny"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "skill": "allow",
+        "webfetch": "allow",
+        "websearch": "allow",
+        "task": "deny"
+      }
+    },
+    "writer": {
+      "description": "Documentation specialist that maintains API docs, Dart Doc comments, feature logs, and .agents/ governance files",
+      "mode": "subagent",
+      "temperature": 0.2,
+      "prompt": "{file:.agents/agents/writer.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": {
+          "*": "deny"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "skill": "allow",
+        "webfetch": "allow",
+        "task": "deny"
+      }
+    },
+    "debugger": {
+      "description": "Runtime bug diagnosis — reproduces failures, traces stack traces, and isolates root cause across Flutter, Serverpod, and Jaspr",
+      "mode": "subagent",
+      "steps": 25,
+      "prompt": "{file:.agents/agents/debugger.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "skill": "allow",
+        "webfetch": "allow",
+        "task": "deny"
+      }
+    },
+    "general": {
+      "description": "General operational tasks — Git operations, configuration, environment setup, and filesystem exploration",
+      "mode": "subagent",
+      "steps": 25,
+      "prompt": "{file:.agents/agents/general.md}",
+      "permission": {
+        "edit": "allow",
+        "bash": "allow",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "skill": "allow",
+        "webfetch": "allow",
+        "task": "deny"
+      }
+    },
+    "ask": {
+      "description": "Clarification specialist — resolves ambiguous requirements through targeted questions before any agent acts",
+      "mode": "primary",
+      "model": "omniroute/Ask",
+      "prompt": "{file:.agents/agents/ask.md}",
+      "permission": {
+        "edit": "deny",
+        "bash": {
+          "*": "deny"
+        },
+        "read": "allow",
+        "glob": "allow",
+        "grep": "deny",
+        "list": "deny",
+        "skill": "deny",
+        "task": "deny"
+      }
+    }
+  },
+  "permission": {
+    "bash": {
+      "git *": "allow",
+      "fvm *": "allow",
+      "melos *": "allow",
+      "dart *": "allow",
+      "make *": "allow"
+    }
+  },
+  "instructions": [
+    "AGENTS.md",
+    ".agents/rules/flutter-architecture.md",
+    ".agents/rules/serverpod-architecture.md",
+    ".agents/rules/code-quality.md",
+    ".agents/rules/design-system.md",
+    ".agents/rules/naming-convention.md",
+    ".agents/rules/testing.md",
+    ".agents/rules/ci-commands.md"
+  ]
+  
+}
