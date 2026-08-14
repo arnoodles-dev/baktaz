@@ -1,0 +1,26 @@
+class: Account
+table: account
+fields:
+  id: UuidValue?, defaultPersist=random
+  authUserId: UuidValue?
+  authUser: module:auth_core:AuthUser?, relation(field=authUserId, onDelete=Cascade)
+  userProfileId: UuidValue?
+  userProfile: module:auth_core:UserProfile?, relation(field=userProfileId, onDelete=Cascade)
+  userInfoId: UuidValue?
+  userInfo: UserInfo?, relation(field=userInfoId, onDelete=Cascade)
+  walletId: UuidValue?
+  wallet: Wallet?, relation(field=walletId, onDelete=Cascade)
+  createdAt: DateTime, default=now,
+  updatedAt: DateTime?, scope=serverOnly
+  deletedAt: DateTime?, scope=serverOnly
+
+indexes:
+  auth_user_id_index:
+    fields: authUserId
+    unique: true
+  user_profile_index:
+    fields: userProfileId
+    unique: true
+  wallet_index:
+    fields: walletId
+    unique: true

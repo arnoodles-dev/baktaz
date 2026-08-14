@@ -1,0 +1,8 @@
+class: UserInfo
+table: user_info
+fields:
+  id: UuidValue?, defaultPersist=random
+  gender: Gender, default=unknown
+  birthday: DateTime?
+  updatedAt: DateTime?
+  mobileNumber: String?

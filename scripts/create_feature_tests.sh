@@ -19,22 +19,40 @@ done
 set -- "${ARGS[@]}"
 
 if ! validate_or_prompt_feature_name "$@"; then
-  print_usage "Creates test folders under test/unit/features/<feature_name> and test/widget/features/<feature_name>"
+  print_usage "Creates test scaffolding for feature under test/unit and test/widget"
   exit 1
 fi
 
 FEATURE_NAME_SNAKE=$(to_snake_case "$INPUT_NAME")
 
+# Determine target package
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 if [[ -n "$APP" ]]; then
-  REPO_ROOT="$(cd "$SCRIPT_DIR/../$APP" && pwd)"
+  # Find package matching app type
+  PACKAGES=($(discover_packages "$ROOT_DIR"))
+  TARGET_PKG=""
+  for pkg in "${PACKAGES[@]}"; do
+    case "$APP" in
+      flutter) [[ "$pkg" == *flutter* ]] && TARGET_PKG="$pkg" ;;
+      admin) [[ "$pkg" == *admin* ]] && TARGET_PKG="$pkg" ;;
+      site) [[ "$pkg" == *site* ]] && TARGET_PKG="$pkg" ;;
+      shared) [[ "$pkg" == *shared* ]] && TARGET_PKG="$pkg" ;;
+      server) [[ "$pkg" == *server* ]] && TARGET_PKG="$pkg" ;;
+    esac
+    [[ -n "$TARGET_PKG" ]] && break
+  done
+  [[ -z "$TARGET_PKG" ]] && { echo "Error: No package found for app type: $APP"; exit 1; }
+  REPO_ROOT="$ROOT_DIR/$TARGET_PKG"
 else
-  REPO_ROOT="$(pwd)"
+  REPO_ROOT="$ROOT_DIR"
 fi
 
-UNIT_ROOT="$REPO_ROOT/test/unit/features/$FEATURE_NAME_SNAKE"
 WIDGET_ROOT="$REPO_ROOT/test/widget/features/$FEATURE_NAME_SNAKE"
+UNIT_ROOT="$REPO_ROOT/test/unit/features/$FEATURE_NAME_SNAKE"
 
-echo "Creating test scaffolding for feature: $FEATURE_NAME_SNAKE"
+echo "Creating test scaffold for feature: $FEATURE_NAME_SNAKE"
+echo "Root: $REPO_ROOT"
 
 dirs=(
   "$UNIT_ROOT/cubit"

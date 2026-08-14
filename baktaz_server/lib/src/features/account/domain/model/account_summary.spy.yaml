@@ -1,0 +1,6 @@
+class: AccountSummary
+fields:
+  name: String
+  imageUrl: Uri?
+  cashBalance: double
+  connectBalance: int

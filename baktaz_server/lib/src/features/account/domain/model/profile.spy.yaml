@@ -1,0 +1,10 @@
+class: Profile
+fields:
+  fullName: String
+  gender: Gender
+  email: String?
+  mobileNumber: String?
+  birthday: DateTime?
+  age: int?
+  imageUrl: Uri?
+  updatedAt: DateTime?

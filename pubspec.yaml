@@ -5,9 +5,11 @@ environment:
   sdk: ">=3.10.3 <4.0.0"
 
 workspace:
-  - baktas_client
-  - baktas_server
-  - baktas_flutter
+  - baktaz_client
+  - baktaz_server
+  - baktaz_flutter
+  - baktaz_admin
+  - baktaz_shared
 
 dev_dependencies:
   melos: ^8.2.2
@@ -15,6 +17,7 @@ dev_dependencies:
 
 dependency_overrides:
   file_picker: ^12.0.0-beta.7
+  flutter_secure_storage: ^10.0.0
 
 melos:
   command:
@@ -53,46 +56,46 @@ melos:
         "
       packageFilters:
         scope:
-          - "paxa"
-          - "paxa_admin"
-          - "paxa_server"
-          - "paxa_shared"
-          - "paxa_site"
+          - "baktaz_flutter"
+          - "baktaz_admin"
+          - "baktaz_server"
+          - "baktaz_shared"
+          - "baktaz_site"
         ignore:
-          - "paxa_client"
+          - "baktaz_client"
     setup:app:
       run: |
-        melos exec --scope="paxa" -- "fvm flutter pub get"
-        melos exec --scope="paxa" -- "fvm dart run slang"
-        melos exec --scope="paxa" -- "fvm dart run build_runner build"
-      description: Setup the paxa_flutter mobile application
+        melos exec --scope="baktaz_flutter" -- "fvm flutter pub get"
+        melos exec --scope="baktaz_flutter" -- "fvm dart run slang"
+        melos exec --scope="baktaz_flutter" -- "fvm dart run build_runner build"
+      description: Setup the baktaz_flutter mobile application
     setup:admin:
       run: |
-        melos exec --scope="paxa_admin" -- "fvm flutter pub get"
-        melos exec --scope="paxa_admin" -- "fvm dart run slang"
-        melos exec --scope="paxa_admin" -- "fvm dart run build_runner build"
-      description: Setup the paxa_admin web application
+        melos exec --scope="baktaz_admin" -- "fvm flutter pub get"
+        melos exec --scope="baktaz_admin" -- "fvm dart run slang"
+        melos exec --scope="baktaz_admin" -- "fvm dart run build_runner build"
+      description: Setup the baktaz_admin web application
     setup:server:
       run: |
-        melos exec --scope="paxa_server" -- "fvm dart pub get"
-        melos exec --scope="paxa_server" -- "fvm dart run build_runner build"
-        melos exec --scope="paxa_server" -- "serverpod generate"
-        melos exec --scope="paxa_server" -- "serverpod create-migration"
-      description: Setup the paxa_server backend application
+        melos exec --scope="baktaz_server" -- "fvm dart pub get"
+        melos exec --scope="baktaz_server" -- "fvm dart run build_runner build"
+        melos exec --scope="baktaz_server" -- "serverpod generate"
+        melos exec --scope="baktaz_server" -- "serverpod create-migration"
+      description: Setup the baktaz_server backend application
     setup:site:
       run: |
-        melos exec --scope="paxa_site" -- "fvm dart pub get"
-        melos exec --scope="paxa_site" -- "fvm dart run build_runner build"
-      description: Setup the paxa_site web application
+        melos exec --scope="baktaz_site" -- "fvm dart pub get"
+        melos exec --scope="baktaz_site" -- "fvm dart run build_runner build"
+      description: Setup the baktaz_site web application
     setup:shared:
       run: |
-        melos exec --scope="paxa_shared" -- "fvm dart pub get"
-        melos exec --scope="paxa_shared" -- "fvm dart run build_runner build"
-      description: Setup the paxa_shared shared application
+        melos exec --scope="baktaz_shared" -- "fvm dart pub get"
+        melos exec --scope="baktaz_shared" -- "fvm dart run build_runner build"
+      description: Setup the baktaz_shared shared application
     clean:
-      run: melos exec --ignore="paxa_client" -- "fvm flutter clean"
+      run: melos exec --ignore="baktaz_client" -- "fvm flutter clean"
     pub_get:
-      run: melos exec --ignore="paxa_client" -- "fvm dart pub get"
+      run: melos exec --ignore="baktaz_client" -- "fvm dart pub get"
     pub_outdated:
       run: melos exec -c 1  -- "fvm dart pub outdated"
     pub_upgrade:
@@ -103,19 +106,19 @@ melos:
       run: melos exec --fail-fast --depends-on="build_runner" -- "fvm dart run build_runner build"
       packageFilters:
         scope:
-          - "paxa"
-          - "paxa_admin"
-          - "paxa_server"
-          - "paxa_shared"
-          - "paxa_site"
+          - "baktaz_flutter"
+          - "baktaz_admin"
+          - "baktaz_server"
+          - "baktaz_shared"
+          - "baktaz_site"
         ignore:
-          - "paxa_client"
+          - "baktaz_client"
     format:
-      run: melos exec --ignore="paxa_client" -- "fvm dart format lib && ( [ -d test ] && fvm dart format test || true )"
+      run: melos exec --ignore="baktaz_client" -- "fvm dart format lib && ( [ -d test ] && fvm dart format test || true )"
     lint:all:
-      run: melos exec -c 1 --ignore="paxa_client" -- "fvm dart analyze --fatal-infos"
+      run: melos exec -c 1 --ignore="baktaz_client" -- "fvm dart analyze --fatal-infos"
     fix_lint:
-      run: melos exec --ignore="paxa_client" -- "fvm dart fix --apply"
+      run: melos exec --ignore="baktaz_client" -- "fvm dart fix --apply"
     test:
       run: sh $MELOS_ROOT_PATH/scripts/run_tests.sh all
       description: Run tests for all packages
@@ -130,5 +133,6 @@ melos:
         dirExists:
           - test
         ignore:
-          - paxa_client
+          - baktaz_client
   sdkPath: .fvm/flutter_sdk
+

@@ -3,12 +3,12 @@
   "dart.analysisExcludedFolders": [
     "**/build/**",
     "build",
-    "baktas_flutter/build/**",
+    "baktaz_flutter/build/**",
     "**/ios/build/**",
-    "baktas_server/build/**",
-    "baktas_flutter/plugins/**/build/**",
-    "baktas_admin/build/**",
-    "baktas_shared/build/**",
-    "baktas_site/build/**"
+    "baktaz_server/build/**",
+    "baktaz_flutter/plugins/**/build/**",
+    "baktaz_admin/build/**",
+    "baktaz_shared/build/**",
+    "baktaz_site/build/**"
   ]
 }

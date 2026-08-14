@@ -1,0 +1,7 @@
+class: Wallet
+table: wallet
+fields:
+  id: UuidValue?, defaultPersist=random
+  cashBalance: double, default=0
+  connectBalance: int, default=0
+  transactions: List<WalletTransactions>?, relation(optional)

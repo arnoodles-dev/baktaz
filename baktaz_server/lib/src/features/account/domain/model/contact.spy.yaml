@@ -1,0 +1,11 @@
+class: Contact
+table: contact
+fields:
+  id: UuidValue?, defaultPersist=random
+  account: Account?, relation
+  mobileNumber: String
+  email: String?
+indexes:
+  contact_user_index:
+    fields: accountId
+    unique: true

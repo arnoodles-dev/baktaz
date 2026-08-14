@@ -1,0 +1,193 @@
+{
+  "parameters": {
+    "privacy_policy_url": {
+      "defaultValue": {
+        "value": "https://policies.google.com/privacy"
+      },
+      "valueType": "STRING",
+      "description": "URL for the app privacy policy page",
+      "lastModified": "2026-07-04T13:15:00Z"
+    },
+    "android_store_url": {
+      "defaultValue": {
+        "value": "https://play.google.com/"
+      },
+      "valueType": "STRING",
+      "description": "Google Play Store listing URL",
+      "lastModified": "2026-07-04T12:17:00Z"
+    },
+    "about_us_url": {
+      "defaultValue": {
+        "value": "https://about.google/"
+      },
+      "valueType": "STRING",
+      "description": "Company about us page URL",
+      "lastModified": "2026-07-04T10:17:00Z"
+    },
+    "help_center_url": {
+      "defaultValue": {
+        "value": "https://support.google.com/"
+      },
+      "valueType": "STRING",
+      "description": "Help center / support page URL",
+      "lastModified": "2026-07-04T08:17:00Z"
+    },
+    "ios_store_url": {
+      "defaultValue": {
+        "value": "https://www.apple.com/app-store/"
+      },
+      "valueType": "STRING",
+      "description": "Apple App Store listing URL",
+      "lastModified": "2026-07-02T13:17:00Z"
+    },
+    "min_supported_version": {
+      "defaultValue": {
+        "value": "1.0.0"
+      },
+      "valueType": "STRING",
+      "description": "Minimum app version required before force-update",
+      "lastModified": "2026-06-30T13:17:00Z"
+    },
+    "terms_condition_url": {
+      "defaultValue": {
+        "value": "https://policies.google.com/terms"
+      },
+      "valueType": "STRING",
+      "description": "Terms and conditions page URL",
+      "lastModified": "2026-06-28T13:17:00Z"
+    },
+    "is_maintenance": {
+      "defaultValue": {
+        "value": false
+      },
+      "valueType": "BOOLEAN",
+      "description": "Global maintenance mode toggle",
+      "lastModified": "2026-07-04T09:17:00Z"
+    },
+    "timeout_ms": {
+      "defaultValue": {
+        "value": 3000
+      },
+      "valueType": "NUMBER",
+      "description": "API gateway response limit",
+      "lastModified": "2026-07-04T13:07:00Z"
+    },
+    "max_upload_size_mb": {
+      "defaultValue": {
+        "value": 25
+      },
+      "valueType": "NUMBER",
+      "description": "Maximum file size for user uploads",
+      "lastModified": "2026-07-04T07:17:00Z"
+    },
+    "theme_config": {
+      "defaultValue": {
+        "value": "{\"primary\": \"#1A6FD4\"}"
+      },
+      "valueType": "JSON",
+      "description": "JSON palette overrides",
+      "lastModified": "2026-07-04T01:17:00Z"
+    },
+    "supported_locales": {
+      "defaultValue": {
+        "value": "[\"en\", \"fr\", \"es\"]"
+      },
+      "valueType": "JSON",
+      "description": "Active languages for localization",
+      "lastModified": "2026-06-25T13:17:00Z"
+    },
+    "feature_rollout_v3": {
+      "defaultValue": {
+        "value": false
+      },
+      "valueType": "BOOLEAN",
+      "description": "Enable new experimental UI elements",
+      "lastModified": "2026-07-03T19:17:00Z"
+    },
+    "enable_realtime_tracking": {
+      "defaultValue": {
+        "value": true
+      },
+      "valueType": "BOOLEAN",
+      "description": "Enables live driver location updates",
+      "lastModified": "2026-07-04T13:12:00Z"
+    },
+    "driver_ping_interval_sec": {
+      "defaultValue": {
+        "value": 10
+      },
+      "valueType": "NUMBER",
+      "description": "Interval for driver location ping back",
+      "lastModified": "2026-07-04T13:09:00Z"
+    },
+    "max_delivery_distance_km": {
+      "defaultValue": {
+        "value": 50
+      },
+      "valueType": "NUMBER",
+      "description": "Maximum radius allowed for delivery services",
+      "lastModified": "2026-07-03T13:17:00Z"
+    },
+    "checkout_discount_pct": {
+      "defaultValue": {
+        "value": 15
+      },
+      "valueType": "NUMBER",
+      "description": "Standard checkout promo discount percent",
+      "lastModified": "2026-07-03T13:17:00Z"
+    },
+    "feature_chat_enabled": {
+      "defaultValue": {
+        "value": true
+      },
+      "valueType": "BOOLEAN",
+      "description": "Toggle chat feature between driver and customer",
+      "lastModified": "2026-07-04T13:17:00Z"
+    },
+    "delivery_fee_per_km": {
+      "defaultValue": {
+        "value": 2.5
+      },
+      "valueType": "NUMBER",
+      "description": "Base rate per kilometer for shipments",
+      "lastModified": "2026-07-04T09:17:00Z"
+    },
+    "promo_code_active": {
+      "defaultValue": {
+        "value": true
+      },
+      "valueType": "BOOLEAN",
+      "description": "Toggle standard checkout coupons",
+      "lastModified": "2026-07-04T13:02:00Z"
+    },
+    "payment_gateway_provider": {
+      "defaultValue": {
+        "value": "stripe"
+      },
+      "valueType": "STRING",
+      "description": "Active processing hub identifier",
+      "lastModified": "2026-07-02T13:17:00Z"
+    },
+    "max_active_orders_per_driver": {
+      "defaultValue": {
+        "value": 3
+      },
+      "valueType": "NUMBER",
+      "description": "Capacity throttle for logistics",
+      "lastModified": "2026-07-03T13:17:00Z"
+    },
+    "tax_rate_percent": {
+      "defaultValue": {
+        "value": 8
+      },
+      "valueType": "NUMBER",
+      "description": "Default platform surcharge value",
+      "lastModified": "2026-07-01T13:17:00Z"
+    }
+  },
+  "version": {
+    "versionNumber": "13",
+    "updateTime": "2025-06-21T08:48:55.084898Z",
+    "updateUser": "arnoodles.development@gmail.com"
+  }
+}

@@ -1,0 +1,8 @@
+class: WalletTransactions
+table: wallet_transactions
+fields:
+    id: UuidValue?, defaultPersist=random
+    wallet: Wallet?, relation
+    amount: double
+    transactionDate: DateTime
+    transactionType: TransactionType

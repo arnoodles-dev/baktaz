@@ -1,0 +1,44 @@
+services:
+  # Development services
+  postgres:
+    image: ghcr.io/serverpod/postgres:16
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: baktaz
+      POSTGRES_PASSWORD: "0q4pMycOPwNCTUNXaKacLYuJp3srHTWC"
+    volumes:
+      - baktaz_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:6.2.6
+    ports:
+      - "8091:6379"
+    command: redis-server --requirepass "agrUpCCi3GswwkM_G_3mR4_AsHiXMB7E"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+  # Test services
+  postgres_test:
+    image: ghcr.io/serverpod/postgres:16
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: baktaz_test
+      POSTGRES_PASSWORD: "izyi8R4u5GHu9OQeHP5vIC5_m6zCPenl"
+    volumes:
+      - baktaz_test_data:/var/lib/postgresql/data
+
+  redis_test:
+    image: redis:6.2.6
+    ports:
+      - "9091:6379"
+    command: redis-server --requirepass "n_AlDIA6buFYEVNPyB1nmBxrTh-ppXIj"
+    environment:
+      - REDIS_REPLICATION_MODE=master
+
+volumes:
+  baktaz_data:
+  baktaz_test_data:

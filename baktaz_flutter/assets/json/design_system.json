@@ -1,0 +1,242 @@
+{
+  "project": "Paxa",
+  "description": "A design system for a modern mobile application, derived from UI screenshots. It includes light and dark themes, typography, component styling, and layout guidelines to ensure consistent design replication.",
+  "themes": {
+    "light": {
+      "colors": {
+        "primary": "#216bfe",
+        "primaryVariant": "#1c5de8",
+        "secondary": "#e9f0ff",
+        "secondaryVariant": "#d1e0ff",
+        "accent": "#5AC8FA",
+        "accentVariant": "#4AB8EA",
+        "background": "#FFFFFF",
+        "surface": "#f9f9f9",
+        "error": "#FF3B30",
+        "errorVariant": "#E62A1F",
+        "success": "#34C759",
+        "warning": "#FF9500",
+        "info": "#5AC8FA",
+        "onPrimary": "#FFFFFF",
+        "onSecondary": "#216bfe",
+        "onAccent": "#000000",
+        "onBackground": "#000000",
+        "onSurface": "#000000",
+        "onError": "#FFFFFF",
+        "onSuccess": "#FFFFFF",
+        "onWarning": "#000000",
+        "onInfo": "#000000",
+        "textPrimary": "#000000",
+        "textSecondary": "#d8d8d7",
+        "textHint": "#cfcfcf",
+        "textDisabled": "#cfcfcf",
+        "border": "#C6C6C8",
+        "icon": "#8E8E93",
+        "inputFill": "#f9f9f9"
+      }
+    },
+    "dark": {
+      "colors": {
+        "primary": "#246bfc",
+        "primaryVariant": "#3d7dfd",
+        "secondary": "#35383f",
+        "secondaryVariant": "#4A4D54",
+        "accent": "#64D2FF",
+        "accentVariant": "#54C2EF",
+        "background": "#171920",
+        "surface": "#1f222a",
+        "error": "#FF453A",
+        "errorVariant": "#E6352A",
+        "success": "#30D158",
+        "warning": "#FF9F0A",
+        "info": "#64D2FF",
+        "onPrimary": "#FFFFFF",
+        "onSecondary": "#FFFFFF",
+        "onAccent": "#000000",
+        "onBackground": "#FFFFFF",
+        "onSurface": "#FFFFFF",
+        "onError": "#FFFFFF",
+        "onSuccess": "#FFFFFF",
+        "onWarning": "#000000",
+        "onInfo": "#000000",
+        "textPrimary": "#FFFFFF",
+        "textSecondary": "#f7fafd",
+        "textHint": "#464a4e",
+        "textDisabled": "#464a4e",
+        "border": "#38383A",
+        "icon": "#8E8E93",
+        "inputFill": "#2D3748"
+      }
+    }
+  },
+  "typography": {
+    "fontFamily": "SF-Pro-Display",
+    "display": {
+      "fontWeight": "Bold",
+      "fontSize": 32,
+      "letterSpacing": 0.25
+    },
+    "headline1": {
+      "fontWeight": "Bold",
+      "fontSize": 24,
+      "letterSpacing": 0
+    },
+    "headline2": {
+      "fontWeight": "Semibold",
+      "fontSize": 20,
+      "letterSpacing": 0.15
+    },
+    "subtitle1": {
+      "fontWeight": "Regular",
+      "fontSize": 16,
+      "letterSpacing": 0.15
+    },
+    "body1": {
+      "fontWeight": "Regular",
+      "fontSize": 16,
+      "letterSpacing": 0.5
+    },
+    "body2": {
+      "fontWeight": "Regular",
+      "fontSize": 14,
+      "letterSpacing": 0.25
+    },
+    "button": {
+      "fontWeight": "Semibold",
+      "fontSize": 16,
+      "letterSpacing": 1.25
+    },
+    "caption": {
+      "fontWeight": "Regular",
+      "fontSize": 12,
+      "letterSpacing": 0.4
+    }
+  },
+  "layout": {
+    "spacing": {
+      "xs": 4,
+      "sm": 8,
+      "md": 16,
+      "lg": 24,
+      "xl": 32,
+      "xxl": 48
+    },
+    "screenPadding": 24,
+    "gridColumnSpacing": 16
+  },
+  "components": {
+    "button": {
+      "primary": {
+        "description": "For the main call-to-action on a screen.",
+        "style": {
+          "backgroundColor": "primary",
+          "textColor": "onPrimary",
+          "borderRadius": 999,
+          "paddingVertical": 16,
+          "paddingHorizontal": 24
+        }
+      },
+      "secondary": {
+        "description": "For secondary actions.",
+        "style": {
+          "backgroundColor": "secondary",
+          "textColor": "onSecondary",
+          "borderColor": "primary",
+          "borderWidth": 2,
+          "borderRadius": 999,
+          "paddingVertical": 14,
+          "paddingHorizontal": 24
+        }
+      },
+      "social": {
+        "description": "For social login options like Google, Facebook, Apple.",
+        "style": {
+          "backgroundColor": "surface",
+          "textColor": "textPrimary",
+          "borderColor": "border",
+          "borderWidth": 1,
+          "borderRadius": 16
+        }
+      }
+    },
+    "card": {
+      "description": "Used to group related information.",
+      "style": {
+        "backgroundColor": "surface",
+        "borderRadius": 24,
+        "padding": 16,
+        "shadow": {
+          "light": "0px 10px 15px -3px rgba(33, 107, 254, 0.1)",
+          "dark": "0px 10px 15px -3px rgba(36, 107, 252, 0.3)"
+        }
+      }
+    },
+    "textField": {
+      "description": "For user text input.",
+      "style": {
+        "backgroundColor": "inputFill",
+        "borderColor": "transparent",
+        "borderRadius": 16,
+        "borderWidth": 0,
+        "paddingVertical": 16,
+        "paddingHorizontal": 20
+      }
+    },
+    "appBar": {
+      "description": "Top navigation bar for screens.",
+      "style": {
+        "backgroundColor": "transparent",
+        "elevation": 0,
+        "centerTitle": true,
+        "titleTextStyle": "headline2"
+      }
+    },
+    "bottomNavBar": {
+      "description": "Primary navigation at the bottom of the screen.",
+      "style": {
+        "backgroundColor": "surface",
+        "selectedItemColor": "primary",
+        "unselectedItemColor": "textSecondary",
+        "elevation": 8,
+        "borderRadiusTopLeft": 24,
+        "borderRadiusTopRight": 24
+      }
+    }
+  },
+  "iconography": {
+    "style": "Outlined",
+    "strokeWidth": 1.5,
+    "size": 24
+  },
+  "imagery": {
+    "borderRadius": 16
+  },
+  "semantic": {
+    "success": {
+      "light": "#34C759",
+      "dark": "#30D158"
+    },
+    "warning": {
+      "light": "#FF9500",
+      "dark": "#FF9F0A"
+    },
+    "error": {
+      "light": "#FF3B30",
+      "dark": "#FF453A"
+    },
+    "info": {
+      "light": "#5AC8FA",
+      "dark": "#64D2FF"
+    }
+  },
+  "shadows": {
+    "light": {
+      "primary": "0 2px 10px rgba(33, 107, 254, 0.1)",
+      "default": "0 2px 10px rgba(0, 0, 0, 0.1)"
+    },
+    "dark": {
+      "primary": "0 2px 10px rgba(36, 107, 252, 0.3)",
+      "default": "0 2px 10px rgba(0, 0, 0, 0.3)"
+    }
+  }
+}

@@ -1,4 +1,4 @@
-# Baktas 🚶‍♂️🏆
+# Baktaz 🚶‍♂️🏆
 
 > **Gamified Social Walking & Step-Count Challenge Platform**  
 > *Turn your daily steps into real rewards, commitment, and community competition.*
@@ -7,9 +7,9 @@
 
 ## 🌟 Overview
 
-**Baktas** (Visayan term for walking/trekking) is a mobile-first fitness app designed to motivate people to stay active through stake-backed step challenges. Users put up a buy-in fee to join public or private walking challenges, compete on live leaderboards, interact in challenge-bound group chats, and win from the prize pool.
+**Baktaz** (Visayan term for walking/trekking) is a mobile-first fitness app designed to motivate people to stay active through stake-backed step challenges. Users put up a buy-in fee to join public or private walking challenges, compete on live leaderboards, interact in challenge-bound group chats, and win from the prize pool.
 
-Whether aiming for personal fitness goals or competing against friends and local walkers, Baktas turns daily physical activity into an engaging, accountable, and rewarding experience.
+Whether aiming for personal fitness goals or competing against friends and local walkers, Baktaz turns daily physical activity into an engaging, accountable, and rewarding experience.
 
 ---
 
@@ -32,17 +32,17 @@ To view detailed specifications and feature breakdowns, explore the `docs/` fold
 
 | Document | Description |
 | :--- | :--- |
-| 📑 [**Product Specification**](file:///Users/arnold/Projects/Project%20Baktas/docs/product-specification.md) | High-level PRD, user roles, core value propositions, and monetization model. |
-| 📱 [**Screens & User Flow**](file:///Users/arnold/Projects/Project%20Baktas/docs/screens-and-user-flow.md) | Detailed UI layout specs for Home, Challenge Hub, Group Chat, and Wallet/Account. |
-| ⚖️ [**Challenge Mechanics & Math**](file:///Users/arnold/Projects/Project%20Baktas/docs/challenge-mechanics-and-math.md) | Prize pool calculations, tax rates, duration rules, and reward mode recommendations. |
-| 🛡️ [**Anti-Cheat & Integrations**](file:///Users/arnold/Projects/Project%20Baktas/docs/anti-cheat-and-integrations.md) | Recommendations for anti-spoofing step verification, health sync, and wallet escrow. |
+| 📑 [**Product Specification**](file:///Users/arnold/Projects/Project%20Baktaz/docs/product-specification.md) | High-level PRD, user roles, core value propositions, and monetization model. |
+| 📱 [**Screens & User Flow**](file:///Users/arnold/Projects/Project%20Baktaz/docs/screens-and-user-flow.md) | Detailed UI layout specs for Home, Challenge Hub, Group Chat, and Wallet/Account. |
+| ⚖️ [**Challenge Mechanics & Math**](file:///Users/arnold/Projects/Project%20Baktaz/docs/challenge-mechanics-and-math.md) | Prize pool calculations, tax rates, duration rules, and reward mode recommendations. |
+| 🛡️ [**Anti-Cheat & Integrations**](file:///Users/arnold/Projects/Project%20Baktaz/docs/anti-cheat-and-integrations.md) | Recommendations for anti-spoofing step verification, health sync, and wallet escrow. |
 
 ---
 
 ## 🛠️ Main App Structure
 
 ```
-Baktas App
+Baktaz App
 ├── 🏠 Home (Daily Steps, Weekly Charts, Active Challenge Ticker, Daily Missions, Leaderboard Preview)
 ├── 🏆 Challenge Hub (Explore Public/Private, Invite Codes, Rules/Guidelines, Live Leaderboard)
 ├── 💬 Chat (Challenge-Specific Automated Group Chats & Announcements)

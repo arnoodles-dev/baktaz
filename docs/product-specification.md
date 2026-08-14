@@ -1,4 +1,4 @@
-# Product Specification: Baktas
+# Product Specification: Baktaz
 
 > **Document Version:** 1.0  
 > **Status:** Active Concept Specification  
@@ -8,7 +8,7 @@
 
 ## 1. Product Vision & Mission
 
-**Baktas** is a gamified, social step-tracking and fitness challenge ecosystem. Its primary mission is to solve the common drop-off in personal exercise consistency by attaching **social accountability**, **gamified leaderboards**, and **stake-backed financial incentives** to daily walking routines.
+**Baktaz** is a gamified, social step-tracking and fitness challenge ecosystem. Its primary mission is to solve the common drop-off in personal exercise consistency by attaching **social accountability**, **gamified leaderboards**, and **stake-backed financial incentives** to daily walking routines.
 
 ---
 
@@ -75,7 +75,7 @@
                                                 └─────────────────┘
 ```
 
-1. **App Service Fee ($R_{app}$)**: **After every completed challenge**, Baktas automatically deducts a configurable variable service fee ($R_{app}$) from the gross prize pool prior to reward payouts to cover platform infrastructure, anti-cheat monitoring, and transaction processing.
+1. **App Service Fee ($R_{app}$)**: **After every completed challenge**, Baktaz automatically deducts a configurable variable service fee ($R_{app}$) from the gross prize pool prior to reward payouts to cover platform infrastructure, anti-cheat monitoring, and transaction processing.
 2. **Host Earnings ($R_{host}$)**: Subscribed Hosts earn a configurable percentage cut of the gross prize pool as compensation for organizing and maintaining community engagement.
 3. **Host Creator Subscription ($S_{host}$)**:
    - Configurable recurring subscription fee granting the user the ability to host unlimited public and private challenges.

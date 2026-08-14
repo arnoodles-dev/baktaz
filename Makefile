@@ -49,11 +49,11 @@ clean: flutter_clean delete_generated_files ## Clean the project
 create_feature:
 	@read -p "Choose app (admin/app/site): " app; \
 	if [ "$$app" = "admin" ]; then \
-		sh scripts/create_feature.sh --app baktas_admin; \
+		sh scripts/create_feature.sh --app baktaz_admin; \
 	elif [ "$$app" = "app" ]; then \
-		sh scripts/create_feature.sh --app baktas_flutter; \
+		sh scripts/create_feature.sh --app baktaz_flutter; \
 	elif [ "$$app" = "site" ]; then \
-		sh scripts/create_feature.sh --app baktas_site; \
+		sh scripts/create_feature.sh --app baktaz_site; \
 	else \
 		echo "Invalid app choice."; \
 	fi
@@ -61,11 +61,11 @@ create_feature:
 create_feature_tests:
 	@read -p "Choose app (admin/app/site): " app; \
 	if [ "$$app" = "admin" ]; then \
-		sh scripts/create_feature_tests.sh --app baktas_admin; \
+		sh scripts/create_feature_tests.sh --app baktaz_admin; \
 	elif [ "$$app" = "app" ]; then \
-		sh scripts/create_feature_tests.sh --app baktas_flutter; \
+		sh scripts/create_feature_tests.sh --app baktaz_flutter; \
 	elif [ "$$app" = "site" ]; then \
-		sh scripts/create_feature_tests.sh --app baktas_site; \
+		sh scripts/create_feature_tests.sh --app baktaz_site; \
 	else \
 		echo "Invalid app choice."; \
 	fi
@@ -74,36 +74,36 @@ create_feature_tests:
 server_run: docker_run server_apply_migrations
 
 server_start:
-	cd baktas_server && fvm dart run serverpod start --watch
+	cd baktaz_server && fvm dart run serverpod start --watch
 
 server_apply_migrations:
-	cd baktas_server && fvm dart bin/main.dart --apply-migrations
+	cd baktaz_server && fvm dart bin/main.dart --apply-migrations
 
 server_seed:
-	cd baktas_server && fvm dart bin/seed.dart --role maintenance
+	cd baktaz_server && fvm dart bin/seed.dart --role maintenance
 
 server_gen:
-	cd baktas_server && fvm dart run build_runner build --delete-conflicting-outputs
-	cd baktas_server && serverpod generate
+	cd baktaz_server && fvm dart run build_runner build --delete-conflicting-outputs
+	cd baktaz_server && serverpod generate
 
 server_gen_watch:
-	cd baktas_server && serverpod generate watch		
+	cd baktaz_server && serverpod generate watch		
 
 server_migration: 
-	cd baktas_server && serverpod create-migration
+	cd baktaz_server && serverpod create-migration
 
 server_migration_force: 
-	cd baktas_server && serverpod create-migration --force
+	cd baktaz_server && serverpod create-migration --force
 
 docker_run:
-	cd baktas_server && docker compose up --build --detach
+	cd baktaz_server && docker compose up --build --detach
 
 docker_open:
 	cd /d C:\Program Files\Docker\Docker && "Docker Desktop.exe"
 
 ## Site Commands
 site_serve:
-	cd baktas_site && PATH="$$HOME/bin:$$PATH" fvm dart pub global run jaspr_cli:jaspr serve
+	cd baktaz_site && PATH="$$HOME/bin:$$PATH" fvm dart pub global run jaspr_cli:jaspr serve
 
 ## Coverage Reports
 lcov: 
@@ -115,7 +115,7 @@ clean_pods:
 	sh scripts/clean_pods.sh
 
 update_android_project:
-	cd baktas_flutter && sh ../scripts/update_android_project.sh
+	cd baktaz_flutter && sh ../scripts/update_android_project.sh
 
 ## Tests
 test: ## Run tests interactively (select packages)
@@ -124,20 +124,20 @@ test: ## Run tests interactively (select packages)
 test_all: ## Run tests for all packages
 	@sh scripts/run_tests.sh all
 
-test_admin: ## Run tests for baktas_admin
-	@sh scripts/run_tests.sh baktas_admin
+test_admin: ## Run tests for baktaz_admin
+	@sh scripts/run_tests.sh baktaz_admin
 
-test_app: ## Run tests for baktas_flutter
-	@sh scripts/run_tests.sh baktas_flutter
+test_app: ## Run tests for baktaz_flutter
+	@sh scripts/run_tests.sh baktaz_flutter
 
-test_shared: ## Run tests for baktas_shared
-	@sh scripts/run_tests.sh baktas_shared
+test_shared: ## Run tests for baktaz_shared
+	@sh scripts/run_tests.sh baktaz_shared
 
-test_server: ## Run tests for baktas_server
-	@sh scripts/run_tests.sh baktas_server
+test_server: ## Run tests for baktaz_server
+	@sh scripts/run_tests.sh baktaz_server
 
-test_site: ## Run tests for baktas_site
-	@sh scripts/run_tests.sh baktas_site
+test_site: ## Run tests for baktaz_site
+	@sh scripts/run_tests.sh baktaz_site
 
 codebase_graph: ## Open codebase graph in browser http://localhost:9749
 	(sleep 1.5 && open http://localhost:9749) & \

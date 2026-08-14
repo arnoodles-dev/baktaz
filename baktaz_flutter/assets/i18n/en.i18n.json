@@ -1,0 +1,147 @@
+{
+  "app_update": {
+    "button": {
+      "update_now": "Update Now"
+    },
+    "label": {
+      "subtitle": "To continue using the app, please update to the latest version.",
+      "title": "New update is available"
+    }
+  },
+  "common": {
+    "error": {
+      "generic": "Oops! Something went wrong",
+      "email_format": "Invalid email format",
+      "empty_string": "${property: String} is empty",
+      "feature_unavailable": "This feature is currently unavailable",
+      "invalid_password": "Password does not meet the required format",
+      "max_characters": "Exceeds the number of allowable characters",
+      "min_characters": "Does not meet the required character length",
+      "no_internet_connection": "No Internet Connection",
+      "server_error": "Error ${code: String}: ${error: String}",
+      "unexpected_error": "Unexpected Error",
+      "unsupported_device": "This device is not supported by the app",
+      "server_unavailable": "Server is currently unavailable, please try again later"
+    },
+    "exit": "exit",
+    "home": "home",
+    "next": "next",
+    "no": "no",
+    "or": "or",
+    "profile": "profile",
+    "skip": "skip",
+    "yes": "yes",
+    "post": "post",
+    "activity": "activity",
+    "messages": "messages",
+    "chats": "chats",
+    "notifications": "notifications",
+    "account": "account",
+    "history": "history",
+    "cancel": "cancel",
+    "search": "search",
+    "select_country": "Select a country",
+    "see_all": "See All"
+  },
+  "dialogs": {
+    "exit_message": "Are you sure you want to close the application?"
+  },
+  "login": {
+    "welcome": "Welcome!",
+    "email_subtitle": "Enter your email address to get started.",
+    "button": {
+      "facebook": "Continue with Facebook",
+      "google": "Continue with Google",
+      "email": "Sign in with Email"
+    }
+  },
+  "maintenance": {
+    "label": {
+      "subtitle": "Please check back soon just putting little touch up on some pretty updates.",
+      "title": "We Are Under Maintenance"
+    }
+  },
+  "onboarding": {
+    "button": {
+      "get_started": "Get Started"
+    }
+  },
+  "profile": {
+    "label": {
+      "basic_information": "Basic Information",
+      "age": "Age",
+      "birthday": "Birthday",
+      "email": "Email",
+      "gender": "Gender",
+      "phone_number": "Phone Number"
+    }
+  },
+  "account": {
+    "button": {
+      "logout": "Log Out"
+    },
+    "logout_dialog": {
+      "title": "Just making sure...",
+      "subtitle": "Are you sure you want to logout?"
+    }
+  },
+  "register": {
+    "title": "Get Started",
+    "submit": "Submit",
+    "label": {
+      "disclaimer": "By continuing, you confirm you have read and agree to our <link href=\"${terms: String}\">Terms of Service</link> and <link href=\"${privacy: String}\">Privacy Policy</link> on how we collect, use, disclose, and process your personal data.",
+      "mobile_number": "Mobile Number",
+      "email_address": "Email Address",
+      "name": "Name"
+    },
+    "hint": {
+      "email": "No spam, we promise",
+      "name": "What should we call you?"
+    }
+  },
+  "select_address": {
+    "title": "Pin Your Address Location",
+    "location": "Location",
+    "search_hint": "Search address",
+    "continue_text": "Continue"
+  },
+  "otp": {
+    "header": "We've sent you an SMS",
+    "description": "An OTP has been sent to your mobile number: <b>${phoneNumber: String}</b>",
+    "button": {
+      "verify": "Verify"
+    },
+    "error": {
+      "incorrect_code": "Incorrect OTP Code"
+    },
+    "resend": "Did not receive the code? Request code"
+  },
+  "home": {
+    "loading": "Loading...",
+    "greeting": "Good Morning 👋",
+    "greeting_fallback": "Hello 👋",
+    "special_offers": "Special Offers",
+    "special_offer_item": "Special Offer ${index: int}",
+    "services": "Services",
+    "shops_you_might_like": "Shops you might like",
+    "packages_for_you": "Packages for you",
+    "heroes_near_you": "Heroes near you",
+    "ads_item": "Ads ${index: int}",
+    "banner_ads": "Banner Ads",
+    "thats_all": "That's all for now!",
+    "services_list": {
+      "shops": "Shops",
+      "requests": "Requests",
+      "heroes": "Heroes",
+      "express": "Express"
+    },
+    "search_hints": [
+      "Search for heroes...",
+      "Search for packages...",
+      "Search for shops..."
+    ]
+  },
+  "post": {
+    "create_post": "Create Post"
+  }
+}

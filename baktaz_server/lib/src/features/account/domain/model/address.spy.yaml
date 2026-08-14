@@ -1,0 +1,12 @@
+class: Address
+table: address
+fields:
+    id: UuidValue?, defaultPersist=random
+    label: String?
+    street: String?
+    subLocality: String?
+    locality: String?
+    administrativeArea: String?
+    country: String?
+    postalCode: String?
+    isDefault: bool, default=false

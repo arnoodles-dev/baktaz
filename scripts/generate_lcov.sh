@@ -1,32 +1,73 @@
 #!/bin/bash
 # Reusable script for generating LCOV coverage reports
 # Reads per-package coverage exceptions from .coverage_exclude
+# Dynamically discovers packages from workspace
+
+set -e
 
 APP=$1
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
-if [ -z "$APP" ]; then
-  echo "Usage: $0 <admin|app|server|site>"
+# Dynamically discover packages from melos workspace
+PACKAGES=()
+if [ -f "$ROOT_DIR/pubspec.yaml" ]; then
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*(.+)$ ]]; then
+      pkg="${BASH_REMATCH[1]}"
+      if [ -d "$ROOT_DIR/$pkg" ]; then
+        PACKAGES+=("$pkg")
+      fi
+    fi
+  done < <(awk '/^workspace:/,/^[^[:space:]]/ {print}' "$ROOT_DIR/pubspec.yaml" | grep -E '^  - ')
+fi
+
+# Fallback
+if [ ${#PACKAGES[@]} -eq 0 ]; then
+  while IFS= read -r pkg_dir; do
+    pkg_name=$(basename "$pkg_dir")
+    if [ "$pkg_name" != "baktaz_client" ]; then
+      PACKAGES+=("$pkg_name")
+    fi
+  done < <(find "$ROOT_DIR" -maxdepth 1 -type d -name "baktaz_*" | sort)
+fi
+
+# Find matching package
+TARGET_PKG=""
+for pkg in "${PACKAGES[@]}"; do
+  case "$pkg" in
+    *flutter*) [ "$APP" = "app" ] && TARGET_PKG="$pkg" ;;
+    *admin*) [ "$APP" = "admin" ] && TARGET_PKG="$pkg" ;;
+    *shared*) [ "$APP" = "shared" ] && TARGET_PKG="$pkg" ;;
+    *server*) [ "$APP" = "server" ] && TARGET_PKG="$pkg" ;;
+    *site*) [ "$APP" = "site" ] && TARGET_PKG="$pkg" ;;
+  esac
+done
+
+if [ -z "$TARGET_PKG" ]; then
+  echo "Usage: $0 <admin|app|server|site|shared>"
+  echo "Available packages: ${PACKAGES[*]}"
   exit 1
 fi
 
-source "$(dirname "$0")/common.sh"
-if [[ "$OS_TYPE" == "windows" ]]; then
-  LCOV_CMD="perl C:\\ProgramData\\chocolatey\\lib\\lcov\\tools\\bin\\lcov"
-  GENHTML_CMD="perl C:\\ProgramData\\chocolatey\\lib\\lcov\\tools\\bin\\genhtml"
-  OPEN_CMD="CMD /C start"
-  OUT_ADMIN="coverage\\index.html"
-  OUT_APP="coverage\\index.html"
-  OUT_SERVER="coverage\\html\\index.html"
-  OUT_SITE="coverage\\index.html"
-else
+cd "$ROOT_DIR/$TARGET_PKG"
+
+# Check if it's a Flutter package
+IS_FLUTTER=false
+if grep -q "flutter:" pubspec.yaml 2>/dev/null; then
+  IS_FLUTTER=true
+fi
+
+if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
   LCOV_CMD="lcov"
   GENHTML_CMD="genhtml"
   OPEN_CMD="open"
-  OUT_ADMIN="coverage/index.html"
-  OUT_APP="coverage/index.html"
-  OUT_SERVER="coverage/html/index.html"
-  OUT_SITE="coverage/index.html"
-  OUT_SHARED="coverage/index.html"
+  OUT_DIR="coverage"
+else
+  LCOV_CMD="perl C:\\ProgramData\\chocolatey\\lib\\lcov\\tools\\bin\\lcov"
+  GENHTML_CMD="perl C:\\ProgramData\\chocolatey\\lib\\lcov\\tools\\bin\\genhtml"
+  OPEN_CMD="CMD /C start"
+  OUT_DIR="coverage"
 fi
 
 read_exclude_patterns() {
@@ -39,38 +80,16 @@ read_exclude_patterns() {
   done < "$exclude_file"
 }
 
-if [ "$APP" = "admin" ]; then
-  cd paxa_admin
+if [ "$IS_FLUTTER" = true ]; then
   PATTERNS=$(read_exclude_patterns ".coverage_exclude")
-  $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
+  eval $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
   $GENHTML_CMD -o coverage coverage/lcov.info
-  $OPEN_CMD $OUT_ADMIN
-elif [ "$APP" = "app" ]; then
-  cd paxa_flutter
-  PATTERNS=$(read_exclude_patterns ".coverage_exclude")
-  $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
-  $GENHTML_CMD -o coverage coverage/lcov.info
-  $OPEN_CMD $OUT_APP
-elif [ "$APP" = "server" ]; then
-  cd paxa_server
+  $OPEN_CMD $OUT_DIR/index.html
+else
+  # Server package
   $LCOV_CMD --ignore-errors unused --extract coverage/lcov.info '*/endpoints/*' '*/services/*' -o coverage/lcov.info
   PATTERNS=$(read_exclude_patterns ".coverage_exclude")
-  $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
+  eval $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
   $GENHTML_CMD -o coverage/html coverage/lcov.info
-  $OPEN_CMD $OUT_SERVER
-elif [ "$APP" = "site" ]; then
-  cd paxa_site
-  PATTERNS=$(read_exclude_patterns ".coverage_exclude")
-  $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
-  $GENHTML_CMD -o coverage coverage/lcov.info
-  $OPEN_CMD $OUT_SITE
-elif [ "$APP" = "shared" ]; then
-  cd paxa_shared
-  PATTERNS=$(read_exclude_patterns ".coverage_exclude")
-  $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
-  $GENHTML_CMD -o coverage coverage/lcov.info
-  $OPEN_CMD $OUT_SHARED
-else
-  echo "Invalid app choice. Must be admin, app, server, site, or shared."
-  exit 1
+  $OPEN_CMD coverage/html/index.html
 fi

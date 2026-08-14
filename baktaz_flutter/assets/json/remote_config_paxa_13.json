@@ -1,0 +1,61 @@
+{
+  "parameters": {
+    "privacy_policy_url": {
+      "defaultValue": {
+        "value": "https://policies.google.com/privacy"
+      },
+      "valueType": "STRING"
+    },
+    "android_store_url": {
+      "defaultValue": {
+        "value": "https://play.google.com/"
+      },
+      "valueType": "STRING"
+    },
+    "about_us_url": {
+      "defaultValue": {
+        "value": "https://about.google/"
+      },
+      "valueType": "STRING"
+    },
+    "help_center_url": {
+      "defaultValue": {
+        "value": "https://support.google.com/"
+      },
+      "valueType": "STRING"
+    },
+    "ios_store_url": {
+      "defaultValue": {
+        "value": "https://www.apple.com/app-store/"
+      },
+      "valueType": "STRING"
+    },
+    "min_supported_version": {
+      "defaultValue": {
+        "value": "1.0.0"
+      },
+      "valueType": "STRING"
+    },
+    "terms_condition_url": {
+      "defaultValue": {
+        "value": "https://policies.google.com/terms"
+      },
+      "valueType": "STRING"
+    },
+    "is_maintenance": {
+      "defaultValue": {
+        "value": "false"
+      },
+      "valueType": "BOOLEAN"
+    }
+  },
+  "version": {
+    "versionNumber": "13",
+    "updateTime": "2025-06-21T08:48:55.084898Z",
+    "updateUser": {
+      "email": "arnoodles.development@gmail.com"
+    },
+    "updateOrigin": "CONSOLE",
+    "updateType": "INCREMENTAL_UPDATE"
+  }
+}

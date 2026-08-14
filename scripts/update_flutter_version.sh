@@ -1,5 +1,5 @@
 #!/bin/bash
-# filepath: /Users/Arnold/Projects/paxa/update_flutter_version.sh
+# filepath: Dynamic version update for Flutter across workspace
 
 if [ -z "$1" ]; then
   echo "Usage: $0 <new_flutter_version>"
@@ -8,34 +8,62 @@ fi
 
 NEW_VERSION="$1"
 
-source "$(dirname "$0")/common.sh"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
-# Update flutter: ">={version}" in pubspec.yaml
-find . -type f -name "pubspec.yaml" | while read -r file; do
-  sed_inplace "s/([[:space:]]*flutter:[[:space:]]*\")>=([0-9]+\.[0-9]+\.[0-9]+)(\")/\1>=$NEW_VERSION\3/" "$file"
-  echo "Updated flutter: >=$NEW_VERSION in $file"
+source "$SCRIPT_DIR/common.sh"
+
+# Dynamically discover packages from melos workspace
+PACKAGES=()
+if [ -f "$ROOT_DIR/pubspec.yaml" ]; then
+  while IFS= read -r line; do
+    if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*(.+)$ ]]; then
+      pkg="${BASH_REMATCH[1]}"
+      if [ -d "$ROOT_DIR/$pkg" ]; then
+        PACKAGES+=("$pkg")
+      fi
+    fi
+  done < <(awk '/^workspace:/,/^[^[:space:]]/ {print}' "$ROOT_DIR/pubspec.yaml" | grep -E '^  - ')
+fi
+
+# Fallback
+if [ ${#PACKAGES[@]} -eq 0 ]; then
+  while IFS= read -r pkg_dir; do
+    pkg_name=$(basename "$pkg_dir")
+    if [ "$pkg_name" != "baktaz_client" ]; then
+      PACKAGES+=("$pkg_name")
+    fi
+  done < <(find "$ROOT_DIR" -maxdepth 1 -type d -name "baktaz_*" | sort)
+fi
+
+# Update flutter: ">={version}" in pubspec.yaml for all packages
+for pkg in "${PACKAGES[@]}"; do
+  find "$ROOT_DIR/$pkg" -type f -name "pubspec.yaml" | while read -r file; do
+    sed_inplace "s/([[:space:]]*flutter:[[:space:]]*\")>=([0-9]+\.[0-9]+\.[0-9]+)(\")/\1>=$NEW_VERSION\3/" "$file"
+    echo "Updated flutter: >=$NEW_VERSION in $file"
+  done
 done
 
 # Update flutter: ">={version}" in melos.yaml
-find . -type f -name "melos.yaml" | while read -r file; do
+find "$ROOT_DIR" -type f -name "melos.yaml" | while read -r file; do
   sed_inplace "s/([[:space:]]*flutter:[[:space:]]*\")>=([0-9]+\.[0-9]+\.[0-9]+)(\")/\1>=$NEW_VERSION\3/" "$file"
   echo "Updated flutter: >=$NEW_VERSION in $file"
 done
 
 # Update flutter: ">={version}" in pubspec.lock
-find . -type f -name "pubspec.lock" | while read -r file; do
+find "$ROOT_DIR" -type f -name "pubspec.lock" | while read -r file; do
   sed_inplace "s/([[:space:]]*flutter:[[:space:]]*\")>=([0-9]+\.[0-9]+\.[0-9]+)(\")/\1>=$NEW_VERSION\3/" "$file"
   echo "Updated flutter: >=$NEW_VERSION in $file"
 done
 
 # Update flutterSdkVersion in all fvm_config.json files
-find . -type f -name "fvm_config.json" | while read -r file; do
+find "$ROOT_DIR" -type f -name "fvm_config.json" | while read -r file; do
   sed_inplace "s/^([[:space:]]*\"flutterSdkVersion\":[[:space:]]*\")[^\"]+(\")/\1$NEW_VERSION\2/" "$file"
   echo "Updated flutterSdkVersion in $file"
 done
 
 # Update fvm ... <version> in Makefile(s) and the ensure_flutter_version comment and note
-find . -type f -name "Makefile" | while read -r file; do
+find "$ROOT_DIR" -type f -name "Makefile" | while read -r file; do
   # Update fvm commands
   sed_inplace "s/(fvm[[:space:]]+[a-zA-Z0-9_-]*[[:space:]]+)[0-9]+\.[0-9]+\.[0-9]+/\1$NEW_VERSION/g" "$file"
   # Update the comment for ensure_flutter_version

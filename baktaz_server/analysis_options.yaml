@@ -1,0 +1,73 @@
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  errors:
+    invalid_assignment: warning
+    dead_code: info
+    todo: ignore
+    missing_required_param: error
+    missing_return: error
+    unawaited_futures: warning
+    unused_import: warning
+    invalid_annotation_target: ignore
+  exclude:
+    - "**/build/**"
+    - "build/**"
+    - lib/src/generated/**
+    - test/integration/test_tools/**
+
+  language:
+    strict-casts: true
+    strict-inference: true
+    strict-raw-types: true
+
+linter:
+  rules:
+    # Better readability
+    always_specify_types: true
+    prefer_expression_function_bodies: true
+
+    #Suppressed Lints
+    public_member_api_docs: false
+    flutter_style_todos: false
+    one_member_abstracts: false
+    omit_local_variable_types: false
+    avoid_classes_with_only_static_members: false
+    lines_longer_than_80_chars: false
+    no_default_cases: false
+    document_ignores: false
+    avoid_types_on_closure_parameters: false
+
+formatter:
+  page_width: 120
+  trailing_commas: automate
+
+dart_code_metrics:
+  formatter:
+    line-length: 120
+    cascading-widget-extensions: true
+  metrics:
+    cyclomatic-complexity: 20
+    number-of-parameters: 5
+    maximum-nesting-level: 5
+  exclude:
+    metrics:
+      - test/**
+      - build/**
+  rules:
+    - avoid-cascade-after-if-null
+    - avoid-duplicate-named-imports
+    - avoid-global-state
+    - avoid-self-compare
+    - avoid-substring
+    - avoid-throw-in-catch-block
+    - binary-expression-operand-order
+    - double-literal-format
+    - no-boolean-literal-compare
+    - no-empty-block
+    - no-equal-then-else
+    - prefer-conditional-expressions
+    - prefer-enums-by-name
+    - prefer-immediate-return
+    - prefer-iterable-of
+    - prefer-match-file-name

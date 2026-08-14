@@ -7,7 +7,7 @@
 
 ## 1. Challenge Parameters & Boundary Rules
 
-To foster habit formation and ensure financial commitment, challenges on Baktas operate under explicit boundary conditions:
+To foster habit formation and ensure financial commitment, challenges on Baktaz operate under explicit boundary conditions:
 
 | Parameter | Boundary / Limit | Rationale |
 | :--- | :--- | :--- |
@@ -53,7 +53,7 @@ If 20 participants join a 30-day challenge with a ₱1,000 buy-in:
 
 ## 3. Recommended Reward Distribution Modes
 
-Baktas provides 4 recommended reward modes for hosts to choose from during challenge creation:
+Baktaz provides 4 recommended reward modes for hosts to choose from during challenge creation:
 
 ```
                                   ┌─────────────────────────┐

@@ -22,7 +22,7 @@ jobs:
           flutter-version: '3.38.4'
 
       - name: Start containers
-        working-directory: baktas_server
+        working-directory: baktaz_server
         run: docker compose up --quiet-pull --build -d
 
       - name: Install dependencies
@@ -32,14 +32,14 @@ jobs:
         run: dart install serverpod_cli $VERSION
 
       - name: Run Serverpod generator
-        working-directory: baktas_server
+        working-directory: baktaz_server
         run: serverpod generate
 
       - name: Run tests
-        working-directory: baktas_server
+        working-directory: baktaz_server
         run: dart test
 
       - name: Stop containers
         if: always()
-        working-directory: baktas_server
+        working-directory: baktaz_server
         run: docker compose down -v

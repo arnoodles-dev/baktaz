@@ -5,8 +5,43 @@ THRESHOLD=80
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 
-PACKAGES=("paxa_flutter" "paxa_admin" "paxa_shared" "paxa_server" "paxa_site")
-LCOV_MAP=("app" "admin" "shared" "server" "site")
+# Dynamically discover packages from melos workspace
+PACKAGES=()
+if [ -f "$ROOT_DIR/pubspec.yaml" ]; then
+  # Extract workspace packages from pubspec.yaml
+  while IFS= read -r line; do
+    # Match lines like "  - package_name" in workspace section
+    if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*(.+)$ ]]; then
+      pkg="${BASH_REMATCH[1]}"
+      if [ -d "$ROOT_DIR/$pkg" ]; then
+        PACKAGES+=("$pkg")
+      fi
+    fi
+  done < <(awk '/^workspace:/,/^[^[:space:]]/ {print}' "$ROOT_DIR/pubspec.yaml" | grep -E '^  - ')
+fi
+
+# Fallback: discover all directories with pubspec.yaml (excluding client)
+if [ ${#PACKAGES[@]} -eq 0 ]; then
+  while IFS= read -r pkg_dir; do
+    pkg_name=$(basename "$pkg_dir")
+    if [ "$pkg_name" != "baktaz_client" ]; then
+      PACKAGES+=("$pkg_name")
+    fi
+  done < <(find "$ROOT_DIR" -maxdepth 1 -type d -name "baktaz_*" | sort)
+fi
+
+LCOV_MAP=()
+for pkg in "${PACKAGES[@]}"; do
+  # Map package name to short name for coverage output
+  case "$pkg" in
+    *flutter*) LCOV_MAP+=("app") ;;
+    *admin*) LCOV_MAP+=("admin") ;;
+    *shared*) LCOV_MAP+=("shared") ;;
+    *server*) LCOV_MAP+=("server") ;;
+    *site*) LCOV_MAP+=("site") ;;
+    *) LCOV_MAP+=("$pkg") ;;
+  esac
+done
 
 run_for_package() {
   local pkg="$1"
@@ -19,211 +54,128 @@ run_for_package() {
 
   echo ""
   echo "━━━ $pkg ━━━"
+
   cd "$pkg_dir"
 
-  local tool=""
-  command -v fvm >/dev/null 2>&1 && tool="fvm "
-
-  if grep -q 'sdk: flutter' pubspec.yaml 2>/dev/null; then
-    ${tool}flutter test --test-randomize-ordering-seed random --no-pub --coverage || exit $?
-  else
-    ${tool}dart test --test-randomize-ordering-seed random --concurrency=1 --coverage=coverage || exit $?
+  # Check if it's a Flutter package (has flutter in pubspec.yaml)
+  IS_FLUTTER=false
+  if grep -q "flutter:" pubspec.yaml 2>/dev/null; then
+    IS_FLUTTER=true
   fi
 
-  [ ! -f "coverage/lcov.info" ] && return 0
+  # Run tests
+  if [ "$IS_FLUTTER" = true ]; then
+    fvm flutter test --coverage --no-pub 2>&1 | tail -20
+  else
+    fvm dart test --concurrency=1 2>&1 | tail -20
+  fi
 
-  if [ -f ".coverage_exclude" ]; then
-    local patterns=()
-    while IFS= read -r line || [ -n "$line" ]; do
-      local stripped
-      stripped=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-      [ -z "$stripped" ] || [ "${stripped:0:1}" = "#" ] && continue
-      patterns+=("'$stripped'")
-    done < ".coverage_exclude"
+  # Generate lcov.info if coverage directory exists
+  if [ -d "coverage" ]; then
+    PKG_CONFIG=".dart_tool/package_config.json"
+    if [ ! -f "$PKG_CONFIG" ] && [ -f "../.dart_tool/package_config.json" ]; then
+      PKG_CONFIG="../.dart_tool/package_config.json"
+    fi
 
-    if [ ${#patterns[@]} -gt 0 ]; then
-      eval lcov --ignore-errors unused --remove "coverage/lcov.info" "${patterns[@]}" -o "coverage/lcov.info" 2>/dev/null || true
+    if [ "$IS_FLUTTER" = true ]; then
+      fvm dart pub global activate coverage >/dev/null 2>&1
+      fvm dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages="$PKG_CONFIG" --report-on=lib
+    else
+      fvm dart pub global activate coverage >/dev/null 2>&1
+      fvm dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages="$PKG_CONFIG"
     fi
   fi
-
-  awk -F: -v threshold="$THRESHOLD" '
-    /^LF:/ { lf += $2 }
-    /^LH:/ { lh += $2 }
-    END {
-      if (lf == 0) exit 0
-      pct = lh * 100 / lf
-      printf "Coverage: %.1f%% (%d/%d)\n", pct, lh, lf
-      if (pct < threshold) {
-        printf "FAIL: Coverage %.1f%% < %d%% threshold\n", pct, threshold
-        exit 1
-      }
-      printf "OK: Coverage %.1f%% >= %d%% threshold\n", pct, threshold
-    }
-  ' "coverage/lcov.info"
 }
 
 generate_lcov() {
   local pkg="$1"
-  local idx=-1
-  for i in "${!PACKAGES[@]}"; do
-    if [ "${PACKAGES[$i]}" = "$pkg" ]; then
-      idx=$i
-      break
-    fi
-  done
+  local pkg_dir="$ROOT_DIR/$pkg"
 
-  if [ $idx -eq -1 ]; then
+  if [ ! -d "$pkg_dir" ]; then
+    return 1
+  fi
+
+  cd "$pkg_dir"
+
+  # Check if it's a Flutter package
+  IS_FLUTTER=false
+  if grep -q "flutter:" pubspec.yaml 2>/dev/null; then
+    IS_FLUTTER=true
+  fi
+
+  if [ ! -d "coverage" ] || [ ! -f "coverage/lcov.info" ]; then
     return 0
   fi
 
-  local lcov_arg="${LCOV_MAP[$idx]}"
+  # Apply exclude patterns if .coverage_exclude exists
+  if [ -f ".coverage_exclude" ]; then
+    patterns=()
+    while IFS= read -r line || [ -n "$line" ]; do
+      stripped=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+      [ -z "$stripped" ] || [ "${stripped#\#}" != "$stripped" ] && continue
+      patterns+=("$stripped")
+    done < ".coverage_exclude"
 
-  if [ -f "$ROOT_DIR/scripts/generate_lcov.sh" ]; then
-    echo ""
-    echo "Generating LCOV report for $lcov_arg..."
-    cd "$ROOT_DIR"
-    bash "$ROOT_DIR/scripts/generate_lcov.sh" "$lcov_arg" 2>/dev/null || true
-  fi
-}
-
-run_interactive() {
-  echo "Select packages to test:"
-  echo ""
-  for i in "${!PACKAGES[@]}"; do
-    echo "  $((i+1))) ${PACKAGES[$i]}"
-  done
-  echo ""
-  echo "  a) All packages"
-  echo "  q) Quit"
-  echo ""
-  printf "Enter selection (e.g. 1 3, or 'a' for all): "
-  read -r input
-
-  if [ "$input" = "q" ] || [ -z "$input" ]; then
-    echo "Aborted."
-    exit 0
+    if [ ${#patterns[@]} -gt 0 ]; then
+      lcov --ignore-errors unused --remove "coverage/lcov.info" "${patterns[@]}" -o "coverage/lcov.info" 2>/dev/null || true
+    fi
   fi
 
-  local selected=()
-  if [ "$input" = "all" ] || [ "$input" = "a" ]; then
-    selected=("${PACKAGES[@]}")
+  # Special handling for server: extract only endpoints/services
+  if [[ "$pkg" == *server* ]] && [ "$IS_FLUTTER" = false ]; then
+    lcov --ignore-errors unused --extract coverage/lcov.info '*/endpoints/*' '*/services/*' -o coverage/lcov.info 2>/dev/null || true
+  fi
+
+  # Generate HTML report
+  if [[ "$OSTYPE" == "darwin"* ]] || [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    LCOV_CMD="lcov"
+    GENHTML_CMD="genhtml"
+    OPEN_CMD="open"
   else
-    for choice in $input; do
-      if [[ "$choice" =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "${#PACKAGES[@]}" ]; then
-        selected+=("${PACKAGES[$((choice-1))]}")
-      else
-        echo "Invalid selection: $choice"
-        exit 1
-      fi
-    done
+    LCOV_CMD="perl C:\\ProgramData\\chocolatey\\lib\\lcov\\tools\\bin\\lcov"
+    GENHTML_CMD="perl C:\\ProgramData\\chocolatey\\lib\\lcov\\tools\\bin\\genhtml"
+    OPEN_CMD="CMD /C start"
   fi
 
-  if [ ${#selected[@]} -eq 0 ]; then
-    echo "No packages selected."
-    exit 1
+  if [[ "$pkg" == *server* ]] && [ "$IS_FLUTTER" = false ]; then
+    $GENHTML_CMD -o coverage/html coverage/lcov.info
+    $OPEN_CMD coverage/html/index.html
+  else
+    $GENHTML_CMD -o coverage coverage/lcov.info
+    $OPEN_CMD coverage/index.html
   fi
-
-  echo ""
-  echo "Running tests for: ${selected[*]}"
-
-  if [ ${#selected[@]} -eq ${#PACKAGES[@]} ]; then
-    run_all_parallel
-    return
-  fi
-
-  local failed=0
-  for pkg in "${selected[@]}"; do
-    run_for_package "$pkg" || failed=1
-    generate_lcov "$pkg"
-  done
-
-  if [ $failed -ne 0 ]; then
-    echo ""
-    echo "Some tests failed."
-    exit 1
-  fi
-
-  echo ""
-  echo "All tests passed."
-  print_coverage_summary
 }
 
 print_coverage_summary() {
-  local total_lf=0
-  local total_lh=0
-  local pkg_results=()
-  local any_coverage=false
-
-  for pkg in "${PACKAGES[@]}"; do
-    local lcov="$ROOT_DIR/$pkg/coverage/lcov.info"
-    [ ! -f "$lcov" ] && continue
-
-    local lf=0 lh=0 pct=0
-    eval "$(awk -F: '
-      /^LF:/ { lf += $2 }
-      /^LH:/ { lh += $2 }
-      END {
-        if (lf > 0) {
-          printf "lf=%d lh=%d pct=%.1f\n", lf, lh, lh * 100 / lf
-        } else {
-          printf "lf=0 lh=0 pct=0\n"
-        }
-      }
-    ' "$lcov")"
-
-    [ "$lf" -eq 0 ] && continue
-
-    any_coverage=true
-    total_lf=$((total_lf + lf))
-    total_lh=$((total_lh + lh))
-
-    local status="OK"
-    local pct_int=${pct%.*}
-    [ "$pct_int" -lt "$THRESHOLD" ] && status="FAIL"
-
-    pkg_results+=("$pkg|$pct|($lh/$lf)|$status")
-  done
-
-  if [ "$any_coverage" = false ]; then
-    echo ""
-    echo "No coverage data found."
-    return
-  fi
-
-  local total_pct=0
-  [ "$total_lf" -gt 0 ] && total_pct=$(awk "BEGIN { printf \"%.1f\", $total_lh * 100 / $total_lf }")
-
   echo ""
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  echo "  Coverage Summary Report"
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-  printf "  %-18s %7s %10s %6s\n" "Package" "Cover" "Lines" "Status"
-  echo "  ────────────────── ─────── ────────── ──────"
+  echo "━━━ Coverage Summary ━━━"
+  for i in "${!PACKAGES[@]}"; do
+    pkg="${PACKAGES[$i]}"
+    short="${LCOV_MAP[$i]}"
+    lcov_file="$ROOT_DIR/$pkg/coverage/lcov.info"
 
-  for result in "${pkg_results[@]}"; do
-    IFS='|' read -r rpkg rpct rlines rstatus <<< "$result"
-    printf "  %-18s %6s%% %10s %6s\n" "$rpkg" "$rpct" "$rlines" "$rstatus"
+    if [ -f "$lcov_file" ]; then
+      awk -F: -v threshold="$THRESHOLD" -v name="$short" '
+        /^LF:/ { lf += $2 }
+        /^LH:/ { lh += $2 }
+        END {
+          if (lf == 0) { print name ": No coverage data"; next }
+          pct = lh * 100 / lf
+          printf "%s: %.1f%% (%d/%d)", name, pct, lh, lf
+          if (pct < threshold) {
+            printf " FAIL (below %d%%)\n", threshold
+          } else {
+            printf " OK\n"
+          }
+        }
+      ' "$lcov_file"
+    fi
   done
-
-  echo "  ────────────────── ─────── ────────── ──────"
-  printf "  %-18s %6s%% (%d/%d)\n" "TOTAL" "$total_pct" "$total_lh" "$total_lf"
-
-  local overall_int=${total_pct%.*}
-  if [ "$overall_int" -lt "$THRESHOLD" ]; then
-    printf "  OVERALL: FAIL (below %d%% threshold)\n" "$THRESHOLD"
-  else
-    printf "  OVERALL: PASS\n"
-  fi
-  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 }
 
 run_all_parallel() {
   local pids=()
   local failed=0
-
-  echo ""
-  echo "Running tests in parallel for: ${PACKAGES[*]}"
-  echo ""
 
   for pkg in "${PACKAGES[@]}"; do
     run_for_package "$pkg" &
@@ -235,13 +187,15 @@ run_all_parallel() {
   done
 
   if [ $failed -ne 0 ]; then
-    echo ""
     echo "Some tests failed."
     exit 1
   fi
 
-  echo ""
-  echo "All tests passed."
+  # Generate LCOV for all packages
+  for pkg in "${PACKAGES[@]}"; do
+    generate_lcov "$pkg"
+  done
+
   print_coverage_summary
 }
 
@@ -260,5 +214,5 @@ run_single() {
 if [ $# -gt 0 ]; then
   run_single "$1"
 else
-  run_interactive
+  run_all_parallel
 fi

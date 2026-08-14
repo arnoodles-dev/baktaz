@@ -1,19 +1,154 @@
-# Files and directories created by pub
+# OS Files
+.DS_Store
+Thumbs.db
+*.db
+*.log
+*.swp
+
+# Editors & IDEs
+.history/
+.idea/
+.vscode/*
+*.iml
+*.ipr
+*.iws
+*.code-workspace
+.ruby-lsp/
+.cursor/
+
+# IDE Exceptions
+!.vscode/launch.json
+!.vscode/tasks.json
+!.idea/codeStyles/
+!.idea/dictionaries/
+!.idea/runConfigurations/
+
+# Dart / Pub / Flutter
 .dart_tool/
 .packages
-
-# Pubspec overrides
+.pub-cache/
+.pub/
+build/
+doc/api/
+devtools_options.yaml
+.flutter-plugins
+.flutter-plugins-dependencies
 pubspec_overrides.yaml
 
-# Agents
-.dart_skills/
-.agents/
-.claude/
-.gemini/
-.cursor/
-.vscode/mcp.json
-.codex/
-.mcp.json
+# Generated Code (Dart/Flutter/Serverpod)
+*.g.dart
+*.gr.dart
+*.freezed.dart
+*.config.dart
+*.chopper.dart
+*.mocks.dart
+*.gen.dart
+**/lib/src/generated/**
+**/lib/app/generated/**
+**/generated_plugin_registrant.dart
+.serverpod/
 
-# Serverpod Cloud CLI
+# Testing & Coverage
+coverage/
+baktas_server/coverage/
+**/goldens/macos
+**/goldens/linux
+**/goldens/windows
+**/failures/
+
+# FVM Version Cache
+.fvm/
+.fvmrc
+
+# Workspace Tooling & AI Assistants
+.agents/*
+!.agents/agents/**
+!.agents/agents/
+!.agents/rules/
+!.agents/rules/**
+!.agents/workflows/
+!.agents/workflows/**
+!.agents/skills/
+!.agents/skills/**
+.dart_skills/
+.agent/
+.tool-versions
+outputs/
+graphify-out/
+
+# Serverpod Specific
+baktas_server/.serverpod
+baktas_server/var
+var/
+config/passwords.yaml
 .scloud/
+
+# Environment Config
+assets/env/.env.*
+baktas_flutter/ios/Flutter/ephemeral/flutter_native_integration.env
+
+# Android
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/key.properties
+**/android/.idea/
+/android/app/debug
+/android/app/profile
+/android/app/release
+*.jks
+.cxx/
+
+# iOS / Xcode Build
+**/ios/build/**
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/.last_build_id
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+
+# iOS Exceptions
+!**/ios/**/default.mode1v3
+!**/ios/**/default.mode2v3
+!**/ios/**/default.pbxuser
+!**/ios/**/default.perspectivev3
+
+# Build outputs
+app.*.symbols
+app.*.map.json
+release.keystore
+baktas_flutter/android/.kotlin
+data
+node_modules
+.codegraph
+package.json
+package-lock.json
+**/.flutter-plugins-dependencies
+.codebase-memory
+baktas_shared/build/ios/SourcePackages

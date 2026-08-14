@@ -1,0 +1,16 @@
+targets:
+  $default:
+    builders:
+      freezed:
+        options:
+          map_make_fallback: true
+        generate_for:
+          - lib/src/entity/**.dart
+          - lib/src/dto/**.dart
+      json_serializable:
+        options:
+          explicit_to_json: true
+          field_rename: snake
+        generate_for:
+          - lib/src/entity/**.dart
+          - lib/src/dto/**.dart

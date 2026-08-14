@@ -1,0 +1,6 @@
+class: AccountState
+fields:
+  account: Account
+  summary: AccountSummary
+  profile: Profile
+  defaultAddress: Address?

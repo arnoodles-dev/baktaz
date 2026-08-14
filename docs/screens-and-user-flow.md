@@ -7,7 +7,7 @@
 
 ## 🧭 Navigation Architecture
 
-Baktas uses a standard 4-tab bottom navigation bar for high-level app navigation, complemented by deep sub-screen flows.
+Baktaz uses a standard 4-tab bottom navigation bar for high-level app navigation, complemented by deep sub-screen flows.
 
 ```
 Bottom Navigation Bar
@@ -25,7 +25,7 @@ The Home Screen serves as the daily operational dashboard for personal progress 
 
 ### 1.1 UI Layout Breakdown
 - **AppBar Header**:
-  - App Brand Logo (`Baktas`)
+  - App Brand Logo (`Baktaz`)
   - User Avatar (taps redirect to `/account/profile`)
   - Notification Bell Icon (with unread badge counter)
 - **Daily Step Count Hero Card**:
@@ -132,7 +132,7 @@ The central hub for user profile, monetization, wallet management, and app confi
   - Badge Grid: Visual collection of unlocked milestone badges (e.g. *30-Day Streak*, *100k Steps*, *Podium Finisher*).
   - XP Bar & Current Level badge with progress to next level perk.
 - **Referral & Affiliate Hub**:
-  - Personal Invite Link generator & QR code (`baktas.app/invite/USER123`).
+  - Personal Invite Link generator & QR code (`baktaz.app/invite/USER123`).
   - Referral Earnings Ledger: Total friends invited, referral bonus balance earned ($R_{ref}$).
   - Affiliate share button for Host challenge promoters.
 - **In-App Wallet Card**:
