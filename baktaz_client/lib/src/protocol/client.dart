@@ -18,9 +18,9 @@ import 'package:baktaz_client/src/protocol/features/account/domain/model/account
     as _i4;
 import 'package:baktaz_client/src/protocol/features/account/domain/model/profile.dart'
     as _i5;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i6;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i6;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i7;
 import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
 import 'package:http/http.dart' as _i9;
@@ -61,7 +61,60 @@ class EndpointAccount extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointEmailIdp extends _i6.EndpointEmailIdpBase {
+class EndpointAdmin extends EndpointAdminEndpointBase {
+  EndpointAdmin(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'admin';
+
+  _i2.Future<
+    List<({_i6.AuthUserModel authUser, _i6.UserProfileModel userProfile})>
+  >
+  listAdminUsers() =>
+      caller.callServerEndpoint<
+        List<({_i6.AuthUserModel authUser, _i6.UserProfileModel userProfile})>
+      >(
+        'admin',
+        'listAdminUsers',
+        {},
+      );
+
+  _i2.Future<List<_i6.AuthUserModel>> listAuthUsers() =>
+      caller.callServerEndpoint<List<_i6.AuthUserModel>>(
+        'admin',
+        'listAuthUsers',
+        {},
+      );
+
+  _i2.Future<void> blockUser(_i1.UuidValue authUserId) =>
+      caller.callServerEndpoint<void>(
+        'admin',
+        'blockUser',
+        {'authUserId': authUserId},
+      );
+
+  _i2.Future<void> unblockUser(_i1.UuidValue authUserId) =>
+      caller.callServerEndpoint<void>(
+        'admin',
+        'unblockUser',
+        {'authUserId': authUserId},
+      );
+
+  _i2.Future<void> updateUserScope(
+    _i1.UuidValue authUserId,
+    List<String> scopeNames,
+  ) => caller.callServerEndpoint<void>(
+    'admin',
+    'updateUserScope',
+    {
+      'authUserId': authUserId,
+      'scopeNames': scopeNames,
+    },
+  );
+}
+
+/// {@category Endpoint}
+class EndpointEmailIdp extends _i7.EndpointEmailIdpBase {
   EndpointEmailIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -77,10 +130,10 @@ class EndpointEmailIdp extends _i6.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i2.Future<_i7.AuthSuccess> login({
+  _i2.Future<_i6.AuthSuccess> login({
     required String email,
     required String password,
-  }) => caller.callServerEndpoint<_i7.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
     'emailIdp',
     'login',
     {
@@ -145,10 +198,10 @@ class EndpointEmailIdp extends _i6.EndpointEmailIdpBase {
   ///
   /// Returns a session for the newly created user.
   @override
-  _i2.Future<_i7.AuthSuccess> finishRegistration({
+  _i2.Future<_i6.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) => caller.callServerEndpoint<_i7.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
     'emailIdp',
     'finishRegistration',
     {
@@ -241,7 +294,7 @@ class EndpointEmailIdp extends _i6.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointFacebookIdp extends _i6.EndpointFacebookIdpBase {
+class EndpointFacebookIdp extends _i7.EndpointFacebookIdpBase {
   EndpointFacebookIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -253,8 +306,8 @@ class EndpointFacebookIdp extends _i6.EndpointFacebookIdpBase {
   /// If the access token is invalid or expired, the
   /// [FacebookAccessTokenVerificationException] will be thrown.
   @override
-  _i2.Future<_i7.AuthSuccess> login({required String accessToken}) =>
-      caller.callServerEndpoint<_i7.AuthSuccess>(
+  _i2.Future<_i6.AuthSuccess> login({required String accessToken}) =>
+      caller.callServerEndpoint<_i6.AuthSuccess>(
         'facebookIdp',
         'login',
         {'accessToken': accessToken},
@@ -269,7 +322,7 @@ class EndpointFacebookIdp extends _i6.EndpointFacebookIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointGoogleIdp extends _i6.EndpointGoogleIdpBase {
+class EndpointGoogleIdp extends _i7.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -280,10 +333,10 @@ class EndpointGoogleIdp extends _i6.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i7.AuthSuccess> login({
+  _i2.Future<_i6.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => caller.callServerEndpoint<_i7.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
     'googleIdp',
     'login',
     {
@@ -300,11 +353,11 @@ class EndpointGoogleIdp extends _i6.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i7.AuthSuccess> loginWithCode({
+  _i2.Future<_i6.AuthSuccess> loginWithCode({
     required String code,
     required String codeVerifier,
     required String redirectUri,
-  }) => caller.callServerEndpoint<_i7.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
     'googleIdp',
     'loginWithCode',
     {
@@ -323,7 +376,7 @@ class EndpointGoogleIdp extends _i6.EndpointGoogleIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i7.EndpointRefreshJwtTokens {
+class EndpointJwtRefresh extends _i6.EndpointRefreshJwtTokens {
   EndpointJwtRefresh(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -348,9 +401,9 @@ class EndpointJwtRefresh extends _i7.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i7.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i6.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i7.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
     'jwtRefresh',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -360,14 +413,14 @@ class EndpointJwtRefresh extends _i7.EndpointRefreshJwtTokens {
 
 class Modules {
   Modules(Client client) {
-    auth_core = _i7.Caller(client);
-    serverpod_auth_idp = _i6.Caller(client);
+    auth_core = _i6.Caller(client);
+    serverpod_auth_idp = _i7.Caller(client);
     auth = _i8.Caller(client);
   }
 
-  late final _i7.Caller auth_core;
+  late final _i6.Caller auth_core;
 
-  late final _i6.Caller serverpod_auth_idp;
+  late final _i7.Caller serverpod_auth_idp;
 
   late final _i8.Caller auth;
 }
@@ -400,6 +453,7 @@ class Client extends _i1.ServerpodClientShared {
          httpClientOverride: httpClientOverride,
        ) {
     account = EndpointAccount(this);
+    admin = EndpointAdmin(this);
     emailIdp = EndpointEmailIdp(this);
     facebookIdp = EndpointFacebookIdp(this);
     googleIdp = EndpointGoogleIdp(this);
@@ -408,6 +462,8 @@ class Client extends _i1.ServerpodClientShared {
   }
 
   late final EndpointAccount account;
+
+  late final EndpointAdmin admin;
 
   late final EndpointEmailIdp emailIdp;
 
@@ -422,6 +478,7 @@ class Client extends _i1.ServerpodClientShared {
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'account': account,
+    'admin': admin,
     'emailIdp': emailIdp,
     'facebookIdp': facebookIdp,
     'googleIdp': googleIdp,

@@ -1,5 +1,8 @@
 import 'dart:io';
 
+import 'package:baktaz_server/src/app/injection/service_locator.dart';
+import 'package:baktaz_server/src/app/utils/auth_utils.dart';
+import 'package:baktaz_server/src/app/utils/seeding_utils.dart';
 import 'package:baktaz_server/src/cache_busting.dart';
 import 'package:baktaz_server/src/generated/endpoints.dart';
 import 'package:baktaz_server/src/generated/protocol.dart';
@@ -11,12 +14,18 @@ import 'package:serverpod_auth_idp_server/providers/email.dart';
 
 /// The starting point of the Serverpod server.
 Future<void> run(List<String> args) async {
+  configureDependencies();
+
   // Initialize Serverpod and connect it with your generated code.
   final Serverpod pod = Serverpod(args, Protocol(), Endpoints())
     // Initialize authentication services for the server.
     // Token managers will be used to validate and issue authentication keys,
     // and the identity providers will be the authentication options available for users.
     ..initializeAuthServices(
+      userProfileConfig: const UserProfileConfig(
+        onBeforeUserProfileCreated: AuthUtils.onBeforeUserProfileCreated,
+        onAfterUserProfileCreated: AuthUtils.onAfterUserProfileCreated,
+      ),
       tokenManagerBuilders: <TokenManagerBuilder<TokenManager>>[
         // Use JWT for authentication keys towards the server.
         JwtConfigFromPasswords(),
@@ -68,4 +77,11 @@ Future<void> run(List<String> args) async {
 
   // Start the server.
   await pod.start();
+
+  final Session session = await pod.createSession();
+  try {
+    await seedAdminUser(session);
+  } finally {
+    await session.close();
+  }
 }

@@ -78,8 +78,10 @@ run_for_package() {
     fi
 
     if [ "$IS_FLUTTER" = true ]; then
-      fvm dart pub global activate coverage >/dev/null 2>&1
-      fvm dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages="$PKG_CONFIG" --report-on=lib
+      if [ ! -f "coverage/lcov.info" ]; then
+        fvm dart pub global activate coverage >/dev/null 2>&1
+        fvm dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages="$PKG_CONFIG" --report-on=lib
+      fi
     else
       fvm dart pub global activate coverage >/dev/null 2>&1
       fvm dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages="$PKG_CONFIG"
@@ -138,11 +140,11 @@ generate_lcov() {
   fi
 
   if [[ "$pkg" == *server* ]] && [ "$IS_FLUTTER" = false ]; then
-    $GENHTML_CMD -o coverage/html coverage/lcov.info
-    $OPEN_CMD coverage/html/index.html
+    $GENHTML_CMD --ignore-errors empty -o coverage/html coverage/lcov.info 2>/dev/null || $GENHTML_CMD -o coverage/html coverage/lcov.info 2>/dev/null || true
+    $OPEN_CMD coverage/html/index.html 2>/dev/null || true
   else
-    $GENHTML_CMD -o coverage coverage/lcov.info
-    $OPEN_CMD coverage/index.html
+    $GENHTML_CMD --ignore-errors empty -o coverage coverage/lcov.info 2>/dev/null || $GENHTML_CMD -o coverage coverage/lcov.info 2>/dev/null || true
+    $OPEN_CMD coverage/index.html 2>/dev/null || true
   fi
 }
 

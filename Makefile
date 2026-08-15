@@ -125,7 +125,7 @@ test_all: ## Run tests for all packages
 	@sh scripts/run_tests.sh all
 
 test_admin: ## Run tests for baktaz_admin
-	@sh scripts/run_tests.sh baktaz_admin
+	@bash scripts/run_tests.sh baktaz_admin
 
 test_app: ## Run tests for baktaz_flutter
 	@sh scripts/run_tests.sh baktaz_flutter

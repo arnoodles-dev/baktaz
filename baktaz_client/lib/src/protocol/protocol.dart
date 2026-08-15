@@ -156,6 +156,62 @@ class Protocol extends _i1.SerializationManager {
               : null)
           as T;
     }
+    if (t ==
+        List<
+          ({_i13.AuthUserModel authUser, _i13.UserProfileModel userProfile})
+        >) {
+      return (data as List)
+              .map(
+                (e) =>
+                    deserialize<
+                      ({
+                        _i13.AuthUserModel authUser,
+                        _i13.UserProfileModel userProfile,
+                      })
+                    >(e),
+              )
+              .toList()
+          as T;
+    }
+    if (t ==
+        _i1
+            .getType<
+              ({_i13.AuthUserModel authUser, _i13.UserProfileModel userProfile})
+            >()) {
+      return (
+            authUser: deserialize<_i13.AuthUserModel>(
+              ((data as Map)['n'] as Map)['authUser'],
+            ),
+            userProfile: deserialize<_i13.UserProfileModel>(
+              data['n']['userProfile'],
+            ),
+          )
+          as T;
+    }
+    if (t ==
+        _i1
+            .getType<
+              ({_i13.AuthUserModel authUser, _i13.UserProfileModel userProfile})
+            >()) {
+      return (
+            authUser: deserialize<_i13.AuthUserModel>(
+              ((data as Map)['n'] as Map)['authUser'],
+            ),
+            userProfile: deserialize<_i13.UserProfileModel>(
+              data['n']['userProfile'],
+            ),
+          )
+          as T;
+    }
+    if (t == List<_i13.AuthUserModel>) {
+      return (data as List)
+              .map((e) => deserialize<_i13.AuthUserModel>(e))
+              .toList()
+          as T;
+    }
+    if (t == List<String>) {
+      return (data as List).map((e) => deserialize<String>(e)).toList() as T;
+    }
     try {
       return _i13.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
@@ -309,6 +365,15 @@ class Protocol extends _i1.SerializationManager {
     if (record == null) {
       return null;
     }
+    if (record
+        is ({_i13.AuthUserModel authUser, _i13.UserProfileModel userProfile})) {
+      return {
+        "n": {
+          "authUser": record.authUser.toJson(),
+          "userProfile": record.userProfile.toJson(),
+        },
+      };
+    }
     try {
       return _i13.Protocol().mapRecordToJson(record);
     } catch (_) {}
@@ -319,5 +384,57 @@ class Protocol extends _i1.SerializationManager {
       return _i15.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
+  }
+
+  /// Maps container types (like [List], [Map], [Set]) containing
+  /// [Record]s or non-String-keyed [Map]s to their JSON representation.
+  ///
+  /// It should not be called for [SerializableModel] types. These
+  /// handle the "[Record] in container" mapping internally already.
+  ///
+  /// It is only supposed to be called from generated protocol code.
+  ///
+  /// Returns either a `List<dynamic>` (for List, Sets, and Maps with
+  /// non-String keys) or a `Map<String, dynamic>` in case the input was
+  /// a `Map<String, …>`.
+  Object? mapContainerToJson(Object obj) {
+    if (obj is! Iterable && obj is! Map) {
+      throw ArgumentError.value(
+        obj,
+        'obj',
+        'The object to serialize should be of type List, Map, or Set',
+      );
+    }
+
+    dynamic mapIfNeeded(Object? obj) {
+      return switch (obj) {
+        Record record => mapRecordToJson(record),
+        Iterable iterable => mapContainerToJson(iterable),
+        Map map => mapContainerToJson(map),
+        Object? value => value,
+      };
+    }
+
+    switch (obj) {
+      case Map<String, dynamic>():
+        return {
+          for (var entry in obj.entries) entry.key: mapIfNeeded(entry.value),
+        };
+      case Map():
+        return [
+          for (var entry in obj.entries)
+            {
+              'k': mapIfNeeded(entry.key),
+              'v': mapIfNeeded(entry.value),
+            },
+        ];
+
+      case Iterable():
+        return [
+          for (var e in obj) mapIfNeeded(e),
+        ];
+    }
+
+    return obj;
   }
 }

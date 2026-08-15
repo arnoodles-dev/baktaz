@@ -19,6 +19,7 @@ import 'package:baktaz_server/src/generated/features/account/domain/model/accoun
 import 'package:baktaz_server/src/generated/features/account/domain/model/account_summary.dart' as _i6;
 import 'package:baktaz_server/src/generated/features/account/domain/model/profile.dart' as _i7;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart' as _i8;
+import 'package:baktaz_server/src/generated/protocol.dart' as _i9;
 import 'package:baktaz_server/src/generated/protocol.dart';
 import 'package:baktaz_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -149,6 +150,8 @@ void withServerpod(
 class TestEndpoints {
   late final _AccountEndpoint account;
 
+  late final _AdminEndpoint admin;
+
   late final _EmailIdpEndpoint emailIdp;
 
   late final _FacebookIdpEndpoint facebookIdp;
@@ -162,6 +165,7 @@ class _InternalTestEndpoints extends TestEndpoints implements _i1.InternalTestEn
   @override
   void initialize(_i2.SerializationManager serializationManager, _i2.EndpointDispatch endpoints) {
     account = _AccountEndpoint(endpoints, serializationManager);
+    admin = _AdminEndpoint(endpoints, serializationManager);
     emailIdp = _EmailIdpEndpoint(endpoints, serializationManager);
     facebookIdp = _FacebookIdpEndpoint(endpoints, serializationManager);
     googleIdp = _GoogleIdpEndpoint(endpoints, serializationManager);
@@ -241,6 +245,140 @@ class _AccountEndpoint {
         var _localReturnValue =
             await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
                 as _i4.Future<_i7.Profile?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _AdminEndpoint {
+  _AdminEndpoint(this._endpointDispatch, this._serializationManager);
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i4.Future<List<({_i8.AuthUserModel authUser, _i8.UserProfileModel userProfile})>> listAdminUsers(
+    _i1.TestSessionBuilder sessionBuilder,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'admin',
+        method: 'listAdminUsers',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'listAdminUsers',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await _localCallContext.method
+            .call(_localUniqueSession, _localCallContext.arguments)
+            .then(
+              (record) => _i9.Protocol()
+                  .deserialize<List<({_i8.AuthUserModel authUser, _i8.UserProfileModel userProfile})>>(record),
+            );
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<List<_i8.AuthUserModel>> listAuthUsers(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'admin',
+        method: 'listAuthUsers',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'listAuthUsers',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<List<_i8.AuthUserModel>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<void> blockUser(_i1.TestSessionBuilder sessionBuilder, _i2.UuidValue authUserId) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'admin',
+        method: 'blockUser',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'blockUser',
+          parameters: _i1.testObjectToJson({'authUserId': authUserId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments) as _i4.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<void> unblockUser(_i1.TestSessionBuilder sessionBuilder, _i2.UuidValue authUserId) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'admin',
+        method: 'unblockUser',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'unblockUser',
+          parameters: _i1.testObjectToJson({'authUserId': authUserId}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments) as _i4.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<void> updateUserScope(
+    _i1.TestSessionBuilder sessionBuilder,
+    _i2.UuidValue authUserId,
+    List<String> scopeNames,
+  ) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'admin',
+        method: 'updateUserScope',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'admin',
+          methodName: 'updateUserScope',
+          parameters: _i1.testObjectToJson({'authUserId': authUserId, 'scopeNames': scopeNames}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments) as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

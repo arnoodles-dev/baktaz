@@ -86,6 +86,10 @@ dev_dependencies:
   injectable_generator: ^3.0.2
   json_serializable: ^6.14.1
   mockito: ^5.6.4
+  path_provider_platform_interface: ^2.1.2
+  plugin_platform_interface: ^2.1.8
+  serverpod_auth_core_client: 4.0.0-beta.2
+  serverpod_auth_idp_client: 4.0.0-beta.2
   slang_build_runner: ^4.19.0
   very_good_analysis: ^10.3.0
 
