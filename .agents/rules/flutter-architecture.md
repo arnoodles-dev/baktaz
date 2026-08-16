@@ -13,9 +13,13 @@ globs: *_flutter/lib/**, *_admin/lib/**, *_shared/lib/**, lib/**
 
 ### Layers
 
-- **Cubit**: Annotate DI, extend `Cubit<S>`. Methods single-action only (no "god methods"). Emit view states, only call repo, no data aggregation. Wrap try-catch in `safeRun(onException: handleException)`.
+- **Cubit**: Annotate DI, extend `CubitSignal<S>` (or `BlocSignal<E, S>`). Requires `initialState:` named constructor parameter. Access raw state internally via `stateValue` and expose reactive signal via `state`. Methods single-action only (no "god methods"). Emit view states, only call repo, no data aggregation. Wrap try-catch in `safeRun(onException: handleException)`.
+- **Provider Ownership**: Use `BlocSignalProvider.value(value: getIt<T>())` for `@lazySingleton` Cubits to prevent unmount disposal crashes. Use `BlocSignalProvider(create: (_) => getIt<T>())` only for factory-scoped (`@injectable`) Cubits.
 - **State**: Sealed classes for exclusive states; classic classes with `copyWith` for continuous forms.
-- **Side Effects**: Use `bloc_presentation` for one-off UI events (navigation, dialogs, snackbars).
+  - **Side Effects**:
+    - For one-shot UI reactions from computed/user-interaction state: `useSignalEffect` (with `signals_hooks`) for `HookWidget`s, or `BlocSignalListener`/`BlocSignalConsumer` with `listenWhen` for standard widgets.
+    - For one-shot presentation events emitted autonomously by a Cubit/Bloc (e.g. background sync, WebSocket disconnect, migration from `bloc_presentation`): use `BlocSignalPresentationMixin<Event, State>` (in `baktaz_shared/lib/src/mixin/bloc_signal_presentation_mixin.dart`) on the state container, emit via `emitPresentation(event)`, consume via `BlocSignalPresentationListener<B, Event>`.
+    - Reserve raw Stream side-channels for global broadcast events.
 - **Error**: Match repo result, avoid raw try/catch in UI.
 - **Repo**: `@LazySingleton(as: Interface)`. Return `TaskResult<T>`, never throw. Wrap try-catch in `TaskResult.tryCatch`. Use `fold` to handle failures. Own all business/data logic (aggregation, sorting, slicing). Mock data with `Future.delayed` wrapped in `TaskResult`. Wrap primitives in domain-specific Value Objects at repo boundary.
 - **Domain & DTO Modeling**: Lean (no wrapper class if it only holds a single primitive/value object). Value Objects used in domain entities; DTOs use primitives only. Add `validate()` to all domain entities; validate before persisting or processing.
@@ -32,7 +36,7 @@ globs: *_flutter/lib/**, *_admin/lib/**, *_shared/lib/**, lib/**
 
 ### Tooling
 - **Forbidden**: Serverpod legacy packages (`serverpod_auth_*`). Other Serverpod packages are allowed.
-- **Libs**: `fpdart`, `trust_but_verify`, `envied`, `chopper`.
+- **Libs**: `fpdart`, `trust_but_verify`, `envied`, `chopper`, `bloc_signals`, `bloc_signals_flutter`, `signals_hooks`.
 - **Assets**: `dart run icons_launcher:create`, `dart run flutter_native_splash:create`.
 
 ### Feature Workflow

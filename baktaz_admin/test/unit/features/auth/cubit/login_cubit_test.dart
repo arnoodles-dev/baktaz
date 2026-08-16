@@ -1,7 +1,8 @@
+import 'package:baktaz_admin/app/helpers/injection/service_locator.dart';
+import 'package:baktaz_admin/features/auth/domain/cubit/auth/auth_cubit.dart';
 import 'package:baktaz_admin/features/auth/domain/cubit/login/login_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc_presentation_test/bloc_presentation_test.dart';
-import 'package:bloc_test/bloc_test.dart';
+import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
@@ -18,7 +19,7 @@ void main() {
     late String email;
     late String password;
 
-    setUp(() {
+    setUp(() async {
       authRepository = MockIAuthRepository();
       localStorageRepository = MockILocalStorageRepository();
       failureHandler = MockFailureHandler();
@@ -28,16 +29,23 @@ void main() {
       // Register dummy values to prevent Mockito's MissingDummyValueError under randomized ordering.
       provideDummy(TaskEither<Failure, String?>.right(null));
       provideDummy(TaskEither<Failure, Unit>.right(unit));
+      if (getIt.isRegistered<AuthCubit>()) {
+        await getIt.unregister<AuthCubit>();
+      }
+      getIt.registerFactory<AuthCubit>(MockAuthCubit.new);
     });
 
-    tearDown(() {
+    tearDown(() async {
+      if (getIt.isRegistered<AuthCubit>()) {
+        await getIt.unregister<AuthCubit>();
+      }
       reset(localStorageRepository);
       reset(authRepository);
       reset(failureHandler);
     });
 
     group('initialize', () {
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should emit state with null email when no previous login exists',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
@@ -46,13 +54,13 @@ void main() {
           return LoginCubit(authRepository, localStorageRepository, failureHandler);
         },
         act: (LoginCubit cubit) => cubit.initialize(),
-        expect: () => <LoginState>[LoginState.initial(), LoginState.initial().copyWith(isLoading: false)],
+        expect: () => <LoginState>[LoginState.initial().copyWith(isLoading: false)],
         verify: (_) {
           verify(localStorageRepository.getLastLoggedInUsername()).called(1);
         },
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should emit state with saved email when previous login exists',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(email));
@@ -62,7 +70,6 @@ void main() {
         },
         act: (LoginCubit cubit) => cubit.initialize(),
         expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
           LoginState.initial().copyWith(email: email),
           LoginState.initial().copyWith(isLoading: false, email: email),
         ],
@@ -71,27 +78,23 @@ void main() {
         },
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle storage access failure during initialization',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
-          when(
-            localStorageRepository.getLastLoggedInUsername(),
-          ).thenReturn(TaskEither<Failure, String?>.left(const Failure.deviceInfo('Storage access failed')));
+          when(localStorageRepository.getLastLoggedInUsername())
+              .thenReturn(TaskEither<Failure, String?>.left(const Failure.deviceInfo('Storage access failed')));
 
           return LoginCubit(authRepository, localStorageRepository, failureHandler);
         },
         act: (LoginCubit cubit) => cubit.initialize(),
-        expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
-          LoginState.initial().copyWith(isLoading: false),
-        ],
+        expect: () => <LoginState>[LoginState.initial().copyWith(isLoading: false)],
         verify: (_) {
           verify(localStorageRepository.getLastLoggedInUsername()).called(1);
         },
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle unexpected exception during initialization',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(email));
@@ -100,10 +103,7 @@ void main() {
           return LoginCubit(authRepository, localStorageRepository, failureHandler);
         },
         act: (LoginCubit cubit) => cubit.initialize(),
-        expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
-          LoginState.initial().copyWith(isLoading: false),
-        ],
+        expect: () => <LoginState>[LoginState.initial().copyWith(isLoading: false)],
         verify: (_) {
           verify(localStorageRepository.getLastLoggedInUsername()).called(1);
         },
@@ -117,21 +117,21 @@ void main() {
         loginCubit = LoginCubit(authRepository, localStorageRepository, failureHandler);
       });
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should emit state with updated email',
         build: () => loginCubit,
         act: (LoginCubit cubit) => cubit.onEmailChanged('test_$email'),
         expect: () => <LoginState>[LoginState.initial().copyWith(isLoading: false, email: 'test_$email')],
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle empty email input',
         build: () => loginCubit,
         act: (LoginCubit cubit) => cubit.onEmailChanged(''),
         expect: () => <LoginState>[LoginState.initial().copyWith(isLoading: false, email: '')],
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle special characters in email',
         build: () => loginCubit,
         act: (LoginCubit cubit) => cubit.onEmailChanged('user@domain.com'),
@@ -140,7 +140,7 @@ void main() {
     });
 
     group('login', () {
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should emit loading and success states when login is successful',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
@@ -171,15 +171,14 @@ void main() {
         },
         act: (LoginCubit cubit) => cubit.login(email, password),
         expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
           LoginState.initial().copyWith(email: email),
           LoginState(isLoading: false, email: email),
         ],
         verify: (_) {
           verify(
             authRepository.login(
-              email: anyNamed('email'),
-              password: anyNamed('password'),
+              email: EmailAddress(email),
+              password: Password(password),
               onAuthenticated: anyNamed('onAuthenticated'),
               onError: anyNamed('onError'),
             ),
@@ -187,40 +186,7 @@ void main() {
         },
       );
 
-      blocPresentationTest<LoginCubit, LoginState, LoginPresentationEvent>(
-        'should emit onSuccess presentation event when login is successful',
-        build: () {
-          provideDummy(TaskEither<Failure, String?>.right(null));
-          when(localStorageRepository.getLastLoggedInUsername()).thenReturn(TaskEither<Failure, String?>.right(null));
-
-          when(
-            authRepository.login(
-              email: anyNamed('email'),
-              password: anyNamed('password'),
-              onAuthenticated: anyNamed('onAuthenticated'),
-              onError: anyNamed('onError'),
-            ),
-          ).thenAnswer((Invocation invocation) async {
-            final void Function(AuthSuccess?) onAuthenticated =
-                invocation.namedArguments[#onAuthenticated] as void Function(AuthSuccess?);
-            onAuthenticated(
-              AuthSuccess(
-                authStrategy: 'email',
-                token: 'token',
-                authUserId: UuidValue.fromString('00000000-0000-0000-0000-000000000000'),
-                scopeNames: <String>{},
-              ),
-            );
-            return;
-          });
-          when(failureHandler.handleFailure(any)).thenReturn(null);
-          return LoginCubit(authRepository, localStorageRepository, failureHandler);
-        },
-        act: (LoginCubit cubit) => cubit.login(email, password),
-        expectPresentation: () => const <LoginPresentationEvent>[LoginPresentationEvent.onSuccess()],
-      );
-
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should emit loading and failure states when login fails',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
@@ -244,23 +210,16 @@ void main() {
         },
         act: (LoginCubit cubit) => cubit.login(email, password),
         expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
           LoginState.initial().copyWith(email: email),
           LoginState(isLoading: false, email: email),
         ],
         verify: (_) {
-          verify(
-            authRepository.login(
-              email: anyNamed('email'),
-              password: anyNamed('password'),
-              onAuthenticated: anyNamed('onAuthenticated'),
-              onError: anyNamed('onError'),
-            ),
-          ).called(1);
+          verify(failureHandler.handleFailure(const Failure.server(StatusCode.http500, 'INTERNAL SERVER ERROR')))
+              .called(1);
         },
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle unexpected error during login',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
@@ -279,15 +238,14 @@ void main() {
         },
         act: (LoginCubit cubit) => cubit.login(email, password),
         expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
           LoginState.initial().copyWith(email: email),
           LoginState(isLoading: false, email: email),
         ],
         verify: (_) {
           verify(
             authRepository.login(
-              email: anyNamed('email'),
-              password: anyNamed('password'),
+              email: EmailAddress(email),
+              password: Password(password),
               onAuthenticated: anyNamed('onAuthenticated'),
               onError: anyNamed('onError'),
             ),
@@ -295,29 +253,26 @@ void main() {
         },
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle validation error for invalid password',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
           when(localStorageRepository.getLastLoggedInUsername()).thenReturn(TaskEither<Failure, String?>.right(null));
-
           when(failureHandler.handleFailure(any)).thenReturn(null);
           return LoginCubit(authRepository, localStorageRepository, failureHandler);
         },
         act: (LoginCubit cubit) => cubit.login(email, 'pass'),
         expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
           LoginState.initial().copyWith(email: email),
           LoginState(isLoading: false, email: email),
         ],
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle authentication failure',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
           when(localStorageRepository.getLastLoggedInUsername()).thenReturn(TaskEither<Failure, String?>.right(null));
-
           const Failure authFailure = Failure.authentication('Invalid credentials');
           when(
             authRepository.login(
@@ -336,23 +291,15 @@ void main() {
         },
         act: (LoginCubit cubit) => cubit.login(email, password),
         expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
           LoginState.initial().copyWith(email: email),
           LoginState(isLoading: false, email: email),
         ],
         verify: (_) {
-          verify(
-            authRepository.login(
-              email: anyNamed('email'),
-              password: anyNamed('password'),
-              onAuthenticated: anyNamed('onAuthenticated'),
-              onError: anyNamed('onError'),
-            ),
-          ).called(1);
+          verify(failureHandler.handleFailure(const Failure.authentication('Invalid credentials'))).called(1);
         },
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle network timeout during login',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
@@ -371,23 +318,15 @@ void main() {
         },
         act: (LoginCubit cubit) => cubit.login(email, password),
         expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
           LoginState.initial().copyWith(email: email),
           LoginState(isLoading: false, email: email),
         ],
         verify: (_) {
-          verify(
-            authRepository.login(
-              email: anyNamed('email'),
-              password: anyNamed('password'),
-              onAuthenticated: anyNamed('onAuthenticated'),
-              onError: anyNamed('onError'),
-            ),
-          ).called(1);
+          verify(failureHandler.handleException(any, any)).called(1);
         },
       );
 
-      blocTest<LoginCubit, LoginState>(
+      blocSignalTest<LoginCubit, LoginState>(
         'should handle null authInfo in onAuthenticated callback',
         build: () {
           provideDummy(TaskEither<Failure, String?>.right(null));
@@ -411,7 +350,6 @@ void main() {
         },
         act: (LoginCubit cubit) => cubit.login(email, password),
         expect: () => <LoginState>[
-          LoginState.initial().copyWith(email: null),
           LoginState.initial().copyWith(email: email),
           LoginState(isLoading: false, email: email),
         ],

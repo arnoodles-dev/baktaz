@@ -9,9 +9,9 @@ import 'package:baktaz_flutter/features/account/presentation/widgets/account_det
 import 'package:baktaz_flutter/features/account/presentation/widgets/dialogs/logout_confirmation_dialog.dart';
 import 'package:baktaz_flutter/features/auth/domain/cubit/auth/auth_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -37,13 +37,13 @@ class ProfileScreen extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => BlocProvider<ProfileCubit>(
+  Widget build(BuildContext context) => BlocSignalProvider<ProfileCubit>(
     create: (BuildContext context) => getIt<ProfileCubit>()..initialize(),
     child: Builder(
       builder: (BuildContext context) => Scaffold(
         body: SingleChildScrollView(
           physics: const ClampingScrollPhysics(),
-          child: BlocBuilder<ProfileCubit, ProfileState>(
+          child: BlocSignalBuilder<ProfileCubit, ProfileState>(
             builder: (BuildContext context, ProfileState state) => Column(
               children: <Widget>[
                 BaktazAppBar(

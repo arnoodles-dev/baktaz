@@ -71,11 +71,3 @@ abstract class ContentState with _$ContentState {
 
   int get draftCount => assets.where((ContentAsset a) => a.status == ContentStatus.draft).length;
 }
-
-@freezed
-sealed class ContentPresentationEvent with _$ContentPresentationEvent {
-  const factory ContentPresentationEvent.onPublishSuccess() = OnPublishSuccess;
-  const factory ContentPresentationEvent.onScheduleSuccess() = OnScheduleSuccess;
-  const factory ContentPresentationEvent.showLoader() = ShowLoader;
-  const factory ContentPresentationEvent.hideLoader() = HideLoader;
-}

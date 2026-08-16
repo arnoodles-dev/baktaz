@@ -17,8 +17,8 @@ analyzer:
     strict-casts: true
     strict-raw-types: true
 
-formatter: 
-  page_width: 120 
+formatter:
+  page_width: 120
 
 linter:
   rules:
@@ -29,13 +29,8 @@ linter:
     #Suppressed Lints
     public_member_api_docs: false
     flutter_style_todos: false
-    one_member_abstracts: false
+
     omit_local_variable_types: false
     avoid_classes_with_only_static_members: false
     lines_longer_than_80_chars: false
     avoid_types_on_closure_parameters: false
- 
-
-
-
-

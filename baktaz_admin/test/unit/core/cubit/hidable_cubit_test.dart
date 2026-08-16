@@ -1,18 +1,18 @@
 import 'package:baktaz_admin/core/domain/cubit/hidable/hidable_cubit.dart';
-import 'package:bloc_test/bloc_test.dart';
+import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group(HidableCubit, () {
     group('setVisibility', () {
-      blocTest<HidableCubit, bool>(
+      blocSignalTest<HidableCubit, bool>(
         'should emit a true state',
-        build: HidableCubit.new,
+        build: () => HidableCubit()..setVisibility(isVisible: false),
         act: (HidableCubit cubit) => cubit.setVisibility(isVisible: true),
         expect: () => <bool>[true],
       );
 
-      blocTest<HidableCubit, bool>(
+      blocSignalTest<HidableCubit, bool>(
         'should emit a false state',
         build: HidableCubit.new,
         act: (HidableCubit cubit) => cubit.setVisibility(isVisible: false),

@@ -8,7 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:toastification/toastification.dart';
 
 mixin ErrorActions {
-  I18n get _localization => getIt<AppLocalizationCubit>().state;
+  I18n get _localization => getIt<AppLocalizationCubit>().stateValue;
   ToastificationItem? _activeToast;
 
   void _showErrorOnce(String message) {

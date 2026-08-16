@@ -74,10 +74,3 @@ sealed class RemoteConfigState with _$RemoteConfigState {
     return <String>{...parameters.keys, ...pendingChanges.keys}.length;
   }
 }
-
-@freezed
-sealed class RemoteConfigPresentationEvent with _$RemoteConfigPresentationEvent {
-  const factory RemoteConfigPresentationEvent.onPublishSuccess() = _RemoteConfigPublishSuccess;
-  const factory RemoteConfigPresentationEvent.showLoader() = _ShowLoader;
-  const factory RemoteConfigPresentationEvent.hideLoader() = _HideLoader;
-}

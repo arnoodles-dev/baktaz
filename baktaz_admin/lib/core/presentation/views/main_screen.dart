@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:baktaz_admin/core/presentation/widgets/baktaz_header_bar.dart';
 import 'package:baktaz_admin/core/presentation/widgets/baktaz_nav_item_data.dart';
 import 'package:baktaz_admin/core/presentation/widgets/navigation_transition.dart';
@@ -49,12 +47,12 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     if (width > _mediumWidthBreakpoint) {
       _showLargeSizeLayout = width > _largeWidthBreakpoint;
       if (status != AnimationStatus.forward && status != AnimationStatus.completed) {
-        unawaited(_controller.forward());
+        _controller.forward();
       }
     } else {
       _showLargeSizeLayout = false;
       if (status != AnimationStatus.reverse && status != AnimationStatus.dismissed) {
-        unawaited(_controller.reverse());
+        _controller.reverse();
       }
     }
 

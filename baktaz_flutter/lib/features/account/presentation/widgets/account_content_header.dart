@@ -1,9 +1,9 @@
 import 'package:baktaz_flutter/app/themes/app_theme.dart';
 import 'package:baktaz_flutter/features/account/domain/cubit/account_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -15,7 +15,7 @@ class AccountContentHeader extends StatelessWidget {
   final int? connect;
 
   @override
-  Widget build(BuildContext context) => BlocBuilder<AccountCubit, AccountState>(
+  Widget build(BuildContext context) => BlocSignalBuilder<AccountCubit, AccountState>(
     builder: (BuildContext context, AccountState state) => Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,

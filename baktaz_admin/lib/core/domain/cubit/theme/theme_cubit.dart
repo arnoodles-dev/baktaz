@@ -5,15 +5,15 @@ import 'dart:async';
 import 'package:baktaz_admin/app/helpers/mixins/failure_handler.dart';
 import 'package:baktaz_admin/core/domain/interface/i_local_storage_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
-class ThemeCubit extends Cubit<ThemeMode> {
-  ThemeCubit(this._localStorageRepository, this._failureHandler) : super(ThemeMode.system);
+class ThemeCubit extends CubitSignal<ThemeMode> {
+  ThemeCubit(this._localStorageRepository, this._failureHandler) : super(initialState: ThemeMode.system);
 
   final ILocalStorageRepository _localStorageRepository;
   final FailureHandler _failureHandler;

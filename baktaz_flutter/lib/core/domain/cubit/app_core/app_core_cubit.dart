@@ -5,7 +5,7 @@ import 'package:baktaz_flutter/app/generated/assets.gen.dart';
 import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
 import 'package:baktaz_flutter/core/domain/interface/i_local_storage_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc/bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -15,9 +15,9 @@ part 'app_core_cubit.freezed.dart';
 part 'app_core_state.dart';
 
 @lazySingleton
-class AppCoreCubit extends Cubit<AppCoreState> {
+class AppCoreCubit extends CubitSignal<AppCoreState> {
   AppCoreCubit(this._analyticsService, this._localStorageRepository, this._failureHandler)
-    : super(AppCoreState.initial());
+    : super(initialState: AppCoreState.initial());
 
   final IAnalyticsService _analyticsService;
   final ILocalStorageRepository _localStorageRepository;
@@ -33,7 +33,7 @@ class AppCoreCubit extends Cubit<AppCoreState> {
         final Result<bool?> possibleFailure = await _localStorageRepository.getIsOnboardingDone().run();
 
         possibleFailure.fold(_failureHandler.handleFailure, (bool? isOnboardingDone) {
-          safeEmit(state.copyWith(isOnboardingDone: isOnboardingDone ?? false));
+          safeEmit(stateValue.copyWith(isOnboardingDone: isOnboardingDone ?? false));
         });
       },
     );
@@ -64,7 +64,7 @@ class AppCoreCubit extends Cubit<AppCoreState> {
 
   Future<void> setOnboardingDone() async {
     await _localStorageRepository.setIsOnboardingDone().run();
-    safeEmit(state.copyWith(isOnboardingDone: true));
+    safeEmit(stateValue.copyWith(isOnboardingDone: true));
   }
 
   Future<void> _initializePermissions() async {

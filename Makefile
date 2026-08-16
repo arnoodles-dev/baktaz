@@ -3,7 +3,7 @@ enable_melos:
 	fvm dart pub global activate melos
 
 enable_serverpod:
-	fvm dart pub global activate serverpod_cli 4.0.0-beta.2
+	fvm dart pub global activate serverpod_cli 4.0.0-beta.3
 	fvm dart pub global activate serverpod_mcp
 
 enable_jaspr:
@@ -13,21 +13,21 @@ enable_tools:
 	fvm dart pub global activate flutter_plugin_tools
 
 ensure_flutter_version:
-	fvm install 3.44.9
-	fvm use 3.44.9
-	fvm global 3.44.9
+	fvm install 3.47.0
+	fvm use 3.47.0
+	fvm global 3.47.0
 
 update_flutter_version:
 	@if [ -z "$(NEW_VERSION)" ]; then \
         read -p "Enter new flutter version: " NEW_VERSION; \
     fi; \
-    sh scripts/update_flutter_version.sh $$NEW_VERSION
+    bash scripts/update_flutter_version.sh $$NEW_VERSION
 
 update_serverpod_version:
 	@if [ -z "$(NEW_VERSION)" ]; then \
         read -p "Enter new serverpod version: " NEW_VERSION; \
     fi; \
-    sh scripts/update_serverpod_version.sh $$NEW_VERSION
+    bash scripts/update_serverpod_version.sh $$NEW_VERSION
 
 init: enable_melos enable_serverpod enable_tools ensure_flutter_version enable_jaspr pub_get ## Initialize the project
 
@@ -39,6 +39,7 @@ pub_get:
 
 pub_clean:
 	fvm dart pub cache clean --force
+	fvm dart pub cache repair
 
 delete_generated_files:
 	sh scripts/delete_generated_files.sh			

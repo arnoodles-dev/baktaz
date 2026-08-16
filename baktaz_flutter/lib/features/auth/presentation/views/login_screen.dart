@@ -8,8 +8,8 @@ import 'package:baktaz_flutter/features/auth/domain/cubit/auth/auth_cubit.dart';
 import 'package:baktaz_flutter/features/auth/domain/cubit/login/login_cubit.dart';
 import 'package:baktaz_flutter/features/auth/domain/entity/enum/login_provider.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -41,10 +41,10 @@ class LoginScreen extends HookWidget {
   Widget build(BuildContext context) => PopScope(
     canPop: false,
     onPopInvokedWithResult: (bool didPop, _) => _onPopInvoked(context, didPop),
-    child: BlocProvider<LoginCubit>(
+    child: BlocSignalProvider<LoginCubit>(
       create: (BuildContext context) => getIt<LoginCubit>(),
       child: Builder(
-        builder: (BuildContext context) => BlocListener<LoginCubit, LoginState>(
+        builder: (BuildContext context) => BlocSignalListener<LoginCubit, LoginState>(
           listener: _onStateChangedListener,
           child: ConnectivityChecker.scaffold(
             offlineMessage: context.i18n.common.error.no_internet_connection,

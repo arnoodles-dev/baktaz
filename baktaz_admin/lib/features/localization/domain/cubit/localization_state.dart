@@ -88,10 +88,3 @@ abstract class LocalizationState with _$LocalizationState {
 
   int get endIndex => (startIndex + itemsPerPage).clamp(0, totalItems);
 }
-
-@freezed
-sealed class LocalizationPresentationEvent with _$LocalizationPresentationEvent {
-  const factory LocalizationPresentationEvent.onInitializationError(String message) = OnInitializationError;
-  const factory LocalizationPresentationEvent.onPublishSuccess() = OnPublishSuccess;
-  const factory LocalizationPresentationEvent.onPublishError(String message) = OnPublishError;
-}

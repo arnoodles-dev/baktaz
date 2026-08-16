@@ -9,7 +9,7 @@ import 'package:baktaz_admin/features/dashboard/domain/entity/enum/activity_stat
 import 'package:baktaz_admin/features/dashboard/domain/entity/enum/time_filter.dart';
 import 'package:baktaz_admin/features/dashboard/domain/entity/recent_activity.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc_test/bloc_test.dart';
+import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
@@ -48,12 +48,11 @@ void main() {
   });
 
   group('DashboardCubit', () {
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'initialize emits loading and done states',
       build: () {
-        when(
-          mockDashboardRepository.getRecentActivities(),
-        ).thenAnswer((_) => TaskEither<Failure, List<RecentActivity>>.right(<RecentActivity>[]));
+        when(mockDashboardRepository.getRecentActivities())
+            .thenAnswer((_) => TaskEither<Failure, List<RecentActivity>>.right(<RecentActivity>[]));
         when(
           mockDashboardRepository.getOverviewChartData(
             timeFilter: anyNamed('timeFilter'),
@@ -107,7 +106,7 @@ void main() {
       totalRevenue: Money(5000),
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'setActivityFilter emits loading and done with new data',
       build: () {
         when(
@@ -123,9 +122,8 @@ void main() {
             statusFilter: anyNamed('statusFilter'),
           ),
         ).thenAnswer((_) => TaskEither<Failure, CategoryReportStats>.right(tReports));
-        when(
-          mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')),
-        ).thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
+        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')))
+            .thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
         return DashboardCubit(mockDashboardRepository, failureHandler);
       },
       act: (DashboardCubit cubit) => cubit.setActivityFilter(ActivityFilter.shop),
@@ -144,9 +142,10 @@ void main() {
           stats: tStats,
         ),
       ],
+      wait: const Duration(milliseconds: 100),
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'setActivityFilter with same filter does nothing (early return)',
       build: () => DashboardCubit(mockDashboardRepository, failureHandler),
       act: (DashboardCubit cubit) {
@@ -157,7 +156,7 @@ void main() {
       expect: () => <dynamic>[],
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'setTimeFilter emits loading and done',
       build: () {
         when(
@@ -173,9 +172,8 @@ void main() {
             statusFilter: anyNamed('statusFilter'),
           ),
         ).thenAnswer((_) => TaskEither<Failure, CategoryReportStats>.right(tReports));
-        when(
-          mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')),
-        ).thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
+        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')))
+            .thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
         return DashboardCubit(mockDashboardRepository, failureHandler);
       },
       act: (DashboardCubit cubit) => cubit.setTimeFilter(TimeFilter.last30Days),
@@ -192,9 +190,10 @@ void main() {
           stats: tStats,
         ),
       ],
+      wait: const Duration(milliseconds: 100),
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'setTimeFilter with same filter does nothing',
       build: () => DashboardCubit(mockDashboardRepository, failureHandler),
       act: (DashboardCubit cubit) {
@@ -205,7 +204,7 @@ void main() {
       expect: () => <dynamic>[],
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'setReportStatusFilter emits loading and done',
       build: () {
         when(
@@ -221,9 +220,8 @@ void main() {
             statusFilter: anyNamed('statusFilter'),
           ),
         ).thenAnswer((_) => TaskEither<Failure, CategoryReportStats>.right(tReports));
-        when(
-          mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')),
-        ).thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
+        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')))
+            .thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
         return DashboardCubit(mockDashboardRepository, failureHandler);
       },
       act: (DashboardCubit cubit) => cubit.setReportStatusFilter(ActivityStatusFilter.completed),
@@ -240,9 +238,10 @@ void main() {
           stats: tStats,
         ),
       ],
+      wait: const Duration(milliseconds: 100),
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'setReportStatusFilter with same filter does nothing',
       build: () => DashboardCubit(mockDashboardRepository, failureHandler),
       act: (DashboardCubit cubit) {
@@ -253,7 +252,7 @@ void main() {
       expect: () => <dynamic>[],
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'overview fetch failure is handled',
       build: () {
         when(
@@ -271,9 +270,8 @@ void main() {
             statusFilter: anyNamed('statusFilter'),
           ),
         ).thenAnswer((_) => TaskEither<Failure, CategoryReportStats>.right(tReports));
-        when(
-          mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')),
-        ).thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
+        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')))
+            .thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
         return DashboardCubit(mockDashboardRepository, MockFailureHandler());
       },
       act: (DashboardCubit cubit) => cubit.setTimeFilter(TimeFilter.last30Days),
@@ -285,7 +283,7 @@ void main() {
       ],
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'reports fetch failure is handled',
       build: () {
         when(
@@ -301,9 +299,8 @@ void main() {
             statusFilter: anyNamed('statusFilter'),
           ),
         ).thenAnswer((_) => TaskEither<Failure, CategoryReportStats>.left(const Failure.unexpected('reports error')));
-        when(
-          mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')),
-        ).thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
+        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')))
+            .thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tStats));
         return DashboardCubit(mockDashboardRepository, MockFailureHandler());
       },
       act: (DashboardCubit cubit) => cubit.setTimeFilter(TimeFilter.last30Days),
@@ -315,7 +312,7 @@ void main() {
       ],
     );
 
-    blocTest<DashboardCubit, DashboardState>(
+    blocSignalTest<DashboardCubit, DashboardState>(
       'stats fetch failure is handled',
       build: () {
         when(
@@ -331,9 +328,8 @@ void main() {
             statusFilter: anyNamed('statusFilter'),
           ),
         ).thenAnswer((_) => TaskEither<Failure, CategoryReportStats>.right(tReports));
-        when(
-          mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')),
-        ).thenAnswer((_) => TaskEither<Failure, DashboardStats>.left(const Failure.unexpected('stats error')));
+        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')))
+            .thenAnswer((_) => TaskEither<Failure, DashboardStats>.left(const Failure.unexpected('stats error')));
         return DashboardCubit(mockDashboardRepository, MockFailureHandler());
       },
       act: (DashboardCubit cubit) => cubit.setTimeFilter(TimeFilter.last30Days),

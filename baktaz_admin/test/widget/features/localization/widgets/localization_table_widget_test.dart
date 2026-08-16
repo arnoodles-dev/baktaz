@@ -8,10 +8,11 @@ import 'package:baktaz_admin/features/localization/domain/entity/localization_ke
 import 'package:baktaz_admin/features/localization/domain/entity/localization_translation.dart';
 import 'package:baktaz_admin/features/localization/presentation/widgets/localization_table_widget.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:signals_core/signals_core.dart';
 
 import '../../../../utils/generated_mocks.mocks.dart';
 import '../../../../utils/mock_material_app.dart';
@@ -55,9 +56,9 @@ void main() {
             GoldenTestScenario(
               name: 'empty state',
               child: MockMaterialApp(
-                child: MultiBlocProvider(
-                  providers: <BlocProvider<dynamic>>[
-                    BlocProvider<LocalizationCubit>.value(value: mockCubit..mockState(emptyState)),
+                child: MultiBlocSignalProvider(
+                  providers: <BlocSignalProvider<dynamic>>[
+                    BlocSignalProvider<LocalizationCubit>.value(value: mockCubit..mockState(emptyState)),
                   ],
                   child: LocalizationTableWidget(onEdit: (LocalizationKey _, String? _) {}),
                 ),
@@ -66,9 +67,9 @@ void main() {
             GoldenTestScenario(
               name: 'populated state',
               child: MockMaterialApp(
-                child: MultiBlocProvider(
-                  providers: <BlocProvider<dynamic>>[
-                    BlocProvider<LocalizationCubit>.value(value: mockCubit..mockState(populatedState)),
+                child: MultiBlocSignalProvider(
+                  providers: <BlocSignalProvider<dynamic>>[
+                    BlocSignalProvider<LocalizationCubit>.value(value: mockCubit..mockState(populatedState)),
                   ],
                   child: LocalizationTableWidget(onEdit: (LocalizationKey _, String? _) {}),
                 ),
@@ -77,9 +78,9 @@ void main() {
             GoldenTestScenario(
               name: 'with pending changes',
               child: MockMaterialApp(
-                child: MultiBlocProvider(
-                  providers: <BlocProvider<dynamic>>[
-                    BlocProvider<LocalizationCubit>.value(value: mockCubit..mockState(withChangesState)),
+                child: MultiBlocSignalProvider(
+                  providers: <BlocSignalProvider<dynamic>>[
+                    BlocSignalProvider<LocalizationCubit>.value(value: mockCubit..mockState(withChangesState)),
                   ],
                   child: LocalizationTableWidget(onEdit: (LocalizationKey _, String? _) {}),
                 ),
@@ -88,9 +89,9 @@ void main() {
             GoldenTestScenario(
               name: 'loading state',
               child: MockMaterialApp(
-                child: MultiBlocProvider(
-                  providers: <BlocProvider<dynamic>>[
-                    BlocProvider<LocalizationCubit>.value(
+                child: MultiBlocSignalProvider(
+                  providers: <BlocSignalProvider<dynamic>>[
+                    BlocSignalProvider<LocalizationCubit>.value(
                       value: mockCubit
                         ..mockState(const LocalizationState().copyWith(status: const QueryStatus.loading())),
                     ),
@@ -102,14 +103,13 @@ void main() {
             GoldenTestScenario(
               name: 'expanded namespace',
               child: MockMaterialApp(
-                child: MultiBlocProvider(
-                  providers: <BlocProvider<dynamic>>[
-                    BlocProvider<LocalizationCubit>.value(
+                child: MultiBlocSignalProvider(
+                  providers: <BlocSignalProvider<dynamic>>[
+                    BlocSignalProvider<LocalizationCubit>.value(
                       value: mockCubit
                         ..mockState(
-                          const LocalizationState(
-                            keys: <LocalizationKey>[mockKey1, mockKey2],
-                          ).copyWith(status: const QueryStatus.done()),
+                          const LocalizationState(keys: <LocalizationKey>[mockKey1, mockKey2])
+                              .copyWith(status: const QueryStatus.done()),
                         ),
                     ),
                   ],
@@ -120,9 +120,9 @@ void main() {
             GoldenTestScenario(
               name: 'sorted by key',
               child: MockMaterialApp(
-                child: MultiBlocProvider(
-                  providers: <BlocProvider<dynamic>>[
-                    BlocProvider<LocalizationCubit>.value(
+                child: MultiBlocSignalProvider(
+                  providers: <BlocSignalProvider<dynamic>>[
+                    BlocSignalProvider<LocalizationCubit>.value(
                       value: mockCubit
                         ..mockState(
                           const LocalizationState(
@@ -167,9 +167,9 @@ void main() {
           state ?? const LocalizationState(keys: <LocalizationKey>[mockKey1, mockKey2]);
       return MockMaterialApp(
         child: Scaffold(
-          body: MultiBlocProvider(
-            providers: <BlocProvider<dynamic>>[
-              BlocProvider<LocalizationCubit>.value(value: mockCubit..mockState(effectiveState)),
+          body: MultiBlocSignalProvider(
+            providers: <BlocSignalProvider<dynamic>>[
+              BlocSignalProvider<LocalizationCubit>.value(value: mockCubit..mockState(effectiveState)),
             ],
             child: LocalizationTableWidget(
               onEdit: (LocalizationKey key, String? value) {
@@ -373,8 +373,8 @@ void main() {
 }
 
 extension on MockLocalizationCubit {
-  void mockState(LocalizationState state) {
-    when(this.state).thenReturn(state);
-    when(stream).thenAnswer((_) => Stream<LocalizationState>.fromIterable(<LocalizationState>[state]));
+  void mockState(LocalizationState mockedState) {
+    when(state).thenReturn(signal(mockedState));
+    when(stateValue).thenReturn(mockedState);
   }
 }

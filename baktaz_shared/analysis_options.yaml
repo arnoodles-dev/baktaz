@@ -22,6 +22,12 @@ analyzer:
     - lib/**/generated_plugin_registrant.dart
     - "**/build/**"
     - "build/**"
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
   language:
     strict-casts: true
@@ -37,7 +43,7 @@ linter:
     #Suppressed Lints
     public_member_api_docs: false
     flutter_style_todos: false
-    one_member_abstracts: false
+
     omit_local_variable_types: false
     avoid_classes_with_only_static_members: false
     lines_longer_than_80_chars: false

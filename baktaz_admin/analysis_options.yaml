@@ -1,6 +1,5 @@
 include:
   - package:very_good_analysis/analysis_options.yaml
-  - package:bloc_lint/recommended.yaml
 
 analyzer:
   errors:
@@ -22,6 +21,12 @@ analyzer:
     - lib/**/generated_plugin_registrant.dart
     - "**/build/**"
     - "build/**"
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
 
   language:
     strict-casts: true
@@ -41,7 +46,6 @@ linter:
     #Suppressed Lints
     public_member_api_docs: false
     flutter_style_todos: false
-    one_member_abstracts: false
     omit_local_variable_types: false
     avoid_classes_with_only_static_members: false
     avoid_types_on_closure_parameters: false

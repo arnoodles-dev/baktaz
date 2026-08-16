@@ -4,10 +4,10 @@ import 'package:baktaz_flutter/core/domain/cubit/app_core/app_core_cubit.dart';
 import 'package:baktaz_flutter/core/domain/cubit/remote_config/remote_config_cubit.dart';
 import 'package:baktaz_flutter/features/auth/domain/cubit/auth/auth_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flash/flash.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform, kDebugMode, kProfileMode;
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fpdart/fpdart.dart' as fpdart;
 import 'package:safe_device/safe_device.dart';
@@ -30,7 +30,7 @@ class SplashScreen extends HookWidget {
     final RemoteConfigCubit remoteConfigCubit = context.read<RemoteConfigCubit>();
     await Future.wait(<Future<void>>[appCoreCubit.initialize(), remoteConfigCubit.initialize()]);
     if (context.mounted && !remoteConfigCubit.isForceUpdate && !remoteConfigCubit.isMaintenance) {
-      await context.read<AuthCubit>().initialize(isOnboardingDone: appCoreCubit.state.isOnboardingDone);
+      await context.read<AuthCubit>().initialize(isOnboardingDone: appCoreCubit.stateValue.isOnboardingDone);
     }
   }
 

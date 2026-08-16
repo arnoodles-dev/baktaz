@@ -6,9 +6,12 @@ import 'package:go_router/go_router.dart';
 final class FadeTransitionPage extends CustomTransitionPage<void> {
   FadeTransitionPage({required LocalKey super.key, required super.child})
     : super(
-        transitionsBuilder:
-            (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) =>
-                FadeTransition(opacity: animation.drive(_curveTween), child: child),
+        transitionsBuilder: (
+          BuildContext context,
+          Animation<double> animation,
+          Animation<double> secondaryAnimation,
+          Widget child,
+        ) => FadeTransition(opacity: animation.drive(_curveTween), child: child),
       );
 
   static final CurveTween _curveTween = CurveTween(curve: Curves.ease);
@@ -21,9 +24,12 @@ final class SlideTransitionPage extends CustomTransitionPage<void> {
     this.transitionType = SlideTransitionType.bottomToTop,
     super.fullscreenDialog,
   }) : super(
-         transitionsBuilder:
-             (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child) =>
-                 SlideTransition(position: animation.drive(getOffset(transitionType)), child: child),
+         transitionsBuilder: (
+           BuildContext context,
+           Animation<double> animation,
+           Animation<double> secondaryAnimation,
+           Widget child,
+         ) => SlideTransition(position: animation.drive(getOffset(transitionType)), child: child),
        );
   final SlideTransitionType transitionType;
 

@@ -9,9 +9,9 @@ import 'package:baktaz_flutter/core/presentation/widgets/baktaz_bottom_sheet.dar
 import 'package:baktaz_flutter/core/presentation/widgets/dialogs/country_selector_bottom_sheet.dart';
 import 'package:baktaz_flutter/features/auth/domain/cubit/login/login_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -52,10 +52,10 @@ class LoginMobileScreen extends HookWidget {
     );
     final GlobalKey<FormState> formKey = useMemoized(GlobalKey<FormState>.new);
 
-    return BlocProvider<LoginCubit>(
+    return BlocSignalProvider<LoginCubit>(
       create: (BuildContext context) => getIt<LoginCubit>(),
       child: Builder(
-        builder: (BuildContext context) => BlocListener<LoginCubit, LoginState>(
+        builder: (BuildContext context) => BlocSignalListener<LoginCubit, LoginState>(
           listener: (BuildContext context, LoginState state) =>
               _onStateChangedListener(context, state, selectedCountryCode.value, controller.value.text),
           child: UnfocusableScaffold(

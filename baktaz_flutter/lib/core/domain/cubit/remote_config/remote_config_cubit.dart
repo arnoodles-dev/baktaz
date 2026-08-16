@@ -5,16 +5,16 @@ import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
 import 'package:baktaz_flutter/core/data/dto/remote_app_config.dto.dart';
 import 'package:baktaz_flutter/core/domain/interface/i_device_info_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc/bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 // ignore: avoid_flutter_imports
 import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform, kDebugMode;
 import 'package:injectable/injectable.dart';
 import 'package:mobile_service_core/features/remote_config/i_remote_config_service.dart';
 
 @lazySingleton
-class RemoteConfigCubit extends Cubit<Map<String, dynamic>> {
+class RemoteConfigCubit extends CubitSignal<Map<String, dynamic>> {
   RemoteConfigCubit(this._remoteConfigService, this._deviceRepository, this._failureHandler)
-    : super(<String, dynamic>{});
+    : super(initialState: <String, dynamic>{});
 
   final IRemoteConfigService _remoteConfigService;
   final IDeviceInfoRepository _deviceRepository;
@@ -38,7 +38,7 @@ class RemoteConfigCubit extends Cubit<Map<String, dynamic>> {
 
   bool get isMaintenance {
     try {
-      final String? configValue = state['is_maintenance'] as String?;
+      final String? configValue = stateValue['is_maintenance'] as String?;
 
       return configValue?.toBoolean ?? false;
     } on Exception catch (error) {
@@ -50,7 +50,7 @@ class RemoteConfigCubit extends Cubit<Map<String, dynamic>> {
 
   bool get isForceUpdate {
     try {
-      final String? configValue = state['min_supported_version'] as String?;
+      final String? configValue = stateValue['min_supported_version'] as String?;
 
       return _isForceUpdate(configValue);
     } on Exception catch (error) {
@@ -63,9 +63,9 @@ class RemoteConfigCubit extends Cubit<Map<String, dynamic>> {
   String? get storeLink {
     try {
       if (defaultTargetPlatform case TargetPlatform.android) {
-        return state['android_store_url'] as String?;
+        return stateValue['android_store_url'] as String?;
       } else if (defaultTargetPlatform case TargetPlatform.iOS) {
-        return state['ios_store_url'] as String?;
+        return stateValue['ios_store_url'] as String?;
       } else {
         return null;
       }

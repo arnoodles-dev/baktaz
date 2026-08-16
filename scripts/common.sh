@@ -3,9 +3,9 @@
 # Cross-platform sed -i
 sed_inplace() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
-    sed -i '' "$1" "$2"
+    sed -i '' -E "$1" "$2"
   else
-    sed -i "$1" "$2"
+    sed -i -E "$1" "$2"
   fi
 }
 
@@ -41,16 +41,14 @@ discover_packages() {
           packages+=("$pkg")
         fi
       fi
-    done < <(awk '/^workspace:/,/^[^[:space:]]/ {print}' "$root_dir/pubspec.yaml" | grep -E '^  - ')
+    done <<< "$(awk '/^workspace:/{flag=1; next} /^[^[:space:]]/{flag=0} flag' "$root_dir/pubspec.yaml" | grep -E '^[[:space:]]*- ')"
   fi
   # Fallback
   if [ ${#packages[@]} -eq 0 ]; then
     while IFS= read -r pkg_dir; do
       pkg_name=$(basename "$pkg_dir")
-      if [ "$pkg_name" != "baktaz_client" ]; then
-        packages+=("$pkg_name")
-      fi
-    done < <(find "$root_dir" -maxdepth 1 -type d -name "baktaz_*" | sort)
+      packages+=("$pkg_name")
+    done <<< "$(find "$root_dir" -maxdepth 1 -type d -name "baktaz_*" | sort)"
   fi
   echo "${packages[@]}"
 }

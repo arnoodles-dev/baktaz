@@ -8,8 +8,3 @@ sealed class LoginState with _$LoginState {
 
   const LoginState._();
 }
-
-@freezed
-sealed class LoginPresentationEvent with _$LoginPresentationEvent {
-  const factory LoginPresentationEvent.onSuccess() = _LoginSuccessEvent;
-}

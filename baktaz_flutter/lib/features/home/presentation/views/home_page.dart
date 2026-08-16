@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
 import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
@@ -13,10 +15,9 @@ import 'package:baktaz_flutter/features/home/presentation/widgets/home_search_ba
 import 'package:baktaz_flutter/features/home/presentation/widgets/home_services_grid.dart';
 import 'package:baktaz_flutter/features/home/presentation/widgets/home_title_header.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc_presentation/bloc_presentation.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -58,52 +59,61 @@ class HomePage extends HookWidget {
       return () => scrollController.removeListener(listener);
     }, <Object?>[scrollController]);
 
-    return BlocPresentationListener<HomeCubit, HomeStateSideEffect>(
-      listener: _onSideEffect,
-      child: Scaffold(
-        body: RepaintBoundary(
-          child: BlocBuilder<HomeCubit, HomeState>(
-            builder: (BuildContext context, HomeState state) => RepaintBoundary(
-              child: Scaffold(
-                body: NestedScrollView(
-                  controller: scrollController,
-                  headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) => <Widget>[
-                    SliverOverlapAbsorber(
-                      handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                      sliver: SliverAppBar.large(
-                        scrolledUnderElevation: 0,
-                        flexibleSpace: FlexibleSpaceBar(
-                          centerTitle: true,
-                          background: HomeAppBar(
-                            isLoading: state.queryStatus.isLoading,
-                            onChangeAddress: () => _changeAddress(context),
-                            name: state.profile?.fullName.getValue() ?? context.i18n.home.loading,
-                            profileImage: state.profile?.imageUrl?.getValue(),
-                            greeting: context.i18n.home.greeting,
-                          ),
-                          expandedTitleScale: 1,
-                          title: const HomeSearchBar(),
+    useEffect(() {
+      final HomeCubit homeCubit = context.read<HomeCubit>();
+      final StreamSubscription<HomeStateSideEffect> sub = homeCubit.sideEffectStream.listen((
+        HomeStateSideEffect sideEffect,
+      ) {
+        if (context.mounted) {
+          _onSideEffect(context, sideEffect);
+        }
+      });
+      return sub.cancel;
+    }, <Object?>[]);
+
+    return Scaffold(
+      body: RepaintBoundary(
+        child: BlocSignalBuilder<HomeCubit, HomeState>(
+          builder: (BuildContext context, HomeState state) => RepaintBoundary(
+            child: Scaffold(
+              body: NestedScrollView(
+                controller: scrollController,
+                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) => <Widget>[
+                  SliverOverlapAbsorber(
+                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                    sliver: SliverAppBar.large(
+                      scrolledUnderElevation: 0,
+                      flexibleSpace: FlexibleSpaceBar(
+                        centerTitle: true,
+                        background: HomeAppBar(
+                          isLoading: state.queryStatus.isLoading,
+                          onChangeAddress: () => _changeAddress(context),
+                          name: state.profile?.fullName.getValue() ?? context.i18n.home.loading,
+                          profileImage: state.profile?.imageUrl?.getValue(),
+                          greeting: context.i18n.home.greeting,
                         ),
-                        forceElevated: innerBoxIsScrolled,
+                        expandedTitleScale: 1,
+                        title: const HomeSearchBar(),
                       ),
+                      forceElevated: innerBoxIsScrolled,
                     ),
-                  ],
-                  body: Builder(
-                    builder: (BuildContext context) => CustomScrollView(
-                      physics: const ClampingScrollPhysics(),
-                      slivers: <Widget>[
-                        SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-                        _HomeSectionSpecialOffers(state: state),
-                        _HomeSectionCarousel(state: state),
-                        _HomeSectionServices(state: state),
-                        _HomeContentSections(state: state),
-                        SliverToBoxAdapter(child: Gap.large()),
-                        SliverToBoxAdapter(
-                          child: Center(child: BaktazText(text: context.i18n.home.thats_all)),
-                        ),
-                        SliverToBoxAdapter(child: Gap.medium()),
-                      ],
-                    ),
+                  ),
+                ],
+                body: Builder(
+                  builder: (BuildContext context) => CustomScrollView(
+                    physics: const ClampingScrollPhysics(),
+                    slivers: <Widget>[
+                      SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                      _HomeSectionSpecialOffers(state: state),
+                      _HomeSectionCarousel(state: state),
+                      _HomeSectionServices(state: state),
+                      _HomeContentSections(state: state),
+                      SliverToBoxAdapter(child: Gap.large()),
+                      SliverToBoxAdapter(
+                        child: Center(child: BaktazText(text: context.i18n.home.thats_all)),
+                      ),
+                      SliverToBoxAdapter(child: Gap.medium()),
+                    ],
                   ),
                 ),
               ),

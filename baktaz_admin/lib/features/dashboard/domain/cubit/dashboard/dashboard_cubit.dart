@@ -11,29 +11,29 @@ import 'package:baktaz_admin/features/dashboard/domain/entity/enum/time_filter.d
 import 'package:baktaz_admin/features/dashboard/domain/entity/recent_activity.dart';
 import 'package:baktaz_admin/features/dashboard/domain/interface/i_dashboard_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 
 @injectable
-class DashboardCubit extends Cubit<DashboardState> {
-  DashboardCubit(this._dashboardRepository, this._failureHandler) : super(DashboardState.initial());
+class DashboardCubit extends CubitSignal<DashboardState> {
+  DashboardCubit(this._dashboardRepository, this._failureHandler) : super(initialState: DashboardState.initial());
 
   final IDashboardRepository _dashboardRepository;
   final FailureHandler _failureHandler;
 
   Future<void> initialize() async {
-    safeEmit(state.copyWith(status: const QueryStatus.loading()));
+    safeEmit(stateValue.copyWith(status: const QueryStatus.loading()));
 
     unawaited(_fetchRecentActivities());
     unawaited(_fetchOverviewChartData());
   }
 
   void setActivityFilter(ActivityFilter filter) {
-    if (state.selectedActivityFilter == filter) return;
+    if (stateValue.selectedActivityFilter == filter) return;
 
     safeEmit(
-      state.copyWith(
+      stateValue.copyWith(
         selectedActivityFilter: filter,
         selectedReportStatusFilter: ActivityStatusFilter.all,
         filterStatus: const QueryStatus.loading(),
@@ -44,25 +44,25 @@ class DashboardCubit extends Cubit<DashboardState> {
   }
 
   void setTimeFilter(TimeFilter filter) {
-    if (state.selectedTimeFilter == filter) return;
+    if (stateValue.selectedTimeFilter == filter) return;
 
-    safeEmit(state.copyWith(selectedTimeFilter: filter, filterStatus: const QueryStatus.loading()));
+    safeEmit(stateValue.copyWith(selectedTimeFilter: filter, filterStatus: const QueryStatus.loading()));
 
     unawaited(_simulateFilterUpdate());
   }
 
   void setReportStatusFilter(ActivityStatusFilter filter) {
-    if (state.selectedReportStatusFilter == filter) return;
+    if (stateValue.selectedReportStatusFilter == filter) return;
 
-    safeEmit(state.copyWith(selectedReportStatusFilter: filter, filterStatus: const QueryStatus.loading()));
+    safeEmit(stateValue.copyWith(selectedReportStatusFilter: filter, filterStatus: const QueryStatus.loading()));
 
     unawaited(_simulateFilterUpdate());
   }
 
   Future<void> _simulateFilterUpdate() async {
-    final ActivityFilter activityFilter = state.selectedActivityFilter;
-    final TimeFilter timeFilter = state.selectedTimeFilter;
-    final ActivityStatusFilter reportStatusFilter = state.selectedReportStatusFilter;
+    final ActivityFilter activityFilter = stateValue.selectedActivityFilter;
+    final TimeFilter timeFilter = stateValue.selectedTimeFilter;
+    final ActivityStatusFilter reportStatusFilter = stateValue.selectedReportStatusFilter;
 
     await safeRun(
       action: () async {
@@ -95,11 +95,11 @@ class DashboardCubit extends Cubit<DashboardState> {
         }
 
         safeEmit(
-          state.copyWith(
-            filterStatus: const QueryStatus.done(),
+          stateValue.copyWith(
             overviewChart: overviewResult.getRight().toNullable(),
             reportsChart: reportsResult.getRight().toNullable(),
             stats: statsResult.getRight().toNullable(),
+            filterStatus: const QueryStatus.done(),
           ),
         );
       },
@@ -114,7 +114,8 @@ class DashboardCubit extends Cubit<DashboardState> {
         final Either<Failure, List<RecentActivity>> result = await _dashboardRepository.getRecentActivities().run();
         result.fold(
           _failureHandler.handleFailure,
-          (List<RecentActivity> data) => safeEmit(state.copyWith(activities: data, status: const QueryStatus.done())),
+          (List<RecentActivity> data) =>
+              safeEmit(stateValue.copyWith(activities: data, status: const QueryStatus.done())),
         );
       },
       onException: (Exception error, StackTrace? stackTrace) =>
@@ -127,6 +128,6 @@ class DashboardCubit extends Cubit<DashboardState> {
     await Future<void>.delayed(const Duration(milliseconds: 1200));
     // Since _simulateFilterUpdate handles the overview and reports chart data, we just call it.
     unawaited(_simulateFilterUpdate());
-    safeEmit(state.copyWith(status: const QueryStatus.done()));
+    safeEmit(stateValue.copyWith(status: const QueryStatus.done()));
   }
 }

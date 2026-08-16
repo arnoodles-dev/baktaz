@@ -13,7 +13,7 @@ final class RouteGuard {
 
   final AuthCubit _authCubit;
 
-  String? guard(BuildContext context, GoRouterState goRouterState) => _authCubit.state.maybeWhen(
+  String? guard(BuildContext context, GoRouterState goRouterState) => _authCubit.stateValue.maybeWhen(
     initial: () => _splashLocation,
     unauthenticated: () => _loginLocation,
     authenticated: (_) => _authenticatedRouteGuard(goRouterState.matchedLocation),

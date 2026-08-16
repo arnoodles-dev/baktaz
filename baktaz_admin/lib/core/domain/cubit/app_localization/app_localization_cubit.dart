@@ -2,12 +2,12 @@
 
 import 'package:baktaz_admin/app/generated/localization.g.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
-class AppLocalizationCubit extends Cubit<I18n> {
-  AppLocalizationCubit() : super(AppLocale.values.first.buildSync());
+class AppLocalizationCubit extends CubitSignal<I18n> {
+  AppLocalizationCubit() : super(initialState: AppLocale.values.first.buildSync());
 
   Future<void> initialize() async {
     await safeRun(

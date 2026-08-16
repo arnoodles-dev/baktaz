@@ -6,10 +6,11 @@ import 'package:baktaz_admin/features/remote_config/domain/entity/remote_config.
 import 'package:baktaz_admin/features/remote_config/domain/entity/remote_config_value.dart';
 import 'package:baktaz_admin/features/remote_config/presentation/widgets/parameter_table.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:signals_core/signals_core.dart';
 
 import '../../../../utils/generated_mocks.mocks.dart';
 import '../../../../utils/mock_material_app.dart';
@@ -23,16 +24,16 @@ void main() {
     updateUser: EmailAddress('test@example.com'),
   );
 
-  MockRemoteConfigCubit buildCubit(RemoteConfigState state) {
+  MockRemoteConfigCubit buildCubit(RemoteConfigState mockedState) {
     final MockRemoteConfigCubit cubit = MockRemoteConfigCubit();
-    when(cubit.state).thenReturn(state);
-    when(cubit.stream).thenAnswer((_) => const Stream<RemoteConfigState>.empty());
+    when(cubit.state).thenReturn(signal(mockedState));
+    when(cubit.stateValue).thenReturn(mockedState);
     return cubit;
   }
 
   Widget buildTable({required MockRemoteConfigCubit cubit, void Function(String, RemoteConfigValue, String)? onEdit}) =>
       MockMaterialApp(
-        child: BlocProvider<RemoteConfigCubit>.value(
+        child: BlocSignalProvider<RemoteConfigCubit>.value(
           value: cubit,
           child: ParameterTable(onEdit: onEdit ?? (String k, RemoteConfigValue v, String d) {}),
         ),
@@ -98,6 +99,7 @@ void main() {
 
     testWidgets('calls onEdit when edit button is tapped', (WidgetTester tester) async {
       String? editedKey;
+
       final MockRemoteConfigCubit cubit = buildCubit(
         RemoteConfigState(
           status: const QueryStatus.initial(),
@@ -165,14 +167,13 @@ void main() {
       ),
     };
 
-    final MockRemoteConfigCubit mockCubit = MockRemoteConfigCubit();
-    when(mockCubit.state).thenReturn(
-      RemoteConfigState(
-        status: const QueryStatus.initial(),
-        remoteConfig: RemoteConfig(version: tVersion, parameters: tParameters),
-      ),
+    final RemoteConfigState state = RemoteConfigState(
+      status: const QueryStatus.initial(),
+      remoteConfig: RemoteConfig(version: tVersion, parameters: tParameters),
     );
-    when(mockCubit.stream).thenAnswer((_) => const Stream<RemoteConfigState>.empty());
+    final MockRemoteConfigCubit mockCubit = MockRemoteConfigCubit();
+    when(mockCubit.state).thenReturn(signal(state));
+    when(mockCubit.stateValue).thenReturn(state);
 
     // ignore: discarded_futures
     goldenTest(
@@ -183,7 +184,7 @@ void main() {
           GoldenTestScenario(
             name: 'with data',
             child: MockMaterialApp(
-              child: BlocProvider<RemoteConfigCubit>.value(
+              child: BlocSignalProvider<RemoteConfigCubit>.value(
                 value: mockCubit,
                 child: ParameterTable(onEdit: (String k, RemoteConfigValue v, String d) {}),
               ),

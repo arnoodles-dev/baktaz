@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
 import 'package:baktaz_flutter/features/auth/domain/interface/i_auth_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
@@ -14,8 +14,9 @@ part 'auth_cubit.freezed.dart';
 part 'auth_state.dart';
 
 @lazySingleton
-class AuthCubit extends Cubit<AuthState> {
-  AuthCubit(this._authRepository, this._crashlyticsService, this._failureHandler) : super(const AuthState.initial());
+class AuthCubit extends CubitSignal<AuthState> {
+  AuthCubit(this._authRepository, this._crashlyticsService, this._failureHandler)
+    : super(initialState: const AuthState.initial());
   final IAuthRepository _authRepository;
   final ICrashlyticsService _crashlyticsService;
   final FailureHandler _failureHandler;

@@ -1,6 +1,7 @@
 import 'package:baktaz_flutter/app/config/chopper_config.dart';
 import 'package:baktaz_flutter/app/config/serverpod_config.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
+import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:chopper/chopper.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -15,8 +16,6 @@ import 'package:retry/retry.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker/talker.dart';
-import 'package:talker_bloc_logger/talker_bloc_logger_observer.dart';
-import 'package:talker_bloc_logger/talker_bloc_logger_settings.dart';
 import 'package:talker_chopper_logger/talker_chopper_logger.dart';
 import 'package:talker_flutter/talker_flutter.dart' hide Talker;
 
@@ -63,10 +62,7 @@ abstract class ServiceModule {
   );
 
   @lazySingleton
-  TalkerBlocObserver get talkerBlocObserver => TalkerBlocObserver(
-    talker: talker,
-    settings: const TalkerBlocLoggerSettings(printEventFullData: false, printChanges: true),
-  );
+  TalkerBlocSignalObserver get talkerBlocSignalObserver => TalkerBlocSignalObserver(talker: talker);
 
   @lazySingleton
   TalkerRouteObserver get talkerRouteObserver => TalkerRouteObserver(talker);

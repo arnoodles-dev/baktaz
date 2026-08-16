@@ -9,7 +9,7 @@ import 'package:toastification/toastification.dart';
 mixin ErrorActions {
   ToastificationItem? _activeToast;
 
-  I18n get _localization => getIt<AppLocalizationCubit>().state;
+  I18n get _localization => getIt<AppLocalizationCubit>().stateValue;
 
   void _showErrorOnce(String message) {
     if (_activeToast?.isRunning ?? false) return;

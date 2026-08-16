@@ -14,27 +14,7 @@ ROOT_DIR="$(dirname "$SCRIPT_DIR")"
 source "$SCRIPT_DIR/common.sh"
 
 # Dynamically discover packages from melos workspace
-PACKAGES=()
-if [ -f "$ROOT_DIR/pubspec.yaml" ]; then
-  while IFS= read -r line; do
-    if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*(.+)$ ]]; then
-      pkg="${BASH_REMATCH[1]}"
-      if [ -d "$ROOT_DIR/$pkg" ]; then
-        PACKAGES+=("$pkg")
-      fi
-    fi
-  done < <(awk '/^workspace:/,/^[^[:space:]]/ {print}' "$ROOT_DIR/pubspec.yaml" | grep -E '^  - ')
-fi
-
-# Fallback
-if [ ${#PACKAGES[@]} -eq 0 ]; then
-  while IFS= read -r pkg_dir; do
-    pkg_name=$(basename "$pkg_dir")
-    if [ "$pkg_name" != "baktaz_client" ]; then
-      PACKAGES+=("$pkg_name")
-    fi
-  done < <(find "$ROOT_DIR" -maxdepth 1 -type d -name "baktaz_*" | sort)
-fi
+PACKAGES=($(discover_packages "$ROOT_DIR"))
 
 # Update flutter: ">={version}" in pubspec.yaml for all packages
 for pkg in "${PACKAGES[@]}"; do
@@ -69,7 +49,7 @@ find "$ROOT_DIR" -type f -name "Makefile" | while read -r file; do
   # Update the comment for ensure_flutter_version
   sed_inplace "s/(## Ensures flutter version is )[0-9]+\.[0-9]+\.[0-9]+/\1$NEW_VERSION/" "$file"
   # Update the ## Note: comment above ensure_flutter_version
-  sed_inplace "s/(## Note: If you are using a specific flutter version, change ')[0-9]+\.[0-9]+\.[0-9]+'( to the desired '\{flutter version\}' you want to use)/\1$NEW_VERSION'\2/" "$file"
+  sed_inplace "s/(## Note: If you are using a specific flutter version, change ')[0-9]+\.[0-9]+\.[0-9]+'( to the desired '{flutter version}' you want to use)/\1$NEW_VERSION'\2/" "$file"
   echo "Updated fvm version, comment, and note in $file"
 done
 

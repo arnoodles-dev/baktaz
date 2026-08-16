@@ -5,8 +5,7 @@ import 'package:baktaz_flutter/features/account/domain/entity/model/address.dart
 import 'package:baktaz_flutter/features/account/domain/entity/model/profile.dart';
 import 'package:baktaz_flutter/features/account/domain/interface/i_account_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc_presentation/bloc_presentation.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
@@ -14,21 +13,34 @@ part 'home_cubit.freezed.dart';
 part 'home_state.dart';
 
 @injectable
-class HomeCubit extends Cubit<HomeState> with BlocPresentationMixin<HomeState, HomeStateSideEffect> {
-  HomeCubit(this._accountRepository, this._failureHandler) : super(HomeState.initial()) {
+class HomeCubit extends CubitSignal<HomeState> {
+  HomeCubit(this._accountRepository, this._failureHandler) : super(initialState: HomeState.initial()) {
     initialize();
   }
 
   final IAccountRepository _accountRepository;
-
   final FailureHandler _failureHandler;
+  final StreamController<HomeStateSideEffect> _sideEffectController = StreamController<HomeStateSideEffect>.broadcast();
+
+  Stream<HomeStateSideEffect> get sideEffectStream => _sideEffectController.stream;
+
+  void safeEmitPresentation(HomeStateSideEffect sideEffect) {
+    if (isClosed) return;
+    _sideEffectController.add(sideEffect);
+  }
+
+  @override
+  Future<void> close() {
+    _sideEffectController.close();
+    return super.close();
+  }
 
   Future<void> initialize() async {
     await safeRun(
       onException: _failureHandler.handleException,
       onLoading: (bool isLoading) => isLoading
-          ? safeEmit(state.copyWith(queryStatus: const QueryStatus.loading()))
-          : safeEmit(state.copyWith(queryStatus: const QueryStatus.done())),
+          ? safeEmit(stateValue.copyWith(queryStatus: const QueryStatus.loading()))
+          : safeEmit(stateValue.copyWith(queryStatus: const QueryStatus.done())),
       action: () async {
         final Result<Address?> possibleAddressFailure = await _accountRepository.getDefaultAddress().run();
 
@@ -36,11 +48,11 @@ class HomeCubit extends Cubit<HomeState> with BlocPresentationMixin<HomeState, H
           if (address == null) {
             safeEmitPresentation(const HomeStateSideEffect.initializeAddress());
           } else {
-            safeEmit(state.copyWith(address: address));
+            safeEmit(stateValue.copyWith(address: address));
           }
         });
         final Result<Profile> possibleProfileFailure = await _accountRepository.getProfile().run();
-        possibleProfileFailure.fold(_emitFailure, (Profile profile) => safeEmit(state.copyWith(profile: profile)));
+        possibleProfileFailure.fold(_emitFailure, (Profile profile) => safeEmit(stateValue.copyWith(profile: profile)));
       },
     );
   }

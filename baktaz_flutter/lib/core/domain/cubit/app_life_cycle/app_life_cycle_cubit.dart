@@ -1,5 +1,5 @@
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc/bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 // ignore: avoid_flutter_imports
 import 'package:flutter/material.dart' show AppLifecycleState, WidgetsBinding, WidgetsBindingObserver;
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -10,8 +10,8 @@ part 'app_life_cycle_cubit.freezed.dart';
 part 'app_life_cycle_state.dart';
 
 @lazySingleton
-class AppLifeCycleCubit extends Cubit<AppLifeCycleState> with WidgetsBindingObserver {
-  AppLifeCycleCubit(this._talker) : super(const AppLifeCycleState.resumed()) {
+class AppLifeCycleCubit extends CubitSignal<AppLifeCycleState> with WidgetsBindingObserver {
+  AppLifeCycleCubit(this._talker) : super(initialState: const AppLifeCycleState.resumed()) {
     WidgetsBinding.instance.addObserver(this);
   }
 

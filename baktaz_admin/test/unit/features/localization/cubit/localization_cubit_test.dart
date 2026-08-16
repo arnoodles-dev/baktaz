@@ -5,7 +5,7 @@ import 'package:baktaz_admin/features/localization/domain/entity/localization_ke
 import 'package:baktaz_admin/features/localization/domain/entity/localization_translation.dart';
 import 'package:baktaz_admin/features/localization/domain/entity/paginated_response.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc_test/bloc_test.dart';
+import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
@@ -34,7 +34,7 @@ void main() {
   ];
 
   group('LocalizationCubit', () {
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'initialize emits loading and done with keys',
       build: () {
         when(mockRepository.getKeys(page: 1, limit: 1000, sortField: 'namespace', ascending: true)).thenReturn(
@@ -51,12 +51,11 @@ void main() {
       ],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'initialize handles failure',
       build: () {
-        when(
-          mockRepository.getKeys(page: 1, limit: 1000, sortField: 'namespace', ascending: true),
-        ).thenReturn(TaskEither<Failure, PaginatedResponse<LocalizationKey>>.left(const Failure.unexpected('err')));
+        when(mockRepository.getKeys(page: 1, limit: 1000, sortField: 'namespace', ascending: true))
+            .thenReturn(TaskEither<Failure, PaginatedResponse<LocalizationKey>>.left(const Failure.unexpected('err')));
         return LocalizationCubit(mockRepository);
       },
       act: (LocalizationCubit cubit) => cubit.initialize(),
@@ -66,40 +65,42 @@ void main() {
       ],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'setPage updates state',
       build: () => LocalizationCubit(mockRepository),
       act: (LocalizationCubit cubit) => cubit.setPage(2),
       expect: () => <LocalizationState>[const LocalizationState(currentPage: 2)],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'selectSortCriteria updates sort criteria',
       build: () => LocalizationCubit(mockRepository),
       act: (LocalizationCubit cubit) => cubit.selectSortCriteria(LocalizationSortCriteria.key),
       expect: () => <LocalizationState>[const LocalizationState(sortCriteria: LocalizationSortCriteria.key)],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'toggleSortOrder flips ascending',
       build: () => LocalizationCubit(mockRepository),
       act: (LocalizationCubit cubit) => cubit.toggleSortOrder(),
       expect: () => <LocalizationState>[const LocalizationState(ascending: false)],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'discardChanges clears pending',
-      build: () => LocalizationCubit(mockRepository),
-      seed: () => const LocalizationState(
-        pendingChanges: <String, LocalizationTranslation>{
-          '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: 'test'),
-        },
+      build: () => LocalizationCubit.test(
+        mockRepository,
+        const LocalizationState(
+          pendingChanges: <String, LocalizationTranslation>{
+            '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: 'test'),
+          },
+        ),
       ),
       act: (LocalizationCubit cubit) => cubit.discardChanges(),
       expect: () => <LocalizationState>[const LocalizationState()],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'updateTranslation updates pendingChanges',
       build: () => LocalizationCubit(mockRepository),
       act: (LocalizationCubit cubit) {
@@ -114,7 +115,7 @@ void main() {
       ],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'publishChanges clears pending and emits presentation event',
       build: () {
         when(
@@ -122,13 +123,15 @@ void main() {
             LocalizationTranslation(keyId: 1, locale: 'en', value: 'New Val'),
           ]),
         ).thenReturn(TaskEither<Failure, Unit>.of(unit));
-        return LocalizationCubit(mockRepository);
+        return LocalizationCubit.test(
+          mockRepository,
+          const LocalizationState(
+            pendingChanges: <String, LocalizationTranslation>{
+              '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: 'New Val'),
+            },
+          ),
+        );
       },
-      seed: () => const LocalizationState(
-        pendingChanges: <String, LocalizationTranslation>{
-          '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: 'New Val'),
-        },
-      ),
       act: (LocalizationCubit cubit) => cubit.publishChanges(),
       expect: () => <LocalizationState>[
         const LocalizationState(
@@ -141,19 +144,20 @@ void main() {
       ],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'publishChanges handles failure',
       build: () {
-        when(
-          mockRepository.publishTranslations(any),
-        ).thenReturn(TaskEither<Failure, Unit>.left(const Failure.unexpected('err')));
-        return LocalizationCubit(mockRepository);
+        when(mockRepository.publishTranslations(any))
+            .thenReturn(TaskEither<Failure, Unit>.left(const Failure.unexpected('err')));
+        return LocalizationCubit.test(
+          mockRepository,
+          const LocalizationState(
+            pendingChanges: <String, LocalizationTranslation>{
+              '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: 'New Val'),
+            },
+          ),
+        );
       },
-      seed: () => const LocalizationState(
-        pendingChanges: <String, LocalizationTranslation>{
-          '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: 'New Val'),
-        },
-      ),
       act: (LocalizationCubit cubit) => cubit.publishChanges(),
       expect: () => <LocalizationState>[
         const LocalizationState(
@@ -170,21 +174,21 @@ void main() {
       ],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'selectLocale updates selectedLocale',
       build: () => LocalizationCubit(mockRepository),
       act: (LocalizationCubit cubit) => cubit.selectLocale('es'),
       expect: () => <LocalizationState>[const LocalizationState(selectedLocale: 'es')],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'setSearchQuery updates searchQuery',
       build: () => LocalizationCubit(mockRepository),
       act: (LocalizationCubit cubit) => cubit.setSearchQuery('hello'),
       expect: () => <LocalizationState>[const LocalizationState(searchQuery: 'hello')],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'addKey adds key and a pending translation',
       build: () => LocalizationCubit(mockRepository),
       act: (LocalizationCubit cubit) => cubit.addKey(key: 'hello', namespace: 'common', defaultValueEn: 'Hello World'),
@@ -201,11 +205,15 @@ void main() {
       ],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'addKey when keys already exist assigns next id',
-      build: () => LocalizationCubit(mockRepository),
-      seed: () => const LocalizationState(
-        keys: <LocalizationKey>[LocalizationKey(id: 5, namespace: 'test', key: 'existing', defaultValueEn: 'Existing')],
+      build: () => LocalizationCubit.test(
+        mockRepository,
+        const LocalizationState(
+          keys: <LocalizationKey>[
+            LocalizationKey(id: 5, namespace: 'test', key: 'existing', defaultValueEn: 'Existing'),
+          ],
+        ),
       ),
       act: (LocalizationCubit cubit) => cubit.addKey(key: 'new', namespace: 'common', defaultValueEn: 'New Key'),
       expect: () => <LocalizationState>[
@@ -222,7 +230,7 @@ void main() {
       ],
     );
 
-    blocTest<LocalizationCubit, LocalizationState>(
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'deleteTranslation adds an empty translation to pendingChanges',
       build: () => LocalizationCubit(mockRepository),
       act: (LocalizationCubit cubit) => cubit.deleteTranslation(1, 'en'),

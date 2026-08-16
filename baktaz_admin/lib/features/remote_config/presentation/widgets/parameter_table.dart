@@ -4,8 +4,8 @@ import 'package:baktaz_admin/features/remote_config/domain/entity/enum/config_va
 import 'package:baktaz_admin/features/remote_config/domain/entity/enum/sort_criteria.dart';
 import 'package:baktaz_admin/features/remote_config/domain/entity/remote_config_value.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart';
 
 class ParameterTable extends StatelessWidget {
@@ -16,7 +16,7 @@ class ParameterTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final RemoteConfigCubit cubit = context.watch<RemoteConfigCubit>();
-    final RemoteConfigState state = cubit.state;
+    final RemoteConfigState state = cubit.stateValue;
 
     final Map<String, RemoteConfigValue> parameters =
         state.remoteConfig?.parameters ?? const <String, RemoteConfigValue>{};

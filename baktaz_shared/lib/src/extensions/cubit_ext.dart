@@ -2,11 +2,10 @@
 
 import 'dart:async';
 
-import 'package:bloc/bloc.dart';
-import 'package:bloc_presentation/bloc_presentation.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:flutter/widgets.dart';
 
-extension CubitExt<S> on Cubit<S> {
+extension CubitExt<S> on BlocSignalBase<S> {
   void safeEmit(S state) {
     if (isClosed) return;
     emit(state);
@@ -32,12 +31,5 @@ extension CubitExt<S> on Cubit<S> {
     } finally {
       onLoading?.call(false);
     }
-  }
-}
-
-extension BlocPresentationMixinExt<S, P> on BlocPresentationMixin<S, P> {
-  void safeEmitPresentation(P event) {
-    if (isClosed) return;
-    emitPresentation(event);
   }
 }

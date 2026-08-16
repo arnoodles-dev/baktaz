@@ -9,23 +9,24 @@ import 'package:baktaz_admin/core/domain/cubit/app_localization/app_localization
 import 'package:baktaz_admin/core/domain/cubit/hidable/hidable_cubit.dart';
 import 'package:baktaz_admin/core/domain/cubit/theme/theme_cubit.dart';
 import 'package:baktaz_admin/features/auth/domain/cubit/auth/auth_cubit.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:toastification/toastification.dart';
 
 class App extends StatelessWidget {
   App({super.key});
 
-  final List<BlocProvider<dynamic>> _globalProviders = <BlocProvider<dynamic>>[
-    BlocProvider<AppLocalizationCubit>(create: (BuildContext context) => getIt<AppLocalizationCubit>()),
-    BlocProvider<AppCoreCubit>(create: (BuildContext context) => getIt<AppCoreCubit>()),
-    BlocProvider<ThemeCubit>(create: (BuildContext context) => getIt<ThemeCubit>()),
-    BlocProvider<AuthCubit>(create: (BuildContext context) => getIt<AuthCubit>()),
-    BlocProvider<HidableCubit>(create: (BuildContext context) => getIt<HidableCubit>()),
-  ];
+  final List<BlocSignalProvider<BlocSignalBase<dynamic>>> _globalProviders =
+      <BlocSignalProvider<BlocSignalBase<dynamic>>>[
+        BlocSignalProvider<AppLocalizationCubit>.value(value: getIt<AppLocalizationCubit>()),
+        BlocSignalProvider<AppCoreCubit>.value(value: getIt<AppCoreCubit>()),
+        BlocSignalProvider<ThemeCubit>.value(value: getIt<ThemeCubit>()),
+        BlocSignalProvider<AuthCubit>.value(value: getIt<AuthCubit>()),
+        BlocSignalProvider<HidableCubit>.value(value: getIt<HidableCubit>()),
+      ];
 
   final List<Breakpoint> _breakpoints = <Breakpoint>[
     const Breakpoint(start: 0, end: Constant.mobileBreakpoint, name: MOBILE),
@@ -43,7 +44,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     /// This will tell you which image is oversized by throwing an exception.
     debugInvertOversizedImages = kDebugMode;
-    return MultiBlocProvider(
+    return MultiBlocSignalProvider(
       providers: _globalProviders,
       child: Builder(
         builder: (BuildContext context) => ToastificationWrapper(
@@ -73,10 +74,12 @@ class App extends StatelessWidget {
             title: Constant.appName,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
-            themeMode: context.watch<ThemeCubit>().state,
+            themeMode: context.select<ThemeCubit, ThemeMode>((ThemeCubit cubit) => cubit.stateValue),
             themeAnimationCurve: Curves.fastOutSlowIn,
             themeAnimationDuration: Constant.shortDelay,
-            locale: context.watch<AppLocalizationCubit>().state.$meta.locale.flutterLocale,
+            locale: context.select<AppLocalizationCubit, Locale>(
+              (AppLocalizationCubit cubit) => cubit.stateValue.$meta.locale.flutterLocale,
+            ),
             supportedLocales: AppLocaleUtils.supportedLocales,
             localizationsDelegates: Constant.localizationDelegates,
             debugShowCheckedModeBanner: false,

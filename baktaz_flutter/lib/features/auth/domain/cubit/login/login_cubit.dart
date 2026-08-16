@@ -4,7 +4,7 @@ import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
 import 'package:baktaz_flutter/features/auth/domain/entity/enum/login_provider.dart';
 import 'package:baktaz_flutter/features/auth/domain/interface/i_auth_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc/bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobile_service_core/features/analytics/i_analytics_service.dart';
@@ -14,8 +14,9 @@ part 'login_cubit.freezed.dart';
 part 'login_state.dart';
 
 @injectable
-class LoginCubit extends Cubit<LoginState> {
-  LoginCubit(this._authRepository, this._analyticsService, this._failureHandler) : super(const LoginState.idle());
+class LoginCubit extends CubitSignal<LoginState> {
+  LoginCubit(this._authRepository, this._analyticsService, this._failureHandler)
+    : super(initialState: const LoginState.idle());
 
   final IAuthRepository _authRepository;
   final IAnalyticsService _analyticsService;

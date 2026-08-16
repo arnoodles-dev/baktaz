@@ -4,8 +4,8 @@ import 'package:baktaz_admin/features/localization/domain/entity/localization_ke
 import 'package:baktaz_admin/features/localization/domain/entity/localization_translation.dart';
 import 'package:baktaz_admin/features/localization/domain/entity/localization_tree_builder.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fpdart/fpdart.dart' hide State;
 
 class LocalizationTableRow extends StatelessWidget {

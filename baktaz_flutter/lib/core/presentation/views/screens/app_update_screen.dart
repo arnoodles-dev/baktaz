@@ -3,8 +3,8 @@ import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/app/utils/url_launcher_utils.dart';
 import 'package:baktaz_flutter/core/domain/cubit/remote_config/remote_config_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppUpdateScreen extends StatelessWidget {
   const AppUpdateScreen({super.key});

@@ -78,7 +78,7 @@ final class DialogUtils {
       return Theme.of(context).colorScheme.error;
     }
     // Fallback when no context available — use pre-built theme color schemes
-    return getIt<ThemeCubit>().state == ThemeMode.dark
+    return getIt<ThemeCubit>().stateValue == ThemeMode.dark
         ? AppTheme.dark.colorScheme.error
         : AppTheme.light.colorScheme.error;
   }

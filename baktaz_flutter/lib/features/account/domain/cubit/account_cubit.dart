@@ -6,7 +6,7 @@ import 'package:baktaz_flutter/features/account/domain/entity/enum/support_optio
 import 'package:baktaz_flutter/features/account/domain/entity/model/account_summary.dart';
 import 'package:baktaz_flutter/features/account/domain/interface/i_account_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
@@ -14,8 +14,8 @@ part 'account_cubit.freezed.dart';
 part 'account_state.dart';
 
 @injectable
-interface class AccountCubit extends Cubit<AccountState> {
-  AccountCubit(this._accountRepository, this._failureHandler) : super(AccountState.initial()) {
+interface class AccountCubit extends CubitSignal<AccountState> {
+  AccountCubit(this._accountRepository, this._failureHandler) : super(initialState: AccountState.initial()) {
     initialize();
   }
 
@@ -26,11 +26,11 @@ interface class AccountCubit extends Cubit<AccountState> {
     await safeRun(
       onException: _failureHandler.handleException,
       onLoading: (bool isLoading) {
-        safeEmit(state.copyWith(queryStatus: isLoading ? const QueryStatus.loading() : const QueryStatus.done()));
+        safeEmit(stateValue.copyWith(queryStatus: isLoading ? const QueryStatus.loading() : const QueryStatus.done()));
       },
       action: () async {
         safeEmit(
-          state.copyWith(
+          stateValue.copyWith(
             groupedOptions: <AccountHeader, List<String>>{
               AccountHeader.myAccount: MyAccountOption.values.map((MyAccountOption option) => option.name).toList(),
               AccountHeader.support: SupportOption.values.map((SupportOption option) => option.name).toList(),
@@ -42,7 +42,7 @@ interface class AccountCubit extends Cubit<AccountState> {
 
         possibleFailure.fold(
           _failureHandler.handleFailure,
-          (AccountSummary accountSummary) => safeEmit(state.copyWith(accountSummary: accountSummary)),
+          (AccountSummary accountSummary) => safeEmit(stateValue.copyWith(accountSummary: accountSummary)),
         );
       },
     );

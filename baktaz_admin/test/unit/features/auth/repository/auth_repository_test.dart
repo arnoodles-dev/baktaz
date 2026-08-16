@@ -64,9 +64,8 @@ void main() {
 
         when(mockSessionManager.authInfo).thenReturn(mockAuthSuccess);
 
-        when(
-          mockEndpointEmailIdpBase.login(email: anyNamed('email'), password: anyNamed('password')),
-        ).thenAnswer((_) async => mockAuthSuccess);
+        when(mockEndpointEmailIdpBase.login(email: anyNamed('email'), password: anyNamed('password')))
+            .thenAnswer((_) async => mockAuthSuccess);
 
         authRepository = AuthRepository(serverpod, talker);
 
@@ -87,9 +86,8 @@ void main() {
         final EmailAddress email = EmailAddress('error@baktaz.com');
         final Password password = Password('validPassword123');
 
-        when(
-          mockEndpointEmailIdpBase.login(email: anyNamed('email'), password: anyNamed('password')),
-        ).thenThrow(EmailAccountLoginException(reason: EmailAccountLoginExceptionReason.invalidCredentials));
+        when(mockEndpointEmailIdpBase.login(email: anyNamed('email'), password: anyNamed('password')))
+            .thenThrow(EmailAccountLoginException(reason: EmailAccountLoginExceptionReason.invalidCredentials));
 
         authRepository = AuthRepository(serverpod, talker);
 

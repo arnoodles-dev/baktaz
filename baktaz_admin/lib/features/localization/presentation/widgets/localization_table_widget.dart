@@ -10,8 +10,8 @@ import 'package:baktaz_admin/features/localization/presentation/widgets/localiza
 import 'package:baktaz_admin/features/localization/presentation/widgets/localization_table_row.dart';
 import 'package:baktaz_admin/features/localization/presentation/widgets/localization_table_shimmer.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LocalizationTableWidget extends StatelessWidget {
   const LocalizationTableWidget({required this.onEdit, super.key});
@@ -22,7 +22,7 @@ class LocalizationTableWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final LocalizationCubit cubit = context.watch<LocalizationCubit>();
 
-    final LocalizationState state = cubit.state;
+    final LocalizationState state = cubit.stateValue;
     final Set<String> expandedNamespaces = state.expandedNamespaces;
 
     final List<LocalizationKey> allKeys = state.sortedKeys;

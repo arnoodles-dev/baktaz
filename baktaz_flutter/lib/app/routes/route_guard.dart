@@ -31,7 +31,7 @@ final class RouteGuard {
       return const SplashRoute().location;
     }
 
-    return _authBloc.state.map(
+    return _authBloc.stateValue.map(
       initial: (_) => const SplashRoute().location,
       authenticated: (_) => _authenticatedRouteGuard(matchedLocation),
       unauthenticated: (_) => _unauthenticatedRouteGuard(matchedLocation),
@@ -43,7 +43,7 @@ final class RouteGuard {
       location.startsWith('/registration') || location == '/loginMobile' || location == '/selectAddress';
 
   String? _unauthenticatedRouteGuard(String matchedLocation) {
-    if (!_appCoreBloc.state.isOnboardingDone) {
+    if (!_appCoreBloc.stateValue.isOnboardingDone) {
       return const OnboardingRoute().location;
     } else if (_getAllowedUnauthenticatedRoutes(matchedLocation)) {
       return null;

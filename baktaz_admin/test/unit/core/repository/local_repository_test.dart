@@ -58,9 +58,8 @@ void main() {
         });
 
         test('setAccessToken should return failure when an unexpected error occurs', () async {
-          when(
-            secureStorage.write(key: 'access_token', value: anyNamed('value')),
-          ).thenThrow(Exception('Unexpected error'));
+          when(secureStorage.write(key: 'access_token', value: anyNamed('value')))
+              .thenThrow(Exception('Unexpected error'));
 
           final Result<Unit> result = await localStorageRepository.setAccessToken('access_token').run();
 
@@ -120,9 +119,8 @@ void main() {
         });
 
         test('setRefreshToken should return failure when an unexpected error occurs', () async {
-          when(
-            secureStorage.write(key: 'refresh_token', value: anyNamed('value')),
-          ).thenThrow(Exception('Unexpected error'));
+          when(secureStorage.write(key: 'refresh_token', value: anyNamed('value')))
+              .thenThrow(Exception('Unexpected error'));
 
           final Result<Unit> result = await localStorageRepository.setRefreshToken('refresh_token').run();
 

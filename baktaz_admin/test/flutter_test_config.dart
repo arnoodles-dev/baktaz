@@ -55,14 +55,12 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   return AlchemistConfig.runWithConfig(
     config: AlchemistConfig(
       forceUpdateGoldenFiles: true,
-      goldenTestTheme:
-          GoldenTestTheme.standard().copyWith(
-                backgroundColor: Colors.white,
-                borderColor: Colors.black,
-                padding: const EdgeInsets.all(16),
-                nameTextStyle: AppTextStyle.baseTextStyle,
-              )
-              as GoldenTestTheme,
+      goldenTestTheme: GoldenTestTheme.standard().copyWith(
+        backgroundColor: Colors.white,
+        borderColor: Colors.black,
+        padding: const EdgeInsets.all(16),
+        nameTextStyle: AppTextStyle.baseTextStyle,
+      ) as GoldenTestTheme,
       theme: AppTheme.light,
       platformGoldensConfig: const PlatformGoldensConfig(enabled: !bool.fromEnvironment('CI', defaultValue: false)),
       ciGoldensConfig: CiGoldensConfig(obscureText: false, renderShadows: false, theme: AppTheme.light),

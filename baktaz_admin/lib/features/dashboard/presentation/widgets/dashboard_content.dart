@@ -15,8 +15,8 @@ import 'package:baktaz_admin/features/dashboard/presentation/widgets/recent_acti
 import 'package:baktaz_admin/features/dashboard/presentation/widgets/stat_card.dart';
 import 'package:baktaz_client/baktaz_client.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class DashboardContent extends StatelessWidget {
@@ -71,7 +71,7 @@ class DashboardContent extends StatelessWidget {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        BlocBuilder<DashboardCubit, DashboardState>(
+        BlocSignalBuilder<DashboardCubit, DashboardState>(
           builder: (BuildContext context, DashboardState state) {
             final bool isLoading =
                 state.status.isLoading ||

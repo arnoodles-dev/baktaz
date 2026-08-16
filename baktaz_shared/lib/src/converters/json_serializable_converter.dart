@@ -59,7 +59,7 @@ final class JsonSerializableConverter extends JsonConverter {
   @override
   FutureOr<dynamic> tryDecodeJson(String data) async {
     try {
-      return compute(jsonDecode, data);
+      return await compute(jsonDecode, data);
     } on Exception catch (error) {
       chopperLogger.warning(error);
       rethrow;

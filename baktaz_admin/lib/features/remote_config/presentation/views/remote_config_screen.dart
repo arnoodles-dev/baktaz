@@ -11,9 +11,8 @@ import 'package:baktaz_admin/features/remote_config/presentation/widgets/dialogs
 import 'package:baktaz_admin/features/remote_config/presentation/widgets/parameter_table.dart';
 import 'package:baktaz_admin/features/remote_config/presentation/widgets/pending_changes_banner.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc_presentation/bloc_presentation.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -23,27 +22,23 @@ class RemoteConfigScreen extends HookWidget {
   const RemoteConfigScreen({super.key});
 
   @override
-  Widget build(BuildContext context) => BlocProvider<RemoteConfigCubit>(
+  Widget build(BuildContext context) => BlocSignalProvider<RemoteConfigCubit>(
     create: (_) {
       final RemoteConfigCubit cubit = getIt<RemoteConfigCubit>();
       unawaited(cubit.loadConfig());
       return cubit;
     },
-    child: BlocPresentationListener<RemoteConfigCubit, RemoteConfigPresentationEvent>(
-      listener: (BuildContext context, RemoteConfigPresentationEvent event) {
-        event.when(
-          onPublishSuccess: () {
-            toastification.show(
-              context: context,
-              title: BaktazText(text: context.i18n.remote_config.published_success),
-              autoCloseDuration: const Duration(seconds: 4),
-              type: ToastificationType.success,
-              style: ToastificationStyle.flatColored,
-              alignment: Alignment.topCenter,
-            );
-          },
-          showLoader: () => context.loaderOverlay.show(),
-          hideLoader: () => context.loaderOverlay.hide(),
+    child: BlocSignalListener<RemoteConfigCubit, RemoteConfigState>(
+      listenWhen: (RemoteConfigState previous, RemoteConfigState current) =>
+          previous.pendingChanges.isNotEmpty && current.pendingChanges.isEmpty,
+      listener: (BuildContext context, RemoteConfigState state) {
+        toastification.show(
+          context: context,
+          title: BaktazText(text: context.i18n.remote_config.published_success),
+          autoCloseDuration: const Duration(seconds: 4),
+          type: ToastificationType.success,
+          style: ToastificationStyle.flatColored,
+          alignment: Alignment.topCenter,
         );
       },
       child: const LoaderOverlay(child: _RemoteConfigView()),
@@ -57,50 +52,51 @@ class _RemoteConfigView extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: AppColors.colorBackground,
-    body: BlocBuilder<RemoteConfigCubit, RemoteConfigState>(
-      builder: (BuildContext context, RemoteConfigState state) => state.status.when(
-        initial: () => const _RemoteConfigShimmer(),
-        loading: () => const _RemoteConfigShimmer(),
-        done: () {
-          final Map<String, RemoteConfigValue> pendingChanges = state.pendingChanges;
-          final ConfigSnapshotVersion? version = state.remoteConfig?.version;
+    body: BlocSignalBuilder<RemoteConfigCubit, RemoteConfigState>(
+      builder: (BuildContext context, RemoteConfigState state) {
+        final QueryStatus status = state.status;
+        if (status.isLoading || status is QueryInitial) {
+          return const _RemoteConfigShimmer();
+        }
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(AppSizes.medium, AppSizes.medium, AppSizes.medium, AppSizes.xLarge),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                if (pendingChanges.isNotEmpty)
-                  PendingChangesBanner(
-                    changeCount: pendingChanges.length,
-                    onPublish: () => context.read<RemoteConfigCubit>().publishChanges(),
-                    onDiscard: () => context.read<RemoteConfigCubit>().discardChanges(),
-                  ),
-                _PageHeader(version: version),
-                Gap.xLarge(),
-                ParameterTable(
-                  onEdit: (String key, RemoteConfigValue currentValue, String resolvedDescription) {
-                    unawaited(
-                      showDialog<void>(
-                        context: context,
-                        builder: (_) => EditParameterDialog(
-                          parameterKey: key,
-                          currentValue: currentValue,
-                          initialDescription: resolvedDescription,
-                          onSave: (String pKey, RemoteConfigValue pValue) {
-                            context.read<RemoteConfigCubit>().updateParameter(pKey, pValue);
-                          },
-                        ),
-                      ),
-                    );
-                  },
+        final Map<String, RemoteConfigValue> pendingChanges = state.pendingChanges;
+        final ConfigSnapshotVersion? version = state.remoteConfig?.version;
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(AppSizes.medium, AppSizes.medium, AppSizes.medium, AppSizes.xLarge),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              if (pendingChanges.isNotEmpty)
+                PendingChangesBanner(
+                  changeCount: pendingChanges.length,
+                  onPublish: () => context.read<RemoteConfigCubit>().publishChanges(),
+                  onDiscard: () => context.read<RemoteConfigCubit>().discardChanges(),
                 ),
-                if (version != null) ...<Widget>[Gap.xLarge(), ConfigInfoSection(version: version)],
-              ],
-            ),
-          );
-        },
-      ),
+              _PageHeader(version: version),
+              const Gap(AppSizes.xLarge),
+              ParameterTable(
+                onEdit: (String key, RemoteConfigValue currentValue, String resolvedDescription) {
+                  unawaited(
+                    showDialog<void>(
+                      context: context,
+                      builder: (_) => EditParameterDialog(
+                        parameterKey: key,
+                        currentValue: currentValue,
+                        initialDescription: resolvedDescription,
+                        onSave: (String pKey, RemoteConfigValue pValue) {
+                          context.read<RemoteConfigCubit>().updateParameter(pKey, pValue);
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+              if (version != null) ...<Widget>[const Gap(AppSizes.xLarge), ConfigInfoSection(version: version)],
+            ],
+          ),
+        );
+      },
     ),
   );
 }
@@ -125,12 +121,12 @@ class _PageHeader extends StatelessWidget {
                   style: AppTextStyle.displayMedium.copyWith(color: AppColors.colorTextPrimary),
                 ),
                 if (version != null) ...<Widget>[
-                  Gap.custom(AppSizes.small),
+                  const Gap(AppSizes.small),
                   _VersionBadge(versionNumber: version?.versionNumber.getValue() ?? '0'),
                 ],
               ],
             ),
-            Gap.xSmall(),
+            const Gap(AppSizes.xSmall),
             BaktazText(
               text: context.i18n.remote_config.description,
               style: AppTextStyle.bodyMedium.copyWith(color: AppColors.colorTextSecondary),
@@ -138,7 +134,7 @@ class _PageHeader extends StatelessWidget {
           ],
         ),
       ),
-      Gap.medium(),
+      const Gap(AppSizes.medium),
       BaktazButton(
         onPressed: () {
           unawaited(
@@ -215,7 +211,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                   ],
                 ),
               ),
-              Gap.medium(),
+              const Gap(AppSizes.medium),
               BaktazButton(
                 onPressed: () {},
                 text: context.i18n.remote_config.add_parameter,
@@ -223,7 +219,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
               ),
             ],
           ),
-          Gap.xLarge(),
+          const Gap(AppSizes.xLarge),
           // ponytail: skeleton placeholders, not user-facing - raw primitives acceptable
           Container(
             decoration: const BoxDecoration(
@@ -398,7 +394,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
               ],
             ),
           ),
-          Gap.xLarge(),
+          const Gap(AppSizes.xLarge),
           // ponytail: skeleton cards, not user-facing
           Row(
             children: <Widget>[
@@ -445,7 +441,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                   ),
                 ),
               ),
-              Gap.medium(),
+              const Gap(AppSizes.medium),
               Expanded(
                 child: Container(
                   padding: Paddings.allLarge,

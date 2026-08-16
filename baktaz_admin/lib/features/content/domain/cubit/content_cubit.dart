@@ -7,14 +7,13 @@ import 'package:baktaz_admin/features/content/domain/entity/enum/content_asset_t
 import 'package:baktaz_admin/features/content/domain/entity/enum/content_placement_group.dart';
 import 'package:baktaz_admin/features/content/domain/interface/i_content_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc/bloc.dart';
-import 'package:bloc_presentation/bloc_presentation.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
-class ContentCubit extends Cubit<ContentState> with BlocPresentationMixin<ContentState, ContentPresentationEvent> {
-  ContentCubit(this._repository, this._failureHandler) : super(const ContentState());
+class ContentCubit extends CubitSignal<ContentState> {
+  ContentCubit(this._repository, this._failureHandler) : super(initialState: const ContentState());
 
   final IContentRepository _repository;
   final FailureHandler _failureHandler;
@@ -25,81 +24,78 @@ class ContentCubit extends Cubit<ContentState> with BlocPresentationMixin<Conten
         final Result<List<ContentAsset>> result = await _repository.listAssets().run();
         result.fold(
           _failureHandler.handleFailure,
-          (List<ContentAsset> assets) => safeEmit(state.copyWith(assets: assets, status: const QueryStatus.done())),
+          (List<ContentAsset> assets) =>
+              safeEmit(stateValue.copyWith(assets: assets, status: const QueryStatus.done())),
         );
       },
       onException: _failureHandler.handleException,
       onLoading: (bool isLoading) {
         if (isLoading) {
-          safeEmit(state.copyWith(status: const QueryStatus.loading()));
+          safeEmit(stateValue.copyWith(status: const QueryStatus.loading()));
         }
       },
     );
   }
 
   void selectAsset(String? id) {
-    safeEmit(state.copyWith(selectedAssetId: id));
+    safeEmit(stateValue.copyWith(selectedAssetId: id));
   }
 
-  void updateDraft(ContentAsset asset) {
-    final String key = asset.id.getValue();
-    final Map<String, ContentAsset> newPending = Map<String, ContentAsset>.of(state.pendingChanges);
-    newPending[key] = asset;
-    safeEmit(state.copyWith(pendingChanges: newPending));
-  }
-
-  void submitDraft() {
-    final String? selectedId = state.selectedAssetId;
-    if (selectedId == null) return;
-
-    final ContentAsset? asset = state.pendingChanges[selectedId];
-    if (asset == null) return;
-
-    final Option<Failure> validation = asset.validate;
+  void updateDraft(ContentAsset updated) {
+    final Option<Failure> validation = updated.validate;
     if (validation.isSome()) {
       validation.map(_failureHandler.handleFailure);
       return;
     }
 
-    safeEmit(state.copyWith(isPublishing: true));
-    safeEmitPresentation(const ContentPresentationEvent.showLoader());
+    final Map<String, ContentAsset> newPending = Map<String, ContentAsset>.of(stateValue.pendingChanges)
+      ..[updated.id.getValue()] = updated;
+    safeEmit(stateValue.copyWith(pendingChanges: newPending));
+  }
+
+  void submitDraft() {
+    final ContentAsset? selected = stateValue.selectedAsset;
+    if (selected == null) return;
+
+    final Option<Failure> validation = selected.validate;
+    if (validation.isSome()) {
+      validation.map(_failureHandler.handleFailure);
+      return;
+    }
 
     unawaited(
       safeRun(
         action: () async {
-          final Result<ContentAsset> result = await _repository.saveAsset(asset).run();
+          final Result<ContentAsset> result = await _repository.saveAsset(selected).run();
           result.fold(_failureHandler.handleFailure, (ContentAsset saved) {
-            safeEmit(
-              state.copyWith(
-                pendingChanges: Map<String, ContentAsset>.of(state.pendingChanges)..remove(selectedId),
-                isPublishing: false,
-              ),
-            );
-            safeEmitPresentation(const ContentPresentationEvent.hideLoader());
-            safeEmitPresentation(const ContentPresentationEvent.onPublishSuccess());
+            final List<ContentAsset> newAssets = List<ContentAsset>.of(stateValue.assets);
+            final int index = newAssets.indexWhere((ContentAsset a) => a.id == saved.id);
+            if (index >= 0) {
+              newAssets[index] = saved;
+            } else {
+              newAssets.add(saved);
+            }
+            final Map<String, ContentAsset> newPending = Map<String, ContentAsset>.of(stateValue.pendingChanges)
+              ..remove(saved.id.getValue());
+            safeEmit(stateValue.copyWith(assets: newAssets, pendingChanges: newPending));
           });
         },
         onException: _failureHandler.handleException,
-        onLoading: (bool isLoading) {
-          safeEmit(state.copyWith(isPublishing: isLoading));
-          if (!isLoading) {
-            safeEmitPresentation(const ContentPresentationEvent.hideLoader());
-          }
-        },
       ),
     );
   }
 
   void discardChanges() {
-    final String? selectedId = state.selectedAssetId;
+    final String? selectedId = stateValue.selectedAssetId;
     if (selectedId == null) return;
 
-    final Map<String, ContentAsset> newPending = Map<String, ContentAsset>.of(state.pendingChanges)..remove(selectedId);
-    safeEmit(state.copyWith(pendingChanges: newPending));
+    final Map<String, ContentAsset> newPending = Map<String, ContentAsset>.of(stateValue.pendingChanges)
+      ..remove(selectedId);
+    safeEmit(stateValue.copyWith(pendingChanges: newPending));
   }
 
   void publishChanges() {
-    final Map<String, ContentAsset> pending = state.pendingChanges;
+    final Map<String, ContentAsset> pending = stateValue.pendingChanges;
     if (pending.isEmpty) return;
 
     for (final ContentAsset asset in pending.values) {
@@ -110,8 +106,7 @@ class ContentCubit extends Cubit<ContentState> with BlocPresentationMixin<Conten
       }
     }
 
-    safeEmit(state.copyWith(isPublishing: true));
-    safeEmitPresentation(const ContentPresentationEvent.showLoader());
+    safeEmit(stateValue.copyWith(isPublishing: true));
 
     unawaited(
       safeRun(
@@ -119,24 +114,19 @@ class ContentCubit extends Cubit<ContentState> with BlocPresentationMixin<Conten
           final List<ContentAsset> assets = pending.values.toList();
           final Result<Unit> result = await _repository.publishAssets(assets).run();
           result.fold(_failureHandler.handleFailure, (Unit _) {
-            safeEmit(state.copyWith(pendingChanges: const <String, ContentAsset>{}, isPublishing: false));
-            safeEmitPresentation(const ContentPresentationEvent.hideLoader());
-            safeEmitPresentation(const ContentPresentationEvent.onPublishSuccess());
+            safeEmit(stateValue.copyWith(pendingChanges: const <String, ContentAsset>{}, isPublishing: false));
           });
         },
         onException: _failureHandler.handleException,
         onLoading: (bool isLoading) {
-          safeEmit(state.copyWith(isPublishing: isLoading));
-          if (!isLoading) {
-            safeEmitPresentation(const ContentPresentationEvent.hideLoader());
-          }
+          safeEmit(stateValue.copyWith(isPublishing: isLoading));
         },
       ),
     );
   }
 
   void scheduleChanges() {
-    final Map<String, ContentAsset> pending = state.pendingChanges;
+    final Map<String, ContentAsset> pending = stateValue.pendingChanges;
     if (pending.isEmpty) return;
 
     for (final ContentAsset asset in pending.values) {
@@ -147,8 +137,7 @@ class ContentCubit extends Cubit<ContentState> with BlocPresentationMixin<Conten
       }
     }
 
-    safeEmit(state.copyWith(isPublishing: true));
-    safeEmitPresentation(const ContentPresentationEvent.showLoader());
+    safeEmit(stateValue.copyWith(isPublishing: true));
 
     unawaited(
       safeRun(
@@ -156,33 +145,30 @@ class ContentCubit extends Cubit<ContentState> with BlocPresentationMixin<Conten
           final List<ContentAsset> assets = pending.values.toList();
           final Result<Unit> result = await _repository.scheduleAssets(assets).run();
           result.fold(_failureHandler.handleFailure, (Unit _) {
-            safeEmit(state.copyWith(pendingChanges: const <String, ContentAsset>{}, isPublishing: false));
-            safeEmitPresentation(const ContentPresentationEvent.hideLoader());
-            safeEmitPresentation(const ContentPresentationEvent.onScheduleSuccess());
+            safeEmit(stateValue.copyWith(pendingChanges: const <String, ContentAsset>{}, isPublishing: false));
           });
         },
         onException: _failureHandler.handleException,
         onLoading: (bool isLoading) {
-          safeEmit(state.copyWith(isPublishing: isLoading));
-          if (!isLoading) {
-            safeEmitPresentation(const ContentPresentationEvent.hideLoader());
-          }
+          safeEmit(stateValue.copyWith(isPublishing: isLoading));
         },
       ),
     );
   }
 
   void toggleGroup(String group) {
-    final Set<String> newExpanded = Set<String>.of(state.expandedGroups);
+    final Set<String> newExpanded = Set<String>.of(stateValue.expandedGroups);
     if (newExpanded.contains(group)) {
       newExpanded.remove(group);
     } else {
       newExpanded.add(group);
     }
-    safeEmit(state.copyWith(expandedGroups: newExpanded));
+    safeEmit(stateValue.copyWith(expandedGroups: newExpanded));
   }
 
   void setFilter({ContentAssetType? type, ContentPlacementGroup? placement, String? search}) {
-    safeEmit(state.copyWith(selectedTypeFilter: type, selectedPlacementFilter: placement, searchQuery: search ?? ''));
+    safeEmit(
+      stateValue.copyWith(selectedTypeFilter: type, selectedPlacementFilter: placement, searchQuery: search ?? ''),
+    );
   }
 }

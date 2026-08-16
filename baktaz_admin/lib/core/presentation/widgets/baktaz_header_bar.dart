@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:baktaz_admin/core/domain/cubit/theme/theme_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -72,7 +72,7 @@ class BaktazHeaderBar extends HookWidget implements PreferredSizeWidget {
           const Spacer(flex: 2),
           Semantics(
             label: 'Toggle dark mode',
-            child: BlocBuilder<ThemeCubit, ThemeMode>(
+            child: BlocSignalBuilder<ThemeCubit, ThemeMode>(
               builder: (BuildContext context, _) {
                 final bool isDark = Theme.of(context).brightness == Brightness.dark;
                 return IconButton(

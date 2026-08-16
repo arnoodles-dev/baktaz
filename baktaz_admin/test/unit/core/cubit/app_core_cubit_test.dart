@@ -1,5 +1,5 @@
 import 'package:baktaz_admin/core/domain/cubit/app_core/app_core_cubit.dart';
-import 'package:bloc_test/bloc_test.dart';
+import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
@@ -20,14 +20,14 @@ void main() {
     });
 
     group('initialize', () {
-      blocTest<AppCoreCubit, AppCoreState>(
+      blocSignalTest<AppCoreCubit, AppCoreState>(
         'should complete without emitting states',
         build: () => AppCoreCubit(failureHandler, assetRepository),
         act: (AppCoreCubit cubit) async => cubit.initialize(),
         expect: () => <AppCoreState>[],
       );
 
-      blocTest<AppCoreCubit, AppCoreState>(
+      blocSignalTest<AppCoreCubit, AppCoreState>(
         'should handle unexpected error',
         setUp: () {
           when(assetRepository.preloadSVGs()).thenThrow(Exception('error'));

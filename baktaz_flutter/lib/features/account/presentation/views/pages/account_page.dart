@@ -5,8 +5,8 @@ import 'package:baktaz_flutter/features/account/domain/entity/enum/account_heade
 import 'package:baktaz_flutter/features/account/presentation/widgets/account_content_header.dart';
 import 'package:baktaz_flutter/features/account/presentation/widgets/account_content_widget.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -45,7 +45,7 @@ class AccountPage extends HookWidget {
       backgroundColor: context.colorScheme.surface,
       body: RefreshIndicator(
         onRefresh: () => context.read<AccountCubit>().initialize(),
-        child: BlocBuilder<AccountCubit, AccountState>(
+        child: BlocSignalBuilder<AccountCubit, AccountState>(
           builder: (BuildContext context, AccountState state) => CustomScrollView(
             controller: scrollController,
             physics: const ClampingScrollPhysics(),
@@ -81,7 +81,7 @@ class AccountPage extends HookWidget {
                     ),
 
                     Gap.medium(),
-                    BlocSelector<AccountCubit, AccountState, Map<AccountHeader, List<String>>>(
+                    BlocSignalSelector<AccountCubit, AccountState, Map<AccountHeader, List<String>>>(
                       selector: (AccountState state) => state.groupedOptions,
                       builder: (BuildContext context, Map<AccountHeader, List<String>> groupedOptions) =>
                           AccountContentWidget(

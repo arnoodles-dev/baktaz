@@ -2,7 +2,7 @@ name: _
 publish_to: none
 
 environment:
-  sdk: ">=3.10.3 <4.0.0"
+  sdk: ">=3.13.0 <4.0.0"
 
 workspace:
   - baktaz_client
@@ -12,12 +12,10 @@ workspace:
   - baktaz_shared
 
 dev_dependencies:
-  melos: ^8.2.2
+  melos: ^8.3.0
   very_good_analysis: ^10.3.0
 
-dependency_overrides:
-  file_picker: ^12.0.0-beta.7
-  flutter_secure_storage: ^10.0.0
+
 
 melos:
   command:
@@ -28,8 +26,8 @@ melos:
           melos fix_lint
     bootstrap:
       environment:
-        sdk: ">=3.10.3 <4.0.0"
-        flutter: ">=3.44.7"
+        sdk: ">=3.13.0 <4.0.0"
+        flutter: ">=3.47.0"
       hooks:
         post: |
           melos run setup:all
@@ -135,4 +133,3 @@ melos:
         ignore:
           - baktaz_client
   sdkPath: .fvm/flutter_sdk
-

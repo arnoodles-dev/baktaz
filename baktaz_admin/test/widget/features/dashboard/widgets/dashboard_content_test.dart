@@ -8,10 +8,11 @@ import 'package:baktaz_admin/features/dashboard/domain/entity/enum/activity_stat
 import 'package:baktaz_admin/features/dashboard/domain/entity/recent_activity.dart';
 import 'package:baktaz_admin/features/dashboard/presentation/widgets/dashboard_content.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:signals_core/signals_core.dart';
 
 import '../../../../utils/generated_mocks.mocks.dart';
 import '../../../../utils/mock_material_app.dart';
@@ -85,7 +86,7 @@ void main() {
               name: 'loaded state',
               child: MockMaterialApp(
                 surfaceWidth: 1600,
-                child: BlocProvider<DashboardCubit>.value(
+                child: BlocSignalProvider<DashboardCubit>.value(
                   value: mockCubit..mockState(loadedState),
                   child: DashboardContent(account: mockAccount),
                 ),
@@ -95,7 +96,7 @@ void main() {
               name: 'loading state with shimmer',
               child: MockMaterialApp(
                 surfaceWidth: 1600,
-                child: BlocProvider<DashboardCubit>.value(
+                child: BlocSignalProvider<DashboardCubit>.value(
                   value: mockCubit..mockState(loadingState),
                   child: DashboardContent(account: mockAccount),
                 ),
@@ -105,7 +106,7 @@ void main() {
               name: 'partial data state',
               child: MockMaterialApp(
                 surfaceWidth: 1600,
-                child: BlocProvider<DashboardCubit>.value(
+                child: BlocSignalProvider<DashboardCubit>.value(
                   value: mockCubit..mockState(loadedState.copyWith(activities: null, overviewChart: null)),
                   child: DashboardContent(account: mockAccount),
                 ),
@@ -119,8 +120,8 @@ void main() {
 }
 
 extension on MockDashboardCubit {
-  void mockState(DashboardState state) {
-    when(this.state).thenReturn(state);
-    when(stream).thenAnswer((_) => Stream<DashboardState>.fromIterable(<DashboardState>[state]));
+  void mockState(DashboardState mockedState) {
+    when(state).thenReturn(signal(mockedState));
+    when(stateValue).thenReturn(mockedState);
   }
 }

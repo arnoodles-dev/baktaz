@@ -7,8 +7,8 @@ import 'package:baktaz_flutter/core/presentation/widgets/baktaz_nav_bar.dart';
 import 'package:baktaz_flutter/features/account/domain/cubit/account_cubit.dart';
 import 'package:baktaz_flutter/features/home/domain/cubit/home/home_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 
@@ -32,10 +32,10 @@ class MainScreen extends HookWidget {
   Widget build(BuildContext context) {
     final ValueNotifier<int> selectedIndex = useState<int>(0);
 
-    return MultiBlocProvider(
-      providers: <BlocProvider<dynamic>>[
-        BlocProvider<AccountCubit>(lazy: false, create: (BuildContext context) => getIt<AccountCubit>()),
-        BlocProvider<HomeCubit>(lazy: false, create: (BuildContext context) => getIt<HomeCubit>()),
+    return MultiBlocSignalProvider(
+      providers: <BlocSignalProvider<BlocSignalBase<dynamic>>>[
+        BlocSignalProvider<AccountCubit>(lazy: false, create: (BuildContext context) => getIt<AccountCubit>()),
+        BlocSignalProvider<HomeCubit>(lazy: false, create: (BuildContext context) => getIt<HomeCubit>()),
       ],
       child: Builder(
         builder: (BuildContext context) => PopScope(

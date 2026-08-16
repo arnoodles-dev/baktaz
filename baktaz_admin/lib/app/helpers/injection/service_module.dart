@@ -1,12 +1,11 @@
 import 'package:baktaz_admin/app/config/serverpod_config.dart';
+import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:injectable/injectable.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:talker/talker.dart';
-import 'package:talker_bloc_logger/talker_bloc_logger_observer.dart';
-import 'package:talker_bloc_logger/talker_bloc_logger_settings.dart';
 import 'package:talker_flutter/talker_flutter.dart' hide Talker;
 
 @module
@@ -50,10 +49,8 @@ abstract class ServiceModule {
   );
 
   @lazySingleton
-  TalkerBlocObserver get talkerBlocObserver => TalkerBlocObserver(
-    talker: talker,
-    settings: const TalkerBlocLoggerSettings(printEventFullData: false, printChanges: true),
-  );
+  TalkerBlocSignalObserver get talkerBlocSignalObserver =>
+      TalkerBlocSignalObserver(talker: talker, settings: const TalkerBlocSignalSettings(printEvent: false));
 
   @lazySingleton
   TalkerRouteObserver get talkerRouteObserver => TalkerRouteObserver(talker);

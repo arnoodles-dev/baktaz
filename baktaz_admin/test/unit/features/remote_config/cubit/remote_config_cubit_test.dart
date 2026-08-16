@@ -5,7 +5,7 @@ import 'package:baktaz_admin/features/remote_config/domain/entity/enum/sort_crit
 import 'package:baktaz_admin/features/remote_config/domain/entity/remote_config.dart';
 import 'package:baktaz_admin/features/remote_config/domain/entity/remote_config_value.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc_test/bloc_test.dart';
+import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
@@ -37,7 +37,7 @@ void main() {
   });
 
   group('RemoteConfigCubit', () {
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'loadConfig emits done state when successful',
       build: () {
         when(mockRepository.getRemoteConfig()).thenAnswer((_) => TaskEither<Failure, RemoteConfig>.right(tConfig));
@@ -50,7 +50,7 @@ void main() {
       ],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'updateParameter adds new parameter to pending changes',
       build: () {
         when(mockRepository.getRemoteConfig()).thenAnswer((_) => TaskEither<Failure, RemoteConfig>.right(tConfig));
@@ -79,10 +79,9 @@ void main() {
       ],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'updateParameter adds to pending when originalValue is null',
-      build: () => RemoteConfigCubit(mockRepository, failureHandler),
-      seed: RemoteConfigState.initial,
+      build: () => RemoteConfigCubit.test(mockRepository, failureHandler, RemoteConfigState.initial()),
       act: (RemoteConfigCubit cubit) => cubit.updateParameter('new_key', tValue),
       expect: () => <RemoteConfigState>[
         RemoteConfigState(
@@ -92,7 +91,7 @@ void main() {
       ],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'updateParameter removes from pending when value matches original',
       build: () {
         when(mockRepository.getRemoteConfig()).thenAnswer((_) => TaskEither<Failure, RemoteConfig>.right(tConfig));
@@ -126,23 +125,26 @@ void main() {
       ],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'discardChanges clears pending',
-      build: () => RemoteConfigCubit(mockRepository, failureHandler),
-      seed: () => RemoteConfigState(
-        status: const QueryStatus.initial(),
-        pendingChanges: <String, RemoteConfigValue>{
-          'k': RemoteConfigValue(
-            valueType: ConfigValueType.string,
-            defaultValue: ConfigDefaultValue(value: ValueString('v', fieldName: 'v')),
-          ),
-        },
+      build: () => RemoteConfigCubit.test(
+        mockRepository,
+        failureHandler,
+        RemoteConfigState(
+          status: const QueryStatus.initial(),
+          pendingChanges: <String, RemoteConfigValue>{
+            'k': RemoteConfigValue(
+              valueType: ConfigValueType.string,
+              defaultValue: ConfigDefaultValue(value: ValueString('v', fieldName: 'v')),
+            ),
+          },
+        ),
       ),
       act: (RemoteConfigCubit cubit) => cubit.discardChanges(),
       expect: () => <RemoteConfigState>[const RemoteConfigState(status: QueryStatus.initial())],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'selectType updates selectedType and resets page',
       build: () => RemoteConfigCubit(mockRepository, failureHandler),
       act: (RemoteConfigCubit cubit) => cubit.selectType(ConfigValueType.number),
@@ -151,14 +153,14 @@ void main() {
       ],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'setPage updates currentPage',
       build: () => RemoteConfigCubit(mockRepository, failureHandler),
       act: (RemoteConfigCubit cubit) => cubit.setPage(3),
       expect: () => <RemoteConfigState>[const RemoteConfigState(status: QueryStatus.initial(), currentPage: 3)],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'selectSortCriteria updates sort and resets page',
       build: () => RemoteConfigCubit(mockRepository, failureHandler),
       act: (RemoteConfigCubit cubit) => cubit.selectSortCriteria(SortCriteria.type),
@@ -167,21 +169,21 @@ void main() {
       ],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'toggleSortOrder flips isAscending',
       build: () => RemoteConfigCubit(mockRepository, failureHandler),
       act: (RemoteConfigCubit cubit) => cubit.toggleSortOrder(),
       expect: () => <RemoteConfigState>[const RemoteConfigState(status: QueryStatus.initial(), isAscending: false)],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'publishChanges returns early when remoteConfig is null',
       build: () => RemoteConfigCubit(mockRepository, failureHandler),
       act: (RemoteConfigCubit cubit) => cubit.publishChanges(),
       expect: () => <dynamic>[],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'publishChanges saves and clears pending when successful',
       build: () {
         when(mockRepository.getRemoteConfig()).thenAnswer((_) => TaskEither<Failure, RemoteConfig>.right(tConfig));
@@ -215,25 +217,23 @@ void main() {
       ],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'loadConfig emits initial status when repository returns failure',
       build: () {
-        when(
-          mockRepository.getRemoteConfig(),
-        ).thenAnswer((_) => TaskEither<Failure, RemoteConfig>.left(const Failure.unexpected('load error')));
+        when(mockRepository.getRemoteConfig())
+            .thenAnswer((_) => TaskEither<Failure, RemoteConfig>.left(const Failure.unexpected('load error')));
         return RemoteConfigCubit(mockRepository, failureHandler);
       },
       act: (RemoteConfigCubit cubit) => cubit.loadConfig(),
       expect: () => <RemoteConfigState>[const RemoteConfigState(status: QueryStatus.loading())],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'publishChanges handles failure from repository',
       build: () {
         when(mockRepository.getRemoteConfig()).thenAnswer((_) => TaskEither<Failure, RemoteConfig>.right(tConfig));
-        when(
-          mockRepository.publishConfig(any),
-        ).thenAnswer((_) => TaskEither<Failure, Unit>.left(const Failure.unexpected('publish error')));
+        when(mockRepository.publishConfig(any))
+            .thenAnswer((_) => TaskEither<Failure, Unit>.left(const Failure.unexpected('publish error')));
         return RemoteConfigCubit(mockRepository, failureHandler);
       },
       act: (RemoteConfigCubit cubit) async {
@@ -244,7 +244,7 @@ void main() {
       expect: () => <RemoteConfigState>[],
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'loadConfig emits loading state when repository throws exception',
       build: () {
         when(mockRepository.getRemoteConfig()).thenThrow(Exception('network error'));
@@ -257,7 +257,7 @@ void main() {
       },
     );
 
-    blocTest<RemoteConfigCubit, RemoteConfigState>(
+    blocSignalTest<RemoteConfigCubit, RemoteConfigState>(
       'publishChanges does not emit state changes when repository throws exception',
       build: () {
         when(mockRepository.getRemoteConfig()).thenAnswer((_) => TaskEither<Failure, RemoteConfig>.right(tConfig));

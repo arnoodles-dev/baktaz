@@ -1,7 +1,7 @@
 import 'package:baktaz_admin/features/auth/domain/cubit/auth/auth_cubit.dart';
 import 'package:baktaz_client/baktaz_client.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:bloc_test/bloc_test.dart';
+import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
@@ -32,38 +32,37 @@ void main() {
     });
 
     group('initialize', () {
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit unauthenticated state when not authenticated',
         build: () {
           when(authRepository.isAuthenticated).thenReturn(false);
           return authCubit;
         },
         act: (AuthCubit cubit) => cubit.initialize(),
-        expect: () => const <AuthState>[AuthState.initial(), AuthState.unauthenticated()],
+        expect: () => const <AuthState>[AuthState.unauthenticated()],
         verify: (_) {
           verify(authRepository.isAuthenticated).called(1);
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit unauthenticated state when authenticated but user fetch fails',
         build: () {
           when(authRepository.isAuthenticated).thenReturn(true);
-          when(
-            authRepository.getCurrentAccount(),
-          ).thenReturn(TaskEither<Failure, Account>.left(const Failure.authentication('Authentication Failed')));
+          when(authRepository.getCurrentAccount())
+              .thenReturn(TaskEither<Failure, Account>.left(const Failure.authentication('Authentication Failed')));
 
           return authCubit;
         },
         act: (AuthCubit cubit) => cubit.initialize(),
-        expect: () => const <AuthState>[AuthState.initial(), AuthState.unauthenticated()],
+        expect: () => const <AuthState>[AuthState.unauthenticated()],
         verify: (_) {
           verify(authRepository.isAuthenticated).called(1);
           verify(authRepository.getCurrentAccount()).called(1);
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit authenticated state when user is successfully fetched',
         build: () {
           when(authRepository.isAuthenticated).thenReturn(true);
@@ -72,14 +71,14 @@ void main() {
           return authCubit;
         },
         act: (AuthCubit cubit) => cubit.initialize(),
-        expect: () => <AuthState>[const AuthState.initial(), AuthState.authenticated(account: mockAccount)],
+        expect: () => <AuthState>[AuthState.authenticated(account: mockAccount)],
         verify: (_) {
           verify(authRepository.isAuthenticated).called(1);
           verify(authRepository.getCurrentAccount()).called(1);
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should handle server error during initialization',
         build: () {
           when(authRepository.isAuthenticated).thenReturn(true);
@@ -91,7 +90,7 @@ void main() {
           return authCubit;
         },
         act: (AuthCubit cubit) => cubit.initialize(),
-        expect: () => <AuthState>[const AuthState.initial(), const AuthState.unauthenticated()],
+        expect: () => const <AuthState>[AuthState.unauthenticated()],
         verify: (_) {
           verify(authRepository.isAuthenticated).called(1);
           verify(authRepository.getCurrentAccount()).called(1);
@@ -99,7 +98,7 @@ void main() {
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should handle unexpected exception during initialization',
         build: () {
           when(authRepository.isAuthenticated).thenThrow(Exception('Unexpected error'));
@@ -107,7 +106,7 @@ void main() {
           return authCubit;
         },
         act: (AuthCubit cubit) => cubit.initialize(),
-        expect: () => <AuthState>[const AuthState.initial(), const AuthState.unauthenticated()],
+        expect: () => const <AuthState>[AuthState.unauthenticated()],
         verify: (_) {
           verify(authRepository.isAuthenticated).called(1);
           verifyNever(authRepository.getCurrentAccount());
@@ -116,7 +115,7 @@ void main() {
     });
 
     group('getUser', () {
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit authenticated state when user is successfully fetched',
         build: () {
           when(authRepository.getCurrentAccount()).thenReturn(TaskEither<Failure, Account>.right(mockAccount));
@@ -130,12 +129,11 @@ void main() {
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit loading state and handle failure when user fetch returns unauthorized',
         build: () {
-          when(
-            authRepository.getCurrentAccount(),
-          ).thenReturn(TaskEither<Failure, Account>.left(const Failure.server(StatusCode.http401, 'unauthorized')));
+          when(authRepository.getCurrentAccount())
+              .thenReturn(TaskEither<Failure, Account>.left(const Failure.server(StatusCode.http401, 'unauthorized')));
           when(failureHandler.handleFailure(any)).thenReturn(null);
 
           return authCubit;
@@ -148,7 +146,7 @@ void main() {
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should handle unexpected exception during user fetch',
         build: () {
           final Exception exception = Exception('Unexpected error');
@@ -167,7 +165,7 @@ void main() {
     });
 
     group('logout', () {
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit unauthenticated state when logout is successful',
         build: () {
           provideDummy(TaskEither<Failure, Unit>.right(unit));
@@ -182,13 +180,12 @@ void main() {
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit unauthenticated state and handle failure when logout fails',
         build: () {
           provideDummy(TaskEither<Failure, Unit>.left(Failure.unexpected(Exception('Unexpected error').toString())));
-          when(
-            authRepository.logout(),
-          ).thenReturn(TaskEither<Failure, Unit>.left(Failure.unexpected(Exception('Unexpected error').toString())));
+          when(authRepository.logout())
+              .thenReturn(TaskEither<Failure, Unit>.left(Failure.unexpected(Exception('Unexpected error').toString())));
           when(failureHandler.handleFailure(any)).thenReturn(null);
           return authCubit;
         },
@@ -200,7 +197,7 @@ void main() {
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit unauthenticated state and handle exception when logout throws exception',
         build: () {
           final Exception exception = Exception('Unexpected error');
@@ -219,7 +216,7 @@ void main() {
     });
 
     group('authenticate', () {
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit authenticated state when authentication is successful',
         build: () {
           when(authRepository.getCurrentAccount()).thenReturn(TaskEither<Failure, Account>.right(mockAccount));
@@ -232,12 +229,11 @@ void main() {
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit unauthenticated state when authentication fails',
         build: () {
-          when(
-            authRepository.getCurrentAccount(),
-          ).thenReturn(TaskEither<Failure, Account>.left(const Failure.server(StatusCode.http401, 'unauthorized')));
+          when(authRepository.getCurrentAccount())
+              .thenReturn(TaskEither<Failure, Account>.left(const Failure.server(StatusCode.http401, 'unauthorized')));
           when(failureHandler.handleFailure(any)).thenReturn(null);
 
           return authCubit;
@@ -250,7 +246,7 @@ void main() {
         },
       );
 
-      blocTest<AuthCubit, AuthState>(
+      blocSignalTest<AuthCubit, AuthState>(
         'should emit unauthenticated state when authentication throws exception',
         build: () {
           final Exception exception = Exception('Unexpected error');

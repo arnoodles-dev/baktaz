@@ -29,6 +29,12 @@ export 'src/extensions/string_ext.dart';
 // ── Formatter ────────────────────────────────────────────────────────────
 export 'src/formatters/money_formatter.dart';
 export 'src/formatters/step_formatter.dart';
+// ── Mixin ────────────────────────────────────────────────────────────
+export 'src/mixin/bloc_signal_presentation_listener.dart';
+export 'src/mixin/bloc_signal_presentation_mixin.dart';
+// ── Observer ─────────────────────────────────────────────────────────────
+export 'src/observer/talker_bloc_signal_observer.dart';
+export 'src/observer/talker_bloc_signal_settings.dart';
 // ── Theme ──────────────────────────────────────────────────────────────
 export 'src/theme/app_colors.dart';
 export 'src/theme/app_sizes.dart';

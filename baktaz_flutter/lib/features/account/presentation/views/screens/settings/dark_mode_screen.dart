@@ -2,8 +2,8 @@ import 'package:baktaz_flutter/core/domain/cubit/theme/theme_cubit.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/enum/settings_option.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 class DarkModeScreen extends StatelessWidget {

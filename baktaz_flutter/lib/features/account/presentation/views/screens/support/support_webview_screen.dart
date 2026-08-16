@@ -4,8 +4,8 @@ import 'package:baktaz_flutter/core/presentation/views/pages/empty_page.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/enum/support_option.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -16,7 +16,7 @@ class SupportWebviewScreen extends HookWidget {
   final SupportOption option;
 
   Url? _getUrl(BuildContext context, SupportOption option) {
-    final Map<String, dynamic> remoteConfig = context.read<RemoteConfigCubit>().state;
+    final Map<String, dynamic> remoteConfig = context.read<RemoteConfigCubit>().stateValue;
     final String? urlString = remoteConfig[option.configKey] as String?;
     return urlString != null ? Url(urlString) : null;
   }

@@ -54,7 +54,7 @@ final class ConnectivityUtils {
           ? right(await http.get(Uri.parse(lookupUrl)))
           : left(await InternetAddress.lookup(lookupUrl));
 
-      return result.fold(
+      return await result.fold(
         (List<InternetAddress> mobile) => mobile.isNotEmpty && mobile.first.rawAddress.isNotEmpty
             ? ConnectionStatus.online
             : ConnectionStatus.offline,

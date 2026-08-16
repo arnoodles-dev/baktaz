@@ -3,7 +3,7 @@ import 'package:baktaz_flutter/core/domain/interface/i_device_info_repository.da
 import 'package:baktaz_flutter/features/account/domain/entity/model/profile.dart';
 import 'package:baktaz_flutter/features/account/domain/interface/i_account_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
@@ -11,8 +11,9 @@ part 'profile_cubit.freezed.dart';
 part 'profile_state.dart';
 
 @injectable
-final class ProfileCubit extends Cubit<ProfileState> {
-  ProfileCubit(this._accountRepository, this._deviceRepository, this._failureHandler) : super(ProfileState.initial());
+final class ProfileCubit extends CubitSignal<ProfileState> {
+  ProfileCubit(this._accountRepository, this._deviceRepository, this._failureHandler)
+    : super(initialState: ProfileState.initial());
 
   final IAccountRepository _accountRepository;
   final IDeviceInfoRepository _deviceRepository;
@@ -23,7 +24,7 @@ final class ProfileCubit extends Cubit<ProfileState> {
       onException: _failureHandler.handleException,
       onLoading: (bool isLoading) {
         if (isLoading) {
-          safeEmit(state.copyWith(queryStatus: const QueryStatus.loading()));
+          safeEmit(stateValue.copyWith(queryStatus: const QueryStatus.loading()));
         }
       },
       action: () async {
@@ -39,12 +40,12 @@ final class ProfileCubit extends Cubit<ProfileState> {
           return;
         }
 
-        safeEmit(state.copyWith(appVersion: appVersionResult.asRight(), buildNumber: buildNumberResult.asRight()));
+        safeEmit(stateValue.copyWith(appVersion: appVersionResult.asRight(), buildNumber: buildNumberResult.asRight()));
 
         final Result<Profile> profileResult = await _accountRepository.getProfile().run();
 
         profileResult.fold(_failureHandler.handleFailure, (Profile profile) {
-          safeEmit(state.copyWith(profile: profile, queryStatus: const QueryStatus.done()));
+          safeEmit(stateValue.copyWith(profile: profile, queryStatus: const QueryStatus.done()));
         });
       },
     );

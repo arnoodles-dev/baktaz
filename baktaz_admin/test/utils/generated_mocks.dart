@@ -80,27 +80,19 @@ void main() {}
 // the state correctly. (CI failure on verify-admin.)
 class MockAppLocalizationCubit extends mockito.Mock implements AppLocalizationCubit {
   @override
-  I18n get state {
+  I18n get stateValue {
     final I18n fallback = AppLocale.values.first.buildSync();
-    return super.noSuchMethod(Invocation.getter(#state), returnValue: fallback, returnValueForMissingStub: fallback)
-        as I18n;
+    return super.noSuchMethod(
+      Invocation.getter(#stateValue),
+      returnValue: fallback,
+      returnValueForMissingStub: fallback,
+    ) as I18n;
   }
 
   @override
-  Stream<I18n> get stream =>
-      super.noSuchMethod(
-            Invocation.getter(#stream),
-            returnValue: const Stream<I18n>.empty(),
-            returnValueForMissingStub: const Stream<I18n>.empty(),
-          )
-          as Stream<I18n>;
-
-  @override
-  Future<void> close() async =>
-      super.noSuchMethod(
-            Invocation.method(#close, <Object?>[]),
-            returnValue: Future<void>.value(),
-            returnValueForMissingStub: Future<void>.value(),
-          )
-          as Future<void>;
+  Future<void> close() async => super.noSuchMethod(
+    Invocation.method(#close, <Object?>[]),
+    returnValue: Future<void>.value(),
+    returnValueForMissingStub: Future<void>.value(),
+  ) as Future<void>;
 }

@@ -1,6 +1,6 @@
 import 'package:baktaz_flutter/core/domain/cubit/hidable/hidable_cubit.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Hidable extends StatelessWidget {
   const Hidable({required this.child, super.key});
@@ -11,7 +11,7 @@ class Hidable extends StatelessWidget {
   Widget build(BuildContext context) => AnimatedAlign(
     alignment: Alignment.topCenter,
     duration: const Duration(milliseconds: 500),
-    heightFactor: context.watch<HidableCubit>().state ? 1.0 : 0.0,
+    heightFactor: context.select<HidableCubit, bool>((HidableCubit cubit) => cubit.stateValue) ? 1.0 : 0.0,
     child: child,
   );
 }

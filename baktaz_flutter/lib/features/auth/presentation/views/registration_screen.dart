@@ -6,8 +6,8 @@ import 'package:baktaz_flutter/core/domain/entity/enum/select_address_entry.dart
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_bottom_sheet.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 
@@ -23,7 +23,7 @@ class RegistrationScreen extends HookWidget {
     final TextEditingController nameController = useTextEditingController();
     final TextEditingController emailController = useTextEditingController();
 
-    final Map<String, dynamic> remoteConfig = context.read<RemoteConfigCubit>().state;
+    final Map<String, dynamic> remoteConfig = context.read<RemoteConfigCubit>().stateValue;
 
     return UnfocusableScaffold(
       backgroundColor: context.colorScheme.surface,
