@@ -7,11 +7,11 @@ import 'package:fpdart/fpdart.dart';
 final class BaktazIcon extends StatelessWidget {
   const BaktazIcon({
     required this.icon,
-    super.key,
     this.size,
     this.color,
     this.alignment = Alignment.center,
     this.child,
+    super.key,
   });
 
   final Either<String, IconData> icon;
@@ -40,7 +40,12 @@ final class BaktazIcon extends StatelessWidget {
 }
 
 class _Icon extends StatelessWidget {
-  const _Icon({required this.icon, required this.size, required this.alignment, required this.color});
+  const _Icon({
+    required this.icon,
+    required this.size,
+    required this.alignment,
+    required this.color,
+  });
 
   final Either<String, IconData> icon;
   final double? size;

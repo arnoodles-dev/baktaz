@@ -120,25 +120,25 @@ update_android_project:
 
 ## Tests
 test: ## Run tests interactively (select packages)
-	@sh scripts/run_tests.sh
+	@bash scripts/run_tests.sh
 
 test_all: ## Run tests for all packages
-	@sh scripts/run_tests.sh all
+	@bash scripts/run_tests.sh all
 
 test_admin: ## Run tests for baktaz_admin
 	@bash scripts/run_tests.sh baktaz_admin
 
 test_app: ## Run tests for baktaz_flutter
-	@sh scripts/run_tests.sh baktaz_flutter
+	@bash scripts/run_tests.sh baktaz_flutter
 
 test_shared: ## Run tests for baktaz_shared
-	@sh scripts/run_tests.sh baktaz_shared
+	@bash scripts/run_tests.sh baktaz_shared
 
 test_server: ## Run tests for baktaz_server
-	@sh scripts/run_tests.sh baktaz_server
+	@bash scripts/run_tests.sh baktaz_server
 
 test_site: ## Run tests for baktaz_site
-	@sh scripts/run_tests.sh baktaz_site
+	@bash scripts/run_tests.sh baktaz_site
 
 codebase_graph: ## Open codebase graph in browser http://localhost:9749
 	(sleep 1.5 && open http://localhost:9749) & \

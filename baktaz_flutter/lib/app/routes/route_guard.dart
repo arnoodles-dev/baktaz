@@ -7,12 +7,11 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
-final class RouteGuard {
-  RouteGuard(this._remoteConfigBloc, this._appCoreBloc, this._authBloc);
-
-  final RemoteConfigCubit _remoteConfigBloc;
-  final AuthCubit _authBloc;
-  final AppCoreCubit _appCoreBloc;
+final class RouteGuard(
+  final RemoteConfigCubit _remoteConfigBloc,
+  final AppCoreCubit _appCoreBloc,
+  final AuthCubit _authBloc,
+) {
 
   String? guard(BuildContext context, GoRouterState goRouterState) {
     if (_remoteConfigBloc.isMaintenance) {

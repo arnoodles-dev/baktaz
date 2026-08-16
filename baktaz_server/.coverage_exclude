@@ -1,0 +1,4 @@
+**/app/*
+**/generated/*
+**/domain/**
+**/*.chopper.dart

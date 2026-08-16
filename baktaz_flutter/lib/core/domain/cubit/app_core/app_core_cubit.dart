@@ -16,13 +16,15 @@ part 'app_core_state.dart';
 
 @lazySingleton
 class AppCoreCubit extends CubitSignal<AppCoreState> {
-  AppCoreCubit(this._analyticsService, this._localStorageRepository, this._failureHandler)
-    : super(initialState: AppCoreState.initial());
+  AppCoreCubit(
+    this._analyticsService,
+    this._localStorageRepository,
+    this._failureHandler,
+  ) : super(initialState: AppCoreState.initial());
 
   final IAnalyticsService _analyticsService;
   final ILocalStorageRepository _localStorageRepository;
   final FailureHandler _failureHandler;
-
   Future<void> initialize() async {
     await safeRun(
       onException: _failureHandler.handleException,

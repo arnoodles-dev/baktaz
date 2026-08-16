@@ -5,10 +5,7 @@ import 'package:injectable/injectable.dart';
 import 'package:talker/talker.dart';
 
 @lazySingleton
-class FailureHandler with ErrorActions {
-  FailureHandler(this._talker);
-
-  final Talker _talker;
+class FailureHandler(final Talker _talker) with ErrorActions {
 
   void handleException(Exception error, StackTrace? stackTrace, [ErrorActions? errorActions]) {
     _talker.handle(error, stackTrace);

@@ -3,7 +3,12 @@ import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 
 class BaktazDivider extends StatelessWidget {
-  const BaktazDivider({super.key, this.text, this.textStyle, this.padding});
+  const BaktazDivider({
+    this.text,
+    this.textStyle,
+    this.padding,
+    super.key,
+  });
 
   final String? text;
   final TextStyle? textStyle;

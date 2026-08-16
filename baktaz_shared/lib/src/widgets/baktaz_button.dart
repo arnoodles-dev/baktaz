@@ -27,11 +27,11 @@ final class BaktazButton extends StatelessWidget {
   });
 
   final String text;
-  final bool isEnabled;
-  final bool isExpanded;
-  final bool isLoading;
-  final ButtonType buttonType;
   final VoidCallback? onPressed;
+  final bool isEnabled;
+  final bool isLoading;
+  final bool isExpanded;
+  final ButtonType buttonType;
   final ButtonStyle? buttonStyle;
   final TextStyle? textStyle;
   final EdgeInsets? padding;
@@ -162,12 +162,12 @@ class _ButtonContent extends StatelessWidget {
     this.contentPadding,
   });
 
-  final EdgeInsets? contentPadding;
   final bool isLoading;
   final String text;
-  final TextStyle? textStyle;
   final bool hasIcon;
+  final TextStyle? textStyle;
   final bool isExpanded;
+  final EdgeInsets? contentPadding;
 
   @override
   Widget build(BuildContext context) {

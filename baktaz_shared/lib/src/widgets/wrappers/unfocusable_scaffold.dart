@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 class UnfocusableScaffold extends StatelessWidget {
   const UnfocusableScaffold({
-    super.key,
     this.onTap,
     this.scaffoldKey,
     this.backgroundColor,
@@ -14,6 +13,7 @@ class UnfocusableScaffold extends StatelessWidget {
     this.bottomSheet,
     this.floatingActionButton,
     this.floatingActionButtonLocation,
+    super.key,
   });
 
   final VoidCallback? onTap;

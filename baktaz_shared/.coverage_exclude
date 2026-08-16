@@ -1,0 +1,14 @@
+*.g.dart
+*.freezed.dart
+*.dto.dart
+*.config.dart
+*.chopper.dart
+*_state.dart
+**/theme/*.dart
+**/entity/*.dart
+**/dto/*.dart
+**/converters/*.dart
+**/extensions/*.dart
+*/formatters/*.dart
+*/utils/*.dart
+*/widgets/wrappers/*.dart

@@ -10,8 +10,10 @@ part 'app_life_cycle_cubit.freezed.dart';
 part 'app_life_cycle_state.dart';
 
 @lazySingleton
-class AppLifeCycleCubit extends CubitSignal<AppLifeCycleState> with WidgetsBindingObserver {
-  AppLifeCycleCubit(this._talker) : super(initialState: const AppLifeCycleState.resumed()) {
+class AppLifeCycleCubit extends CubitSignal<AppLifeCycleState>
+    with WidgetsBindingObserver {
+  AppLifeCycleCubit(this._talker)
+      : super(initialState: const AppLifeCycleState.resumed()) {
     WidgetsBinding.instance.addObserver(this);
   }
 

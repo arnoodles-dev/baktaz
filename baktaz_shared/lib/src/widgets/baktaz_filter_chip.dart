@@ -7,7 +7,12 @@ import 'package:flutter/material.dart';
 ///
 /// Chips scroll horizontally. Gap between chips: xSmall.
 class BaktazFilterChip extends StatelessWidget {
-  const BaktazFilterChip({required this.label, required this.isActive, this.onTap, super.key});
+  const BaktazFilterChip({
+    required this.label,
+    required this.isActive,
+    this.onTap,
+    super.key,
+  });
 
   final String label;
   final bool isActive;

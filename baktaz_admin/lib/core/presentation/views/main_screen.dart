@@ -10,7 +10,6 @@ class MainScreen extends StatefulWidget {
   const MainScreen({required this.child, super.key});
 
   final Widget child;
-
   @override
   State<MainScreen> createState() => _MainScreenState();
 }

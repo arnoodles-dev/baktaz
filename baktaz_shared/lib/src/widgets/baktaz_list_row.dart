@@ -21,13 +21,13 @@ class BaktazListRow extends StatelessWidget {
     super.key,
   });
 
+  final String label;
   final Widget? leading;
   final IconData? leadingIcon;
   final Color? leadingIconColor;
-  final String label;
-  final String? subtitle;
   final Widget? trailing;
   final IconData? trailingIcon;
+  final String? subtitle;
   final bool isDestructive;
   final VoidCallback? onTap;
 

@@ -16,13 +16,12 @@ class ConfirmationDialog extends StatelessWidget {
   });
 
   final String message;
-  final String? title;
-  final Color? titleColor;
   final String negativeButtonText;
   final String positiveButtonText;
+  final String? title;
+  final Color? titleColor;
   final VoidCallback? onNegativePressed;
   final VoidCallback? onPositivePressed;
-
   final Color? negativeButtonTextColor;
   final Color? positiveButtonTextColor;
 

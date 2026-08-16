@@ -10,7 +10,11 @@ import 'package:flutter/material.dart';
 /// Always combines background + icon + label. Never color alone.
 /// Colors resolve from `context.baktazColors` (ThemeExtension) — light/dark aware.
 class BaktazStatusBadge extends StatelessWidget {
-  const BaktazStatusBadge({required this.label, required this.variant, super.key});
+  const BaktazStatusBadge({
+    required this.label,
+    required this.variant,
+    super.key,
+  });
 
   final String label;
   final StatusBadgeVariant variant;

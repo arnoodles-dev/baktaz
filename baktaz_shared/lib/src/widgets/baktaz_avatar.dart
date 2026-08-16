@@ -11,6 +11,7 @@ class BaktazAvatar extends StatelessWidget {
   const BaktazAvatar({
     required this.size,
     this.imageUrl,
+    this.initials,
     this.padding,
     this.borderSize = AppSizes.x2Small,
     this.isCachedSize = true,
@@ -20,8 +21,19 @@ class BaktazAvatar extends StatelessWidget {
     this.maxSize,
     this.defaultIcon,
     super.key,
-    this.initials,
-  }) : assert(initials == null || imageUrl == null, 'Cannot provide both imageUrl and initials');
+  });
+
+  final double size;
+  final String? imageUrl;
+  final String? initials;
+  final EdgeInsets? padding;
+  final double borderSize;
+  final bool isCachedSize;
+  final bool isLoading;
+  final Color? borderColor;
+  final BaseCacheManager? cacheManager;
+  final int? maxSize;
+  final Either<String, IconData>? defaultIcon;
 
   // DESIGN.md §12.8 size constants
   static const double sizeXS = 24;
@@ -30,41 +42,30 @@ class BaktazAvatar extends StatelessWidget {
   static const double sizeLG = 64;
   static const double sizeXL = 88;
 
-  final String? imageUrl;
-  final String? initials;
-  final double size;
-  final int? maxSize;
-  final EdgeInsets? padding;
-  final Color? borderColor;
-  final double borderSize;
-  final bool isCachedSize;
-  final bool isLoading;
-  final BaseCacheManager? cacheManager;
-  final Either<String, IconData>? defaultIcon;
-
   @override
   Widget build(BuildContext context) {
+    assert(initials == null || imageUrl == null, 'Cannot provide both imageUrl and initials');
     final ThemeData theme = Theme.of(context);
-    final String? initials = this.initials;
+    final String? effectiveInitials = initials;
     // Show initials fallback if provided
-    if (initials != null) {
+    if (effectiveInitials != null) {
       return Semantics(
         image: true,
         child: Padding(
           padding: padding ?? EdgeInsets.zero,
-          child: _InitialsAvatar(initials: initials, size: size),
+          child: _InitialsAvatar(initials: effectiveInitials, size: size),
         ),
       );
     }
 
-    final String? imageUrl = this.imageUrl;
+    final String? effectiveImageUrl = imageUrl;
     return Semantics(
       image: true,
       child: Padding(
         padding: padding ?? EdgeInsets.zero,
-        child: imageUrl != null
+        child: effectiveImageUrl != null
             ? CachedNetworkImage(
-                imageUrl: imageUrl,
+                imageUrl: effectiveImageUrl,
                 memCacheWidth: isCachedSize ? (size * MediaQuery.devicePixelRatioOf(context)).toInt() : null,
                 memCacheHeight: isCachedSize ? (size * MediaQuery.devicePixelRatioOf(context)).toInt() : null,
                 maxWidthDiskCache: maxSize,
@@ -105,7 +106,10 @@ class BaktazAvatar extends StatelessWidget {
 }
 
 class _InitialsAvatar extends StatelessWidget {
-  const _InitialsAvatar({required this.initials, required this.size});
+  const _InitialsAvatar({
+    required this.initials,
+    required this.size,
+  });
 
   final String initials;
   final double size;
@@ -130,7 +134,10 @@ class _InitialsAvatar extends StatelessWidget {
 }
 
 class _DefaultIcon extends StatelessWidget {
-  const _DefaultIcon({required this.size, this.defaultIcon});
+  const _DefaultIcon({
+    required this.size,
+    this.defaultIcon,
+  });
 
   final double size;
   final Either<String, IconData>? defaultIcon;

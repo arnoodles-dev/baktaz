@@ -8,9 +8,14 @@ import 'package:flutter/material.dart';
 /// Used for availability percentages, booking completion, upload progress.
 /// Always teal for positive progress, colorError for critical/overdue states.
 class BaktazProgressBar extends StatelessWidget {
-  const BaktazProgressBar({required this.progress, this.label, this.isCritical = false, this.height = 5, super.key});
+  const BaktazProgressBar({
+    required this.progress,
+    this.label,
+    this.isCritical = false,
+    this.height = 5,
+    super.key,
+  });
 
-  /// Progress value 0.0–1.0
   final double progress;
   final String? label;
   final bool isCritical;
@@ -26,31 +31,28 @@ class BaktazProgressBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        TweenAnimationBuilder<double>(
-          tween: Tween<double>(begin: 0, end: progress.clamp(0.0, 1.0)),
-          duration: const Duration(milliseconds: 400),
-          curve: Curves.easeOut,
-          builder: (BuildContext context, double value, dynamic _) => Stack(
+        ClipRRect(
+          borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
+          child: Stack(
             children: <Widget>[
               Container(
-                width: double.infinity,
                 height: height,
+                width: double.infinity,
                 decoration: BoxDecoration(
                   color: trackColor,
                   borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
                 ),
               ),
-              if (value > 0)
-                FractionallySizedBox(
-                  widthFactor: value,
-                  child: Container(
-                    height: height,
-                    decoration: BoxDecoration(
-                      color: fillColor,
-                      borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
-                    ),
+              FractionallySizedBox(
+                widthFactor: progress.clamp(0.0, 1.0),
+                child: Container(
+                  height: height,
+                  decoration: BoxDecoration(
+                    color: fillColor,
+                    borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
                   ),
                 ),
+              ),
             ],
           ),
         ),

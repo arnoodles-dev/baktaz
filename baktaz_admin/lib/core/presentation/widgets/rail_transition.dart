@@ -14,7 +14,7 @@ class RailTransition extends HookWidget {
     final bool ltr = Directionality.of(context) == TextDirection.ltr;
 
     final Animation<double> widthAnimation = useMemoized(
-      () => Tween<double>(begin: 0, end: 1).animate(SizeAnimation(animation)),
+      () => Tween<double>(begin: 0, end: 1).animate(SizeAnimation(parent: animation)),
       <Object>[],
     );
 
@@ -22,7 +22,7 @@ class RailTransition extends HookWidget {
       () => Tween<Offset>(
         begin: ltr ? const Offset(-1, 0) : const Offset(1, 0),
         end: Offset.zero,
-      ).animate(OffsetAnimation(animation)),
+      ).animate(OffsetAnimation(parent: animation)),
       <Object>[animation, ltr],
     );
 

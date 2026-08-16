@@ -118,7 +118,7 @@ melos:
     fix_lint:
       run: melos exec --ignore="baktaz_client" -- "fvm dart fix --apply"
     test:
-      run: sh $MELOS_ROOT_PATH/scripts/run_tests.sh all
+      run: bash $MELOS_ROOT_PATH/scripts/run_tests.sh all
       description: Run tests for all packages
     goldens:
       run: |

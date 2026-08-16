@@ -10,17 +10,17 @@ class BaktazMobileNumberField extends HookWidget {
     required this.controller,
     required this.focusNode,
     required this.selectedCountryCode,
-    super.key,
     this.showFlag = true,
     this.isPickerDisabled = false,
     this.isDisabled = false,
     this.onSelectCountry,
     this.validator,
+    super.key,
   });
 
   final TextEditingController controller;
-  final ValueNotifier<PhoneCountryData> selectedCountryCode;
   final FocusNode focusNode;
+  final ValueNotifier<PhoneCountryData> selectedCountryCode;
   final bool showFlag;
   final bool isPickerDisabled;
   final bool isDisabled;
@@ -112,11 +112,10 @@ class _CountryCodePicker extends StatelessWidget {
   });
 
   final ValueNotifier<PhoneCountryData> selectedCountryCode;
-
-  final TextEditingController controller;
   final bool isPickerDisabled;
-  final bool isDisabled;
   final bool showFlag;
+  final TextEditingController controller;
+  final bool isDisabled;
   final FocusNode focusNode;
   final Future<PhoneCountryData?> Function(BuildContext context)? onSelectCountry;
 
@@ -159,7 +158,9 @@ class _CountryCodePicker extends StatelessWidget {
 }
 
 class _CountryFlag extends StatelessWidget {
-  const _CountryFlag({required this.countryId});
+  const _CountryFlag({
+    required this.countryId,
+  });
 
   final String countryId;
 

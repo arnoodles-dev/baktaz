@@ -43,7 +43,9 @@ class ValueString extends ValueObject<String> {
         .verifyEither()
         .fold((ValidationError error) => left(Failure.validation(error, input)), right),
   );
+
   const ValueString._(this.value);
+
   @override
   final Result<String> value;
 }
@@ -66,14 +68,15 @@ class ValueNumeric extends ValueObject<num> {
         })
         .fold((ValidationError error) => left(Failure.validation(error, input?.toString() ?? '')), right),
   );
+
   const ValueNumeric._(this.value);
+
   @override
   final Result<num> value;
 }
 
 class UniqueId extends ValueObject<String> {
   factory UniqueId() => UniqueId._(right(const Uuid().v1()));
-  const UniqueId._(this.value);
 
   factory UniqueId.fromUniqueString(String uniqueId) => UniqueId._(
     uniqueId
@@ -82,6 +85,8 @@ class UniqueId extends ValueObject<String> {
         .verifyEither()
         .fold((ValidationError error) => left(Failure.validation(error, uniqueId)), right),
   );
+
+  const UniqueId._(this.value);
 
   @override
   final Result<String> value;
@@ -123,7 +128,9 @@ class EmailAddress extends ValueObject<String> {
         .verifyEither()
         .fold((ValidationError error) => left(Failure.validation(error, input)), right),
   );
+
   const EmailAddress._(this.value);
+
   @override
   final Result<String> value;
 }
@@ -142,7 +149,9 @@ class Password extends ValueObject<String> {
           (String input) => right(_encryptPassword(input, isHashed: isHashed)),
         ),
   );
+
   const Password._(this.value);
+
   @override
   final Result<String> value;
 
@@ -159,7 +168,9 @@ class Money extends ValueObject<double> {
         .verifyEither()
         .fold((ValidationError error) => left(Failure.validation(error, input.toString())), right),
   );
+
   const Money._(this.value);
+
   @override
   final Result<double> value;
 }
@@ -174,7 +185,9 @@ class MobileNumber extends ValueObject<String> {
         .verifyEither()
         .fold((ValidationError error) => left(Failure.validation(error, input)), right),
   );
+
   const MobileNumber._(this.value);
+
   @override
   final Result<String> value;
 }
@@ -188,7 +201,9 @@ class ValueName extends ValueObject<String> {
         .verifyEither()
         .fold((ValidationError error) => left(Failure.validation(error, input)), right),
   );
+
   const ValueName._(this.value);
+
   @override
   final Result<String> value;
 }
@@ -202,7 +217,9 @@ class Number extends ValueObject<num> {
         .verifyEither()
         .fold((ValidationError error) => left(Failure.validation(error, input?.toString() ?? '')), right),
   );
+
   const Number._(this.value);
+
   @override
   final Result<num> value;
 }
@@ -218,7 +235,9 @@ class ValueBoolean extends ValueObject<bool> {
             ),
           ),
   );
+
   const ValueBoolean._(this.value);
+
   @override
   final Result<bool> value;
 }
@@ -234,7 +253,9 @@ class ValueJson extends ValueObject<dynamic> {
             ),
           ),
   );
+
   const ValueJson._(this.value);
+
   @override
   final Result<dynamic> value;
 }

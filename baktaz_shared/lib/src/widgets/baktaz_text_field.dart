@@ -27,7 +27,6 @@ final class BaktazTextField extends HookWidget {
     this.style,
     this.hintTextStyle,
     this.decoration,
-    super.key,
     this.readOnly = false,
     this.prefix,
     this.isDisabled = false,
@@ -37,15 +36,17 @@ final class BaktazTextField extends HookWidget {
     this.borderRadius,
     this.borderColor,
     this.fillColor,
+    super.key,
   });
 
   final TextEditingController controller;
+  final String? labelText;
   final String? hintText;
-  final TextFieldType textFieldType;
-  final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
-  final EdgeInsets? padding;
+  final TextInputType? keyboardType;
   final ValueChanged<String>? onChanged;
+  final EdgeInsets? padding;
+  final TextFieldType textFieldType;
   final int? maxLength;
   final int? minLines;
   final int? maxLines;
@@ -58,7 +59,6 @@ final class BaktazTextField extends HookWidget {
   final TextStyle? style;
   final TextStyle? hintTextStyle;
   final InputDecoration? decoration;
-  final String? labelText;
   final bool readOnly;
   final Widget? prefix;
   final bool isDisabled;
@@ -66,8 +66,8 @@ final class BaktazTextField extends HookWidget {
   final List<TextInputFormatter>? inputFormatters;
   final FloatingLabelBehavior? floatingLabelBehavior;
   final BorderRadius? borderRadius;
-  final Color? fillColor;
   final Color? borderColor;
+  final Color? fillColor;
 
   InputDecoration? _getInputDecoration(BuildContext context, TextStyle? textStyle, {required bool isFocused}) {
     final ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -228,13 +228,13 @@ class _PasswordTextField extends HookWidget {
     this.inputDecoration,
   });
 
+  final String? hintText;
+  final String? labelText;
   final TextEditingController? controller;
-  final TextInputAction? textInputAction;
   final ValueChanged<String>? onChanged;
   final bool autofocus;
   final ValueChanged<String>? onSubmitted;
-  final String? hintText;
-  final String? labelText;
+  final TextInputAction? textInputAction;
   final FocusNode? focusNode;
   final InputDecoration? inputDecoration;
 

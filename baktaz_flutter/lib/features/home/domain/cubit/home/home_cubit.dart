@@ -14,12 +14,16 @@ part 'home_state.dart';
 
 @injectable
 class HomeCubit extends CubitSignal<HomeState> {
-  HomeCubit(this._accountRepository, this._failureHandler) : super(initialState: HomeState.initial()) {
-    initialize();
+  HomeCubit(
+    this._accountRepository,
+    this._failureHandler,
+  ) : super(initialState: HomeState.initial()) {
+    unawaited(initialize());
   }
 
   final IAccountRepository _accountRepository;
   final FailureHandler _failureHandler;
+
   final StreamController<HomeStateSideEffect> _sideEffectController = StreamController<HomeStateSideEffect>.broadcast();
 
   Stream<HomeStateSideEffect> get sideEffectStream => _sideEffectController.stream;

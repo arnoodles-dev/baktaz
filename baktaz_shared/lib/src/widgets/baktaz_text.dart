@@ -8,13 +8,13 @@ final class BaktazText extends StatelessWidget {
     required this.text,
     this.style,
     this.textType = TextType.regular,
-    super.key,
     this.overflow,
     this.textAlign,
     this.maxLines,
     this.textWidthBasis,
     this.styledTextIcon,
     this.onLinkPressed,
+    super.key,
   });
 
   final String text;
@@ -66,9 +66,9 @@ class _StyledText extends StatelessWidget {
     required this.text,
     required this.style,
     this.overflow,
+    this.textAlign,
     this.maxLines,
     this.textWidthBasis,
-    this.textAlign,
     this.styledTextIcon,
     this.onLinkPressed,
   });
@@ -128,7 +128,10 @@ class _StyledText extends StatelessWidget {
 }
 
 class _MarkdownText extends StatelessWidget {
-  const _MarkdownText({required this.text, required this.style});
+  const _MarkdownText({
+    required this.text,
+    required this.style,
+  });
 
   final String text;
   final TextStyle? style;

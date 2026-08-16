@@ -45,6 +45,18 @@ description: Code analysis, linting, formatting, coding style, and audit exclusi
 - `sealed class` – closed hierarchies.
 - **Mockito Exception**: Mocked classes must NOT be final.
 
+### Primary Constructors
+
+- **SDK Requirement**: Dart `>=3.13.0` required across packages.
+- **Primary Constructors Usage**:
+  - Use Primary Constructors (`class Name(final Type field)`) for plain non-annotated classes, Value Objects (`value_object.dart`), plain DTOs, non-annotated service wrappers, and Serverpod endpoints.
+- **Exceptions (Use Standard Generative/Factory Constructors)**:
+  - **`@injectable` / `@lazySingleton` annotated classes** (Cubits, Blocs, Repositories): Keep standard generative constructors due to `injectable_generator` AST parser limitations.
+  - **`@freezed` sealed union states & models**: Keep redirecting factory constructors (`factory Class.variant(...) = _Variant;`) for union variant generation and `freezed` AST parser compatibility.
+  - **Flutter `StatelessWidget` / `@immutable` UI Widgets**: Keep standard `const` generative constructors (`const Name({super.key, ...});`) because primary constructors cannot be declared `const`.
+- **Refactoring & Execution Workflow**:
+  - Apply code changes first -> run codegen (`build_runner` / `serverpod generate`) after all code changes are complete -> run tests and analysis.
+
 ### Async / Futures
 
 - Always `await` or use `unawaited()`.

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/enum/account_header.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/enum/my_account_option.dart';
@@ -15,8 +17,11 @@ part 'account_state.dart';
 
 @injectable
 interface class AccountCubit extends CubitSignal<AccountState> {
-  AccountCubit(this._accountRepository, this._failureHandler) : super(initialState: AccountState.initial()) {
-    initialize();
+  AccountCubit(
+    this._accountRepository,
+    this._failureHandler,
+  ) : super(initialState: AccountState.initial()) {
+    unawaited(initialize());
   }
 
   final IAccountRepository _accountRepository;
