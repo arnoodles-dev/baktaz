@@ -6,7 +6,6 @@ import 'package:talker/talker.dart';
 
 @lazySingleton
 class FailureHandler(final Talker _talker) with ErrorActions {
-
   void handleException(Exception error, StackTrace? stackTrace, [ErrorActions? errorActions]) {
     _talker.handle(error, stackTrace);
     handleFailure(Failure.unexpected(error.toString()), errorActions);

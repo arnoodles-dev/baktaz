@@ -48,6 +48,19 @@ void main() {
   });
 
   group('DashboardCubit', () {
+    final CategoryReportStats tInitReports = CategoryReportStats(
+      hero: Number(0),
+      express: Number(0),
+      shop: Number(0),
+      buy: Number(0),
+    );
+    final DashboardStats tInitStats = DashboardStats(
+      totalActivities: Number(0),
+      ongoingActivities: Number(0),
+      completedActivities: Number(0),
+      totalRevenue: Money(0),
+    );
+
     blocSignalTest<DashboardCubit, DashboardState>(
       'initialize emits loading and done states',
       build: () {
@@ -65,29 +78,25 @@ void main() {
             activityFilter: anyNamed('activityFilter'),
             statusFilter: anyNamed('statusFilter'),
           ),
-        ).thenAnswer(
-          (_) => TaskEither<Failure, CategoryReportStats>.right(
-            CategoryReportStats(hero: Number(0), express: Number(0), shop: Number(0), buy: Number(0)),
-          ),
-        );
-        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter'))).thenAnswer(
-          (_) => TaskEither<Failure, DashboardStats>.right(
-            DashboardStats(
-              totalActivities: Number(0),
-              ongoingActivities: Number(0),
-              completedActivities: Number(0),
-              totalRevenue: Money(0),
-            ),
-          ),
-        );
+        ).thenAnswer((_) => TaskEither<Failure, CategoryReportStats>.right(tInitReports));
+        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter')))
+            .thenAnswer((_) => TaskEither<Failure, DashboardStats>.right(tInitStats));
         return DashboardCubit(mockDashboardRepository, failureHandler);
       },
       act: (DashboardCubit cubit) => cubit.initialize(),
       expect: () => <DashboardState>[
         DashboardState.initial().copyWith(status: const QueryStatus.loading()),
         DashboardState.initial().copyWith(activities: <RecentActivity>[], status: const QueryStatus.done()),
+        DashboardState.initial().copyWith(
+          activities: <RecentActivity>[],
+          status: const QueryStatus.done(),
+          filterStatus: const QueryStatus.done(),
+          overviewChart: <DailyActivityStats>[],
+          reportsChart: tInitReports,
+          stats: tInitStats,
+        ),
       ],
-      wait: const Duration(milliseconds: 100),
+      wait: const Duration(milliseconds: 1300),
     );
 
     final List<DailyActivityStats> tOverview = <DailyActivityStats>[
@@ -339,6 +348,67 @@ void main() {
           filterStatus: const QueryStatus.loading(),
         ),
       ],
+    );
+
+    blocSignalTest<DashboardCubit, DashboardState>(
+      'simulateFilterUpdate handles raw exception during safeRun',
+      build: () {
+        when(
+          mockDashboardRepository.getOverviewChartData(
+            timeFilter: anyNamed('timeFilter'),
+            activityFilter: anyNamed('activityFilter'),
+          ),
+        ).thenThrow(Exception('Simulated filter crash'));
+        final MockFailureHandler mockFailureHandler = MockFailureHandler();
+        when(mockFailureHandler.handleFailure(any)).thenReturn(null);
+        return DashboardCubit(mockDashboardRepository, mockFailureHandler);
+      },
+      act: (DashboardCubit cubit) => cubit.setTimeFilter(TimeFilter.last30Days),
+      expect: () => <DashboardState>[
+        DashboardState.initial().copyWith(
+          selectedTimeFilter: TimeFilter.last30Days,
+          filterStatus: const QueryStatus.loading(),
+        ),
+      ],
+    );
+
+    blocSignalTest<DashboardCubit, DashboardState>(
+      'fetchRecentActivities handles raw exception during safeRun',
+      build: () {
+        when(mockDashboardRepository.getRecentActivities()).thenThrow(Exception('Recent activities crash'));
+        when(
+          mockDashboardRepository.getOverviewChartData(
+            timeFilter: anyNamed('timeFilter'),
+            activityFilter: anyNamed('activityFilter'),
+          ),
+        ).thenAnswer((_) => TaskEither<Failure, List<DailyActivityStats>>.right(<DailyActivityStats>[]));
+        when(
+          mockDashboardRepository.getReportsChartData(
+            timeFilter: anyNamed('timeFilter'),
+            activityFilter: anyNamed('activityFilter'),
+            statusFilter: anyNamed('statusFilter'),
+          ),
+        ).thenAnswer(
+          (_) => TaskEither<Failure, CategoryReportStats>.right(
+            CategoryReportStats(hero: Number(0), express: Number(0), shop: Number(0), buy: Number(0)),
+          ),
+        );
+        when(mockDashboardRepository.getDashboardStats(timeFilter: anyNamed('timeFilter'))).thenAnswer(
+          (_) => TaskEither<Failure, DashboardStats>.right(
+            DashboardStats(
+              totalActivities: Number(0),
+              ongoingActivities: Number(0),
+              completedActivities: Number(0),
+              totalRevenue: Money(0),
+            ),
+          ),
+        );
+        final MockFailureHandler mockFailureHandler = MockFailureHandler();
+        when(mockFailureHandler.handleFailure(any)).thenReturn(null);
+        return DashboardCubit(mockDashboardRepository, mockFailureHandler);
+      },
+      act: (DashboardCubit cubit) => cubit.initialize(),
+      expect: () => <DashboardState>[DashboardState.initial().copyWith(status: const QueryStatus.loading())],
     );
   });
 }

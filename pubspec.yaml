@@ -15,8 +15,6 @@ dev_dependencies:
   melos: ^8.3.0
   very_good_analysis: ^10.3.0
 
-
-
 melos:
   command:
     version:
@@ -91,7 +89,7 @@ melos:
         melos exec --scope="baktaz_shared" -- "fvm dart run build_runner build"
       description: Setup the baktaz_shared shared application
     clean:
-      run: melos exec --ignore="baktaz_client" -- "fvm flutter clean"
+      run: melos exec -- "fvm flutter clean"
     pub_get:
       run: melos exec --ignore="baktaz_client" -- "fvm dart pub get"
     pub_outdated:
@@ -132,4 +130,3 @@ melos:
           - test
         ignore:
           - baktaz_client
-  sdkPath: .fvm/flutter_sdk

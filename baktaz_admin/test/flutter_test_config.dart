@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:baktaz_admin/app/generated/localization.g.dart';
 import 'package:baktaz_admin/app/themes/app_theme.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mockito/mockito.dart';
@@ -26,9 +29,34 @@ class TestConfig {
 }
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
+  TestWidgetsFlutterBinding.ensureInitialized();
   GoogleFonts.config.allowRuntimeFetching = false;
   provideDummy<AppLocale>(AppLocale.en);
   provideDummy<I18n>(AppLocale.en.buildSync());
+
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', (
+    ByteData? message,
+  ) async {
+    if (message == null) {
+      return null;
+    }
+    final String key = utf8.decode(message.buffer.asUint8List());
+    if (key == 'FontManifest.json' || key == 'FontManifest.bin') {
+      return ByteData.sublistView(utf8.encode('[]'));
+    }
+    if (key == 'AssetManifest.json' || key == 'AssetManifest.bin') {
+      return ByteData.sublistView(utf8.encode('{}'));
+    }
+    File file = File(key);
+    if (!file.existsSync()) {
+      file = File('baktaz_admin/$key');
+    }
+    if (file.existsSync()) {
+      final Uint8List bytes = await file.readAsBytes();
+      return ByteData.sublistView(bytes);
+    }
+    return null;
+  });
 
   await Future.wait(<Future<void>>[setupInjection()]);
 

@@ -57,7 +57,7 @@ serverpod:
     baktaz_app:
       path: ../baktaz_flutter
       displayName: "Baktaz"
-      device: Pixel 10 Pro XL
+      device: iPhone 17 Pro Max
       auto_launch: true
       target: lib/driver.dart
       flavor: development

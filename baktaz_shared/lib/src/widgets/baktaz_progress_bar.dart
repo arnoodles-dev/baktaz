@@ -8,13 +8,7 @@ import 'package:flutter/material.dart';
 /// Used for availability percentages, booking completion, upload progress.
 /// Always teal for positive progress, colorError for critical/overdue states.
 class BaktazProgressBar extends StatelessWidget {
-  const BaktazProgressBar({
-    required this.progress,
-    this.label,
-    this.isCritical = false,
-    this.height = 5,
-    super.key,
-  });
+  const BaktazProgressBar({required this.progress, this.label, this.isCritical = false, this.height = 5, super.key});
 
   final double progress;
   final String? label;

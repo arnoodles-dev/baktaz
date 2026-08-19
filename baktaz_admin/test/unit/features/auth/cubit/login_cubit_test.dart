@@ -30,14 +30,14 @@ void main() {
       provideDummy(TaskEither<Failure, String?>.right(null));
       provideDummy(TaskEither<Failure, Unit>.right(unit));
       if (getIt.isRegistered<AuthCubit>()) {
-        await getIt.unregister<AuthCubit>();
+        final dynamic _ = getIt.unregister<AuthCubit>();
       }
       getIt.registerFactory<AuthCubit>(MockAuthCubit.new);
     });
 
     tearDown(() async {
       if (getIt.isRegistered<AuthCubit>()) {
-        await getIt.unregister<AuthCubit>();
+        final dynamic _ = getIt.unregister<AuthCubit>();
       }
       reset(localStorageRepository);
       reset(authRepository);
@@ -355,6 +355,99 @@ void main() {
         ],
         verify: (_) {
           verify(failureHandler.handleFailure(const Failure.authentication('Authentication failed'))).called(1);
+        },
+      );
+
+      blocSignalTest<LoginCubit, LoginState>(
+        'should trigger AuthCubit authenticate when onAuthenticated receives AuthSuccess',
+        build: () {
+          final MockAuthCubit mockAuthCubit = MockAuthCubit();
+          when(mockAuthCubit.authenticate()).thenAnswer((_) async {});
+          if (getIt.isRegistered<AuthCubit>()) {
+            final dynamic _ = getIt.unregister<AuthCubit>();
+          }
+          getIt.registerSingleton<AuthCubit>(mockAuthCubit);
+
+          provideDummy(TaskEither<Failure, String?>.right(null));
+          when(localStorageRepository.getLastLoggedInUsername()).thenReturn(TaskEither<Failure, String?>.right(null));
+
+          when(
+            authRepository.login(
+              email: anyNamed('email'),
+              password: anyNamed('password'),
+              onAuthenticated: anyNamed('onAuthenticated'),
+              onError: anyNamed('onError'),
+            ),
+          ).thenAnswer((Invocation invocation) async {
+            final void Function(AuthSuccess?) onAuthenticated =
+                invocation.namedArguments[#onAuthenticated] as void Function(AuthSuccess?);
+            onAuthenticated(
+              AuthSuccess(
+                authStrategy: 'email',
+                token: 'token',
+                authUserId: UuidValue.fromString('00000000-0000-0000-0000-000000000000'),
+                scopeNames: const <String>{},
+              ),
+            );
+          });
+          return LoginCubit(authRepository, localStorageRepository, failureHandler);
+        },
+        act: (LoginCubit cubit) => cubit.login(email, password),
+        expect: () => <LoginState>[
+          LoginState.initial().copyWith(email: email),
+          LoginState(isLoading: false, email: email),
+        ],
+        verify: (_) {
+          if (getIt.isRegistered<AuthCubit>()) {
+            verify(getIt<AuthCubit>().authenticate()).called(1);
+            final dynamic _ = getIt.unregister<AuthCubit>();
+          }
+        },
+      );
+
+      blocSignalTest<LoginCubit, LoginState>(
+        'should handle exception in AuthCubit.authenticate during onAuthenticated',
+        build: () {
+          final MockAuthCubit mockAuthCubit = MockAuthCubit();
+          when(mockAuthCubit.authenticate()).thenThrow(Exception('Auth error'));
+          if (getIt.isRegistered<AuthCubit>()) {
+            final dynamic _ = getIt.unregister<AuthCubit>();
+          }
+          getIt.registerSingleton<AuthCubit>(mockAuthCubit);
+
+          provideDummy(TaskEither<Failure, String?>.right(null));
+          when(localStorageRepository.getLastLoggedInUsername()).thenReturn(TaskEither<Failure, String?>.right(null));
+
+          when(
+            authRepository.login(
+              email: anyNamed('email'),
+              password: anyNamed('password'),
+              onAuthenticated: anyNamed('onAuthenticated'),
+              onError: anyNamed('onError'),
+            ),
+          ).thenAnswer((Invocation invocation) async {
+            final void Function(AuthSuccess?) onAuthenticated =
+                invocation.namedArguments[#onAuthenticated] as void Function(AuthSuccess?);
+            onAuthenticated(
+              AuthSuccess(
+                authStrategy: 'email',
+                token: 'token',
+                authUserId: UuidValue.fromString('00000000-0000-0000-0000-000000000000'),
+                scopeNames: const <String>{},
+              ),
+            );
+          });
+          return LoginCubit(authRepository, localStorageRepository, failureHandler);
+        },
+        act: (LoginCubit cubit) => cubit.login(email, password),
+        expect: () => <LoginState>[
+          LoginState.initial().copyWith(email: email),
+          LoginState(isLoading: false, email: email),
+        ],
+        verify: (_) {
+          if (getIt.isRegistered<AuthCubit>()) {
+            final dynamic _ = getIt.unregister<AuthCubit>();
+          }
         },
       );
     });

@@ -12,11 +12,8 @@ part 'profile_state.dart';
 
 @injectable
 final class ProfileCubit extends CubitSignal<ProfileState> {
-  ProfileCubit(
-    this._accountRepository,
-    this._deviceRepository,
-    this._failureHandler,
-  ) : super(initialState: ProfileState.initial());
+  ProfileCubit(this._accountRepository, this._deviceRepository, this._failureHandler)
+    : super(initialState: ProfileState.initial());
 
   final IAccountRepository _accountRepository;
   final IDeviceInfoRepository _deviceRepository;

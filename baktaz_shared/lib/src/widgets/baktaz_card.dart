@@ -9,14 +9,7 @@ import 'package:flutter/material.dart';
 /// The base card used throughout the app.
 /// Slots: header row (icon + title + action) · divider · body · footer row.
 final class BaktazCard extends StatelessWidget {
-  const BaktazCard({
-    required this.body,
-    this.headerIcon,
-    this.headerTitle,
-    this.headerAction,
-    this.footer,
-    super.key,
-  });
+  const BaktazCard({required this.body, this.headerIcon, this.headerTitle, this.headerAction, this.footer, super.key});
 
   final Widget body;
   final IconData? headerIcon;
@@ -57,11 +50,7 @@ final class BaktazCard extends StatelessWidget {
 }
 
 class _CardHeader extends StatelessWidget {
-  const _CardHeader({
-    this.icon,
-    this.title,
-    this.action,
-  });
+  const _CardHeader({this.icon, this.title, this.action});
 
   final IconData? icon;
   final String? title;

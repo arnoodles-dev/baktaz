@@ -4,10 +4,10 @@ import 'package:baktaz_server/src/features/auth/domain/interface/i_admin_reposit
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
-final class AdminEndpoint([
-  IAdminRepository? adminService,
-]) extends AdminEndpointBase {
-  final IAdminRepository _adminService = adminService ?? getIt<IAdminRepository>();
+class AdminEndpoint extends AdminEndpointBase {
+  AdminEndpoint([IAdminRepository? adminService]) : _adminService = adminService ?? getIt<IAdminRepository>();
+
+  final IAdminRepository _adminService;
 
   Future<List<AdminUser>> listAdminUsers(Session session) async => _adminService.listAdminUsers(session);
 

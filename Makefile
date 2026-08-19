@@ -39,6 +39,8 @@ pub_get:
 
 pub_clean:
 	fvm dart pub cache clean --force
+
+pub_repair:
 	fvm dart pub cache repair
 
 delete_generated_files:

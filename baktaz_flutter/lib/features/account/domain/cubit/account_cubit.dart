@@ -17,10 +17,7 @@ part 'account_state.dart';
 
 @injectable
 interface class AccountCubit extends CubitSignal<AccountState> {
-  AccountCubit(
-    this._accountRepository,
-    this._failureHandler,
-  ) : super(initialState: AccountState.initial()) {
+  AccountCubit(this._accountRepository, this._failureHandler) : super(initialState: AccountState.initial()) {
     unawaited(initialize());
   }
 

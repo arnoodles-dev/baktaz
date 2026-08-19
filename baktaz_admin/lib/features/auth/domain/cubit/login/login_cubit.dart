@@ -16,11 +16,8 @@ part 'login_state.dart';
 
 @injectable
 class LoginCubit extends CubitSignal<LoginState> {
-  LoginCubit(
-    this._authRepository,
-    this._localStorageRepository,
-    this._failureHandler,
-  ) : super(initialState: LoginState.initial());
+  LoginCubit(this._authRepository, this._localStorageRepository, this._failureHandler)
+    : super(initialState: LoginState.initial());
 
   final IAuthRepository _authRepository;
   final ILocalStorageRepository _localStorageRepository;

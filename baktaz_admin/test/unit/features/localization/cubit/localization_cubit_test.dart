@@ -145,6 +145,30 @@ void main() {
     );
 
     blocSignalTest<LocalizationCubit, LocalizationState>(
+      'toggleNamespace adds and removes namespace path from expandedNamespaces',
+      build: () => LocalizationCubit(mockRepository),
+      act: (LocalizationCubit cubit) {
+        cubit
+          ..toggleNamespace('auth.login')
+          ..toggleNamespace('auth.login');
+      },
+      expect: () => <LocalizationState>[
+        const LocalizationState(expandedNamespaces: <String>{'auth.login'}),
+        const LocalizationState(),
+      ],
+    );
+
+    blocSignalTest<LocalizationCubit, LocalizationState>(
+      'clearExpanded resets expandedNamespaces to empty set',
+      build: () => LocalizationCubit.test(
+        mockRepository,
+        const LocalizationState(expandedNamespaces: <String>{'auth', 'dashboard'}),
+      ),
+      act: (LocalizationCubit cubit) => cubit.clearExpanded(),
+      expect: () => <LocalizationState>[const LocalizationState()],
+    );
+
+    blocSignalTest<LocalizationCubit, LocalizationState>(
       'publishChanges handles failure',
       build: () {
         when(mockRepository.publishTranslations(any))
@@ -238,6 +262,67 @@ void main() {
         const LocalizationState(
           pendingChanges: <String, LocalizationTranslation>{
             '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: ''),
+          },
+        ),
+      ],
+    );
+
+    blocSignalTest<LocalizationCubit, LocalizationState>(
+      'bulk addKey handles duplicate key names by assigning unique sequential IDs',
+      build: () => LocalizationCubit.test(
+        mockRepository,
+        const LocalizationState(
+          keys: <LocalizationKey>[LocalizationKey(id: 1, namespace: 'common', key: 'save', defaultValueEn: 'Save')],
+        ),
+      ),
+      act: (LocalizationCubit cubit) {
+        cubit
+          ..addKey(key: 'save', namespace: 'common', defaultValueEn: 'Save Duplicate 1')
+          ..addKey(key: 'save', namespace: 'common', defaultValueEn: 'Save Duplicate 2');
+      },
+      expect: () => <LocalizationState>[
+        const LocalizationState(
+          keys: <LocalizationKey>[
+            LocalizationKey(id: 1, namespace: 'common', key: 'save', defaultValueEn: 'Save'),
+            LocalizationKey(id: 2, namespace: 'common', key: 'save', defaultValueEn: 'Save Duplicate 1'),
+          ],
+          pendingChanges: <String, LocalizationTranslation>{
+            '2_en': LocalizationTranslation(keyId: 2, locale: 'en', value: 'Save Duplicate 1'),
+          },
+          addedKeyIds: <int>{2},
+        ),
+        const LocalizationState(
+          keys: <LocalizationKey>[
+            LocalizationKey(id: 1, namespace: 'common', key: 'save', defaultValueEn: 'Save'),
+            LocalizationKey(id: 2, namespace: 'common', key: 'save', defaultValueEn: 'Save Duplicate 1'),
+            LocalizationKey(id: 3, namespace: 'common', key: 'save', defaultValueEn: 'Save Duplicate 2'),
+          ],
+          pendingChanges: <String, LocalizationTranslation>{
+            '2_en': LocalizationTranslation(keyId: 2, locale: 'en', value: 'Save Duplicate 1'),
+            '3_en': LocalizationTranslation(keyId: 3, locale: 'en', value: 'Save Duplicate 2'),
+          },
+          addedKeyIds: <int>{2, 3},
+        ),
+      ],
+    );
+
+    blocSignalTest<LocalizationCubit, LocalizationState>(
+      'updateTranslation overrides pending changes for the same keyId and locale',
+      build: () => LocalizationCubit(mockRepository),
+      act: (LocalizationCubit cubit) {
+        cubit
+          ..updateTranslation(const LocalizationTranslation(keyId: 1, locale: 'en', value: 'First Update'))
+          ..updateTranslation(const LocalizationTranslation(keyId: 1, locale: 'en', value: 'Second Overwrite'));
+      },
+      expect: () => <LocalizationState>[
+        const LocalizationState(
+          pendingChanges: <String, LocalizationTranslation>{
+            '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: 'First Update'),
+          },
+        ),
+        const LocalizationState(
+          pendingChanges: <String, LocalizationTranslation>{
+            '1_en': LocalizationTranslation(keyId: 1, locale: 'en', value: 'Second Overwrite'),
           },
         ),
       ],

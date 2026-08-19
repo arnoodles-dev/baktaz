@@ -109,18 +109,9 @@ generate_lcov() {
     return 0
   fi
 
-  # Apply exclude patterns if .coverage_exclude exists
+  # Apply exclude patterns via filter_coverage.dart
   if [ -f ".coverage_exclude" ]; then
-    patterns=()
-    while IFS= read -r line || [ -n "$line" ]; do
-      stripped=$(echo "$line" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-      [ -z "$stripped" ] || [ "${stripped#\#}" != "$stripped" ] && continue
-      patterns+=("$stripped")
-    done < ".coverage_exclude"
-
-    if [ ${#patterns[@]} -gt 0 ]; then
-      lcov --ignore-errors unused --remove "coverage/lcov.info" "${patterns[@]}" -o "coverage/lcov.info" 2>/dev/null || true
-    fi
+    fvm dart "$SCRIPT_DIR/filter_coverage.dart" "$pkg_dir"
   fi
 
   # Special handling for server: extract only endpoints/services
@@ -141,10 +132,16 @@ generate_lcov() {
 
   if [[ "$pkg" == *server* ]] && [ "$IS_FLUTTER" = false ]; then
     $GENHTML_CMD --ignore-errors empty -o coverage/html coverage/lcov.info 2>/dev/null || $GENHTML_CMD -o coverage/html coverage/lcov.info 2>/dev/null || true
-    $OPEN_CMD coverage/html/index.html 2>/dev/null || true
+    if [ -f "coverage/html/index.html" ]; then
+      if command -v open >/dev/null 2>&1; then open coverage/html/index.html;
+      elif command -v xdg-open >/dev/null 2>&1; then xdg-open coverage/html/index.html; fi
+    fi
   else
     $GENHTML_CMD --ignore-errors empty -o coverage coverage/lcov.info 2>/dev/null || $GENHTML_CMD -o coverage coverage/lcov.info 2>/dev/null || true
-    $OPEN_CMD coverage/index.html 2>/dev/null || true
+    if [ -f "coverage/index.html" ]; then
+      if command -v open >/dev/null 2>&1; then open coverage/index.html;
+      elif command -v xdg-open >/dev/null 2>&1; then xdg-open coverage/index.html; fi
+    fi
   fi
 }
 

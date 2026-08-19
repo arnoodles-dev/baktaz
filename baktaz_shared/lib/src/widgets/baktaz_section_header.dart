@@ -7,12 +7,7 @@ import 'package:flutter/material.dart';
 ///
 /// Row with space-between layout, title, and optional "See All" link.
 class BaktazSectionHeader extends StatelessWidget {
-  const BaktazSectionHeader({
-    required this.title,
-    this.linkLabel,
-    this.onLinkPressed,
-    super.key,
-  });
+  const BaktazSectionHeader({required this.title, this.linkLabel, this.onLinkPressed, super.key});
 
   final String title;
   final String? linkLabel;

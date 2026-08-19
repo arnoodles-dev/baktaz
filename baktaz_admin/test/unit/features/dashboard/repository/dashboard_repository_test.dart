@@ -77,12 +77,17 @@ void main() {
       });
     });
 
-    test('returns daily stats filtered by hero', () async {
-      final Either<Failure, List<DailyActivityStats>> result = await repository
-          .getOverviewChartData(timeFilter: TimeFilter.last7Days, activityFilter: ActivityFilter.hero)
-          .run();
-
-      result.fold((Failure l) => fail('Expected Right but got Left: $l'), (_) {});
+    test('returns daily stats filtered by express, shop, buy', () async {
+      for (final ActivityFilter filter in <ActivityFilter>[
+        ActivityFilter.express,
+        ActivityFilter.shop,
+        ActivityFilter.buy,
+      ]) {
+        final Either<Failure, List<DailyActivityStats>> result = await repository
+            .getOverviewChartData(timeFilter: TimeFilter.last30Days, activityFilter: filter)
+            .run();
+        expect(result.isRight(), isTrue);
+      }
     });
   });
 
@@ -104,16 +109,23 @@ void main() {
       });
     });
 
-    test('returns category stats with inProgress and express filter', () async {
-      final Either<Failure, CategoryReportStats> result = await repository
-          .getReportsChartData(
-            timeFilter: TimeFilter.last7Days,
-            activityFilter: ActivityFilter.express,
-            statusFilter: ActivityStatusFilter.inProgress,
-          )
-          .run();
-
-      result.fold((Failure l) => fail('Expected Right but got Left: $l'), (_) {});
+    test('returns category stats with completed and inProgress status filter', () async {
+      for (final ActivityStatusFilter status in <ActivityStatusFilter>[
+        ActivityStatusFilter.completed,
+        ActivityStatusFilter.inProgress,
+      ]) {
+        for (final ActivityFilter activity in <ActivityFilter>[
+          ActivityFilter.hero,
+          ActivityFilter.express,
+          ActivityFilter.shop,
+          ActivityFilter.buy,
+        ]) {
+          final Either<Failure, CategoryReportStats> result = await repository
+              .getReportsChartData(timeFilter: TimeFilter.today, activityFilter: activity, statusFilter: status)
+              .run();
+          expect(result.isRight(), isTrue);
+        }
+      }
     });
   });
 }

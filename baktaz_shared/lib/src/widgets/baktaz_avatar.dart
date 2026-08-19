@@ -106,10 +106,7 @@ class BaktazAvatar extends StatelessWidget {
 }
 
 class _InitialsAvatar extends StatelessWidget {
-  const _InitialsAvatar({
-    required this.initials,
-    required this.size,
-  });
+  const _InitialsAvatar({required this.initials, required this.size});
 
   final String initials;
   final double size;
@@ -134,10 +131,7 @@ class _InitialsAvatar extends StatelessWidget {
 }
 
 class _DefaultIcon extends StatelessWidget {
-  const _DefaultIcon({
-    required this.size,
-    this.defaultIcon,
-  });
+  const _DefaultIcon({required this.size, this.defaultIcon});
 
   final double size;
   final Either<String, IconData>? defaultIcon;

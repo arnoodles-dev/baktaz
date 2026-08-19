@@ -81,15 +81,13 @@ read_exclude_patterns() {
 }
 
 if [ "$IS_FLUTTER" = true ]; then
-  PATTERNS=$(read_exclude_patterns ".coverage_exclude")
-  eval $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
+  fvm dart "$SCRIPT_DIR/filter_coverage.dart" "$TARGET_PKG"
   $GENHTML_CMD -o coverage coverage/lcov.info
   $OPEN_CMD $OUT_DIR/index.html
 else
   # Server package
   $LCOV_CMD --ignore-errors unused --extract coverage/lcov.info '*/endpoints/*' '*/services/*' -o coverage/lcov.info
-  PATTERNS=$(read_exclude_patterns ".coverage_exclude")
-  eval $LCOV_CMD --ignore-errors unused --remove coverage/lcov.info $PATTERNS -o coverage/lcov.info
+  fvm dart "$SCRIPT_DIR/filter_coverage.dart" "$TARGET_PKG"
   $GENHTML_CMD -o coverage/html coverage/lcov.info
   $OPEN_CMD coverage/html/index.html
 fi

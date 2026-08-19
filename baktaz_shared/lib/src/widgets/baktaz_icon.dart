@@ -40,12 +40,7 @@ final class BaktazIcon extends StatelessWidget {
 }
 
 class _Icon extends StatelessWidget {
-  const _Icon({
-    required this.icon,
-    required this.size,
-    required this.alignment,
-    required this.color,
-  });
+  const _Icon({required this.icon, required this.size, required this.alignment, required this.color});
 
   final Either<String, IconData> icon;
   final double? size;

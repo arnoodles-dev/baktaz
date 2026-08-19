@@ -5,11 +5,7 @@ import 'package:flutter/material.dart';
 /// Wrapper around Material Switch with DESIGN.md tokens.
 /// Track on: colorPrimary · Track off: colorBorder · Thumb: white
 class BaktazToggle extends StatelessWidget {
-  const BaktazToggle({
-    required this.value,
-    required this.onChanged,
-    super.key,
-  });
+  const BaktazToggle({required this.value, required this.onChanged, super.key});
 
   final bool value;
   final ValueChanged<bool>? onChanged;

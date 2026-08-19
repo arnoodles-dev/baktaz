@@ -12,7 +12,9 @@ import 'package:baktaz_admin/core/domain/cubit/theme/theme_cubit.dart';
 import 'package:baktaz_admin/core/domain/interface/i_asset_repository.dart';
 import 'package:baktaz_admin/core/domain/interface/i_local_storage_repository.dart';
 import 'package:baktaz_admin/features/auth/domain/cubit/auth/auth_cubit.dart';
+import 'package:baktaz_admin/features/auth/domain/cubit/login/login_cubit.dart';
 import 'package:baktaz_admin/features/auth/domain/interface/i_auth_repository.dart';
+import 'package:baktaz_admin/features/content/domain/cubit/content_cubit.dart';
 import 'package:baktaz_admin/features/content/domain/interface/i_content_repository.dart';
 import 'package:baktaz_admin/features/dashboard/domain/cubit/dashboard/dashboard_cubit.dart';
 import 'package:baktaz_admin/features/dashboard/domain/interface/i_dashboard_repository.dart';
@@ -52,6 +54,8 @@ export 'generated_mocks.mocks.dart';
 
   // Cubits
   MockSpec<AuthCubit>(),
+  MockSpec<LoginCubit>(),
+  MockSpec<ContentCubit>(),
   MockSpec<AppCoreCubit>(),
   MockSpec<HidableCubit>(),
   MockSpec<RemoteConfigCubit>(),

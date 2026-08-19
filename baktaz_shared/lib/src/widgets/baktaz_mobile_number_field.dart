@@ -158,9 +158,7 @@ class _CountryCodePicker extends StatelessWidget {
 }
 
 class _CountryFlag extends StatelessWidget {
-  const _CountryFlag({
-    required this.countryId,
-  });
+  const _CountryFlag({required this.countryId});
 
   final String countryId;
 

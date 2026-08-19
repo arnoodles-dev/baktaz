@@ -13,11 +13,8 @@ import 'package:mobile_service_core/features/remote_config/i_remote_config_servi
 
 @lazySingleton
 class RemoteConfigCubit extends CubitSignal<Map<String, dynamic>> {
-  RemoteConfigCubit(
-    this._remoteConfigService,
-    this._deviceRepository,
-    this._failureHandler,
-  ) : super(initialState: <String, dynamic>{});
+  RemoteConfigCubit(this._remoteConfigService, this._deviceRepository, this._failureHandler)
+    : super(initialState: <String, dynamic>{});
 
   final IRemoteConfigService _remoteConfigService;
   final IDeviceInfoRepository _deviceRepository;

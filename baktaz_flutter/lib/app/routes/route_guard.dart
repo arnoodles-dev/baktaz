@@ -12,7 +12,6 @@ final class RouteGuard(
   final AppCoreCubit _appCoreBloc,
   final AuthCubit _authBloc,
 ) {
-
   String? guard(BuildContext context, GoRouterState goRouterState) {
     if (_remoteConfigBloc.isMaintenance) {
       return const MaintenanceRoute().location;

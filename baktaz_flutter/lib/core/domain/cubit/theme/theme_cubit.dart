@@ -10,10 +10,7 @@ import 'package:injectable/injectable.dart';
 
 @lazySingleton
 class ThemeCubit extends CubitSignal<ThemeMode> {
-  ThemeCubit(
-    this._localStorageRepository,
-    this._failureHandler,
-  ) : super(initialState: ThemeMode.system);
+  ThemeCubit(this._localStorageRepository, this._failureHandler) : super(initialState: ThemeMode.system);
 
   final ILocalStorageRepository _localStorageRepository;
   final FailureHandler _failureHandler;

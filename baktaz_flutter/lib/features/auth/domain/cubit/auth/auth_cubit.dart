@@ -15,11 +15,8 @@ part 'auth_state.dart';
 
 @lazySingleton
 class AuthCubit extends CubitSignal<AuthState> {
-  AuthCubit(
-    this._authRepository,
-    this._crashlyticsService,
-    this._failureHandler,
-  ) : super(initialState: const AuthState.initial());
+  AuthCubit(this._authRepository, this._crashlyticsService, this._failureHandler)
+    : super(initialState: const AuthState.initial());
 
   final IAuthRepository _authRepository;
   final ICrashlyticsService _crashlyticsService;

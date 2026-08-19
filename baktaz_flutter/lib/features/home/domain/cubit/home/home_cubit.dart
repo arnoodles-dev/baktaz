@@ -14,10 +14,7 @@ part 'home_state.dart';
 
 @injectable
 class HomeCubit extends CubitSignal<HomeState> {
-  HomeCubit(
-    this._accountRepository,
-    this._failureHandler,
-  ) : super(initialState: HomeState.initial()) {
+  HomeCubit(this._accountRepository, this._failureHandler) : super(initialState: HomeState.initial()) {
     unawaited(initialize());
   }
 

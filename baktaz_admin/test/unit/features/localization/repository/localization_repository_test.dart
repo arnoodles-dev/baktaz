@@ -1,8 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:baktaz_admin/features/localization/data/repository/localization_repository.dart';
 import 'package:baktaz_admin/features/localization/domain/entity/localization_key.dart';
 import 'package:baktaz_admin/features/localization/domain/entity/localization_translation.dart';
 import 'package:baktaz_admin/features/localization/domain/entity/paginated_response.dart';
 import 'package:baktaz_shared/src/entity/failure.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 
@@ -103,6 +107,85 @@ void main() {
         final List<LocalizationKey> withVars = r.data.where((LocalizationKey k) => k.variables != null).toList();
         expect(withVars, isNotEmpty);
       });
+    });
+
+    test('returns unexpected failure when asset JSON is malformed', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', (
+        ByteData? message,
+      ) async {
+        final String key = utf8.decode(message!.buffer.asUint8List());
+        if (key == 'assets/i18n/en.i18n.json') {
+          return ByteData.sublistView(utf8.encode('invalid json string'));
+        }
+        return null;
+      });
+      rootBundle.evict('assets/i18n/en.i18n.json');
+      addTearDown(() {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', (
+          ByteData? message,
+        ) async {
+          if (message == null) {
+            return null;
+          }
+          final String key = utf8.decode(message.buffer.asUint8List());
+          File file = File(key);
+          if (!file.existsSync()) {
+            file = File('baktaz_admin/$key');
+          }
+          if (file.existsSync()) {
+            final Uint8List bytes = await file.readAsBytes();
+            return ByteData.sublistView(bytes);
+          }
+          return null;
+        });
+        rootBundle.evict('assets/i18n/en.i18n.json');
+      });
+
+      final Either<Failure, PaginatedResponse<LocalizationKey>> result = await repository
+          .getKeys(page: 1, limit: 10, sortField: 'key', ascending: true)
+          .run();
+
+      result.fold(
+        (Failure l) => expect(l, isA<Failure>()),
+        (PaginatedResponse<LocalizationKey> r) => fail('Expected failure for malformed asset JSON'),
+      );
+    });
+
+    test('returns unexpected failure when asset cannot be loaded', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(
+        'flutter/assets',
+        (ByteData? message) async => null,
+      );
+      rootBundle.evict('assets/i18n/en.i18n.json');
+      addTearDown(() {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', (
+          ByteData? message,
+        ) async {
+          if (message == null) {
+            return null;
+          }
+          final String key = utf8.decode(message.buffer.asUint8List());
+          File file = File(key);
+          if (!file.existsSync()) {
+            file = File('baktaz_admin/$key');
+          }
+          if (file.existsSync()) {
+            final Uint8List bytes = await file.readAsBytes();
+            return ByteData.sublistView(bytes);
+          }
+          return null;
+        });
+        rootBundle.evict('assets/i18n/en.i18n.json');
+      });
+
+      final Either<Failure, PaginatedResponse<LocalizationKey>> result = await repository
+          .getKeys(page: 1, limit: 10, sortField: 'key', ascending: true)
+          .run();
+
+      result.fold(
+        (Failure l) => expect(l, isA<Failure>()),
+        (PaginatedResponse<LocalizationKey> r) => fail('Expected failure for missing asset'),
+      );
     });
   });
 

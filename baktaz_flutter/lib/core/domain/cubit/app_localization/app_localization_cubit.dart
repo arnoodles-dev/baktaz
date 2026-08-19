@@ -11,10 +11,8 @@ import 'package:mobile_service_core/features/remote_config/i_remote_config_servi
 
 @lazySingleton
 class AppLocalizationCubit extends CubitSignal<I18n> {
-  AppLocalizationCubit(
-    this._remoteConfigService,
-    this._failureHandler,
-  ) : super(initialState: AppLocale.values.first.buildSync()) {
+  AppLocalizationCubit(this._remoteConfigService, this._failureHandler)
+    : super(initialState: AppLocale.values.first.buildSync()) {
     unawaited(initialize());
   }
 

@@ -12,10 +12,7 @@ import 'package:meta/meta.dart';
 
 @injectable
 class LocalizationCubit extends CubitSignal<LocalizationState> {
-  LocalizationCubit(
-    this._repository, {
-    super.initialState = const LocalizationState(),
-  });
+  LocalizationCubit(this._repository, {super.initialState = const LocalizationState()});
 
   @visibleForTesting
   LocalizationCubit.test(ILocalizationRepository repository, LocalizationState initialState)

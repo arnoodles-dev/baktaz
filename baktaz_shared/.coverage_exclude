@@ -12,3 +12,6 @@
 */formatters/*.dart
 */utils/*.dart
 */widgets/wrappers/*.dart
+*/domain/*.dart
+*/mixin/*.dart
+*/observer/*.dart

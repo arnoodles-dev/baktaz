@@ -128,10 +128,7 @@ class _StyledText extends StatelessWidget {
 }
 
 class _MarkdownText extends StatelessWidget {
-  const _MarkdownText({
-    required this.text,
-    required this.style,
-  });
+  const _MarkdownText({required this.text, required this.style});
 
   final String text;
   final TextStyle? style;
