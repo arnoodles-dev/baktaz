@@ -411,6 +411,21 @@ class EndpointJwtRefresh extends _i6.EndpointRefreshJwtTokens {
   );
 }
 
+/// {@category Endpoint}
+class EndpointOtp extends _i1.EndpointRef {
+  EndpointOtp(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'otp';
+
+  _i2.Future<void> sendOtp({required String email}) =>
+      caller.callServerEndpoint<void>(
+        'otp',
+        'sendOtp',
+        {'email': email},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     auth_core = _i6.Caller(client);
@@ -458,6 +473,7 @@ class Client extends _i1.ServerpodClientShared {
     facebookIdp = EndpointFacebookIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
+    otp = EndpointOtp(this);
     modules = Modules(this);
   }
 
@@ -473,6 +489,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointJwtRefresh jwtRefresh;
 
+  late final EndpointOtp otp;
+
   late final Modules modules;
 
   @override
@@ -483,6 +501,7 @@ class Client extends _i1.ServerpodClientShared {
     'facebookIdp': facebookIdp,
     'googleIdp': googleIdp,
     'jwtRefresh': jwtRefresh,
+    'otp': otp,
   };
 
   @override
