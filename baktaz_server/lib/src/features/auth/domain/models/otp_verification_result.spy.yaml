@@ -1,0 +1,6 @@
+class: OtpVerificationResult
+table: none
+fields:
+  isNewUser: bool
+  authInfo: module:auth_core:AuthSuccess?
+  registrationToken: String?
