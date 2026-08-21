@@ -129,13 +129,14 @@ void main() {
     });
 
     group('verifyOtp', () {
+      final OtpVerificationResult verificationResult = OtpVerificationResult(
+        isNewUser: false,
+        authInfo: mockAuthSuccess,
+      );
+
       blocSignalTest<LoginCubit, LoginState>(
         'emits verifying, verified, and success when OTP verification succeeds with authInfo',
         build: () {
-          final OtpVerificationResult verificationResult = OtpVerificationResult(
-            isNewUser: false,
-            authInfo: mockAuthSuccess,
-          );
           when(authRepository.verifyOtp(email: 'user@example.com', code: '123456'))
               .thenReturn(TaskResult<OtpVerificationResult>.right(verificationResult));
           return loginCubit;
@@ -143,7 +144,7 @@ void main() {
         act: (LoginCubit cubit) => cubit.verifyOtp(email: 'user@example.com', code: '123456'),
         expect: () => <LoginState>[
           const LoginState.verifying(email: 'user@example.com'),
-          LoginState.verified(OtpVerificationResult(isNewUser: false, authInfo: mockAuthSuccess)),
+          LoginState.verified(verificationResult),
           LoginState.success(mockAuthSuccess),
         ],
         verify: (_) {

@@ -13,9 +13,9 @@ enable_tools:
 	fvm dart pub global activate flutter_plugin_tools
 
 ensure_flutter_version:
-	fvm install 3.47.0
-	fvm use 3.47.0
-	fvm global 3.47.0
+	fvm install 3.47.1
+	fvm use 3.47.1
+	fvm global 3.47.1
 
 update_flutter_version:
 	@if [ -z "$(NEW_VERSION)" ]; then \

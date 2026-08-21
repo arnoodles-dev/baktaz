@@ -1,6 +1,6 @@
 import 'package:serverpod/serverpod.dart';
 
-class AppConfigRoute({required ServerConfig apiConfig}) extends WidgetRoute {
+class AppConfigRoute({required final ServerConfig apiConfig}) extends WidgetRoute {
   final AppConfigWidget widget = AppConfigWidget(apiUrl: apiConfig.apiUrl.toString());
 
   @override
