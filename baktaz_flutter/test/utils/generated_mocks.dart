@@ -30,6 +30,8 @@ export 'generated_mocks.mocks.dart';
 @GenerateNiceMocks(<MockSpec<dynamic>>[
   MockSpec<Client>(),
   MockSpec<EndpointAccount>(),
+  MockSpec<EndpointAuth>(),
+  MockSpec<EndpointOtp>(),
   MockSpec<IAuthRepository>(),
   MockSpec<IAccountRepository>(),
   MockSpec<ILocalStorageRepository>(),

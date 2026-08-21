@@ -1,13 +1,15 @@
-class AppConfig {
+abstract final class AppConfig {
   static const Duration defaultTimeout = Duration(minutes: 1);
   static const Duration defaultCacheLifetime = Duration(minutes: 5);
-}
 
-class OtpConfig {
-  static const int length = 6;
-  static const Duration expiry = Duration(minutes: 5);
-  static const int maxSendsPerHour = 3;
-  static const int maxAttemptsPerOtp = 3;
-  static const Duration registrationTokenLifetime = Duration(minutes: 15);
-  static const String method = 'email_otp';
+  // OTP Configuration
+  static const int otpLength = 6;
+  static const Duration otpExpiry = Duration(minutes: 5);
+  static const int otpMaxSendsPerHour = 3;
+  static const int otpMaxAttemptsPerOtp = 3;
+  static const Duration otpRegistrationTokenLifetime = Duration(minutes: 15);
+  static const String otpMethod = 'email_otp';
+
+  // Feature Flags
+  static const bool accountDeletionEnabled = true;
 }

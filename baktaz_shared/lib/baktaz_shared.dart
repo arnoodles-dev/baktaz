@@ -52,6 +52,7 @@ export 'src/widgets/baktaz_avatar.dart';
 export 'src/widgets/baktaz_button.dart';
 export 'src/widgets/baktaz_card.dart';
 export 'src/widgets/baktaz_divider.dart';
+export 'src/widgets/baktaz_error_screen.dart';
 export 'src/widgets/baktaz_filter_chip.dart';
 export 'src/widgets/baktaz_icon.dart';
 export 'src/widgets/baktaz_icon_tile.dart';

@@ -1,0 +1,3 @@
+exception: OtpException
+fields:
+  message: String

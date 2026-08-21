@@ -96,7 +96,7 @@ class LoginScreen extends HookWidget {
                                 BaktazButton(
                                   text: context.i18n.login.button.email,
                                   isExpanded: true,
-                                  onPressed: () => const LoginMobileRoute().push<void>(context),
+                                  onPressed: () => const LoginEmailRoute().push<void>(context),
                                 ),
                               ],
                             ),

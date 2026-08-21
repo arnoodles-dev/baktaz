@@ -38,7 +38,7 @@ final class RouteGuard(
 
   // Add Routes that is allowed to be unauthenticated
   bool _getAllowedUnauthenticatedRoutes(String location) =>
-      location.startsWith('/registration') || location == '/loginMobile' || location == '/selectAddress';
+      location.startsWith('/registration') || location == '/loginEmail' || location == '/otp' || location == '/blocked';
 
   String? _unauthenticatedRouteGuard(String matchedLocation) {
     if (!_appCoreBloc.stateValue.isOnboardingDone) {

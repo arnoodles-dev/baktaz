@@ -68,6 +68,37 @@ final class AuthUtils {
       transaction,
     );
     session.log('Account created: ${insertedAccount.toJson()}', level: LogLevel.debug);
+
+    if (!authUser.scopes.contains(Scope.admin)) {
+      await createEmailAccountLink(session, userProfile, transaction: transaction);
+    }
+  }
+
+  static Future<void> createEmailAccountLink(
+    Session session,
+    UserProfileModel userProfile, {
+    required Transaction transaction,
+  }) async {
+    final String? email = userProfile.email;
+    if (email == null || email.isEmpty) return;
+    final String emailLower = email.trim().toLowerCase();
+
+    final EmailAccount? existing = await EmailAccount.db.findFirstRow(
+      session,
+      where: (EmailAccountTable t) => t.email.equals(emailLower),
+      transaction: transaction,
+    );
+    if (existing != null) return; // Already linked
+
+    await EmailAccount.db.insertRow(
+      session,
+      EmailAccount(
+        authUserId: userProfile.authUserId,
+        email: emailLower,
+        passwordHash: 'placeholder-otp-only-no-password',
+      ),
+      transaction: transaction,
+    );
   }
 
   static Future<UserInfo> _createUserInfo(Session session, Transaction transaction) async {

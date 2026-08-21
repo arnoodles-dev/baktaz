@@ -22,6 +22,8 @@ import 'package:baktaz_server/src/generated/features/account/domain/model/accoun
 import 'package:baktaz_server/src/generated/features/account/domain/model/profile.dart' as _i7;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart' as _i8;
 import 'package:baktaz_server/src/generated/protocol.dart' as _i9;
+import 'package:baktaz_server/src/generated/features/auth/domain/models/otp_verification_result.dart' as _i10;
+import 'package:baktaz_server/src/generated/features/security/domain/models/security_event.dart' as _i11;
 import 'package:baktaz_server/src/generated/protocol.dart';
 import 'package:baktaz_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -154,6 +156,8 @@ class TestEndpoints {
 
   late final _AdminEndpoint admin;
 
+  late final _AuthEndpoint auth;
+
   late final _EmailIdpEndpoint emailIdp;
 
   late final _FacebookIdpEndpoint facebookIdp;
@@ -163,6 +167,8 @@ class TestEndpoints {
   late final _JwtRefreshEndpoint jwtRefresh;
 
   late final _OtpEndpoint otp;
+
+  late final _SecurityEndpoint security;
 }
 
 class _InternalTestEndpoints extends TestEndpoints implements _i1.InternalTestEndpoints {
@@ -170,11 +176,13 @@ class _InternalTestEndpoints extends TestEndpoints implements _i1.InternalTestEn
   void initialize(_i2.SerializationManager serializationManager, _i2.EndpointDispatch endpoints) {
     account = _AccountEndpoint(endpoints, serializationManager);
     admin = _AdminEndpoint(endpoints, serializationManager);
+    auth = _AuthEndpoint(endpoints, serializationManager);
     emailIdp = _EmailIdpEndpoint(endpoints, serializationManager);
     facebookIdp = _FacebookIdpEndpoint(endpoints, serializationManager);
     googleIdp = _GoogleIdpEndpoint(endpoints, serializationManager);
     jwtRefresh = _JwtRefreshEndpoint(endpoints, serializationManager);
     otp = _OtpEndpoint(endpoints, serializationManager);
+    security = _SecurityEndpoint(endpoints, serializationManager);
   }
 }
 
@@ -253,6 +261,29 @@ class _AccountEndpoint {
           _localUniqueSession,
           _localCallContext.arguments,
         ) as _i4.Future<_i7.Profile?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<void> deleteAccount(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'account',
+        method: 'deleteAccount',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'account',
+          methodName: 'deleteAccount',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments) as _i4.Future<void>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -388,6 +419,52 @@ class _AdminEndpoint {
         );
         var _localReturnValue =
             await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments) as _i4.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _AuthEndpoint {
+  _AuthEndpoint(this._endpointDispatch, this._serializationManager);
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i4.Future<_i10.OtpVerificationResult> completeRegistration(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String email,
+    required String name,
+    required String gender,
+    required String registrationToken,
+    DateTime? birthday,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'auth',
+        method: 'completeRegistration',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'auth',
+          methodName: 'completeRegistration',
+          parameters: _i1.testObjectToJson({
+            'email': email,
+            'name': name,
+            'gender': gender,
+            'registrationToken': registrationToken,
+            'birthday': birthday,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i4.Future<_i10.OtpVerificationResult>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -834,6 +911,79 @@ class _OtpEndpoint {
         );
         var _localReturnValue =
             await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments) as _i4.Future<void>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<_i10.OtpVerificationResult> verifyOtp(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required String email,
+    required String code,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'otp',
+        method: 'verifyOtp',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'otp',
+          methodName: 'verifyOtp',
+          parameters: _i1.testObjectToJson({'email': email, 'code': code}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i4.Future<_i10.OtpVerificationResult>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _SecurityEndpoint {
+  _SecurityEndpoint(this._endpointDispatch, this._serializationManager);
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i4.Future<List<_i11.SecurityEvent>> listSecurityEvents(
+    _i1.TestSessionBuilder sessionBuilder, {
+    required int limit,
+    required int offset,
+    String? eventType,
+    _i2.UuidValue? authUserId,
+  }) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'security',
+        method: 'listSecurityEvents',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'security',
+          methodName: 'listSecurityEvents',
+          parameters: _i1.testObjectToJson({
+            'limit': limit,
+            'offset': offset,
+            'eventType': eventType,
+            'authUserId': authUserId,
+          }),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue = await (_localCallContext.method.call(
+          _localUniqueSession,
+          _localCallContext.arguments,
+        ) as _i4.Future<List<_i11.SecurityEvent>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

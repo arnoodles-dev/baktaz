@@ -78,11 +78,16 @@
   },
   "account": {
     "button": {
-      "logout": "Log Out"
+      "logout": "Log Out",
+      "delete_account": "Delete Account"
     },
     "logout_dialog": {
       "title": "Just making sure...",
       "subtitle": "Are you sure you want to logout?"
+    },
+    "delete_dialog": {
+      "title": "Delete Account",
+      "subtitle": "Are you sure you want to delete your account? This action cannot be undone."
     }
   },
   "register": {
@@ -92,11 +97,15 @@
       "disclaimer": "By continuing, you confirm you have read and agree to our <link href=\"${terms: String}\">Terms of Service</link> and <link href=\"${privacy: String}\">Privacy Policy</link> on how we collect, use, disclose, and process your personal data.",
       "mobile_number": "Mobile Number",
       "email_address": "Email Address",
-      "name": "Name"
+      "name": "Name",
+      "gender": "Gender",
+      "birthday": "Date of Birth"
     },
     "hint": {
       "email": "No spam, we promise",
-      "name": "What should we call you?"
+      "name": "What should we call you?",
+      "gender": "Select gender",
+      "birthday": "Select date of birth"
     }
   },
   "select_address": {
@@ -106,8 +115,9 @@
     "continue_text": "Continue"
   },
   "otp": {
-    "header": "We've sent you an SMS",
+    "header": "We've sent you a code",
     "description": "An OTP has been sent to your mobile number: <b>${phoneNumber: String}</b>",
+    "email_description": "An OTP has been sent to your email address: <b>${email: String}</b>",
     "button": {
       "verify": "Verify"
     },
@@ -115,6 +125,11 @@
       "incorrect_code": "Incorrect OTP Code"
     },
     "resend": "Did not receive the code? Request code"
+  },
+  "blocked": {
+    "title": "Account Blocked",
+    "subtitle": "Your account has been blocked. Please contact support.",
+    "button": "Back to Login"
   },
   "home": {
     "loading": "Loading...",

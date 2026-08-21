@@ -4,6 +4,7 @@ import 'package:baktaz_flutter/features/account/domain/entity/model/profile.dart
 import 'package:baktaz_flutter/features/account/domain/interface/i_account_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:bloc_signals/bloc_signals.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 
@@ -47,6 +48,22 @@ final class ProfileCubit extends CubitSignal<ProfileState> {
         profileResult.fold(_failureHandler.handleFailure, (Profile profile) {
           safeEmit(stateValue.copyWith(profile: profile, queryStatus: const QueryStatus.done()));
         });
+      },
+    );
+  }
+
+  Future<void> deleteAccount() async {
+    await safeRun(
+      onException: _failureHandler.handleException,
+      onLoading: (bool isLoading) {
+        safeEmit(stateValue.copyWith(queryStatus: isLoading ? const QueryStatus.loading() : const QueryStatus.done()));
+      },
+      action: () async {
+        final Result<Unit> possibleFailure = await _accountRepository.deleteAccount().run();
+        possibleFailure.fold(
+          _failureHandler.handleFailure,
+          (_) => safeEmit(stateValue.copyWith(queryStatus: const QueryStatus.done())),
+        );
       },
     );
   }

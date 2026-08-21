@@ -180,6 +180,91 @@ void main() {
           // Verify UserInfo was created with default gender
           expect(account.userInfo, isNotNull);
           expect(account.userInfo!.gender, equals(Gender.unknown));
+
+          // Verify EmailAccount link was created with placeholder password hash
+          final EmailAccount? emailAccount = await EmailAccount.db.findFirstRow(
+            session,
+            where: (EmailAccountTable t) => t.email.equals('newuser@example.com'),
+            transaction: transaction,
+          );
+          expect(emailAccount, isNotNull);
+          expect(emailAccount!.authUserId, equals(authUserId));
+          expect(emailAccount.passwordHash, equals('placeholder-otp-only-no-password'));
+        });
+      });
+
+      test('skips EmailAccount link for user with admin scope', () async {
+        final Session session = sessionBuilder.build();
+        final UuidValue authUserId = UuidValue.fromString('00000000-0000-0000-0000-000000000099');
+        final UserProfileModel userProfile = UserProfileModel(
+          authUserId: authUserId,
+          email: 'adminuser@example.com',
+          fullName: 'Admin User',
+          userName: 'adminuser',
+        );
+
+        await session.db.transaction((Transaction transaction) async {
+          await AuthUser.db.insertRow(
+            session,
+            AuthUser(
+              id: authUserId,
+              createdAt: DateTime.now(),
+              scopeNames: <String>{Scope.admin.name!},
+              blocked: false,
+            ),
+            transaction: transaction,
+          );
+
+          await UserProfile.db.insertRow(
+            session,
+            UserProfile(
+              authUserId: authUserId,
+              email: 'adminuser@example.com',
+              fullName: 'Admin User',
+              userName: 'adminuser',
+            ),
+            transaction: transaction,
+          );
+
+          await AuthUtils.onAfterUserProfileCreated(session, userProfile, transaction: transaction);
+
+          final EmailAccount? emailAccount = await EmailAccount.db.findFirstRow(
+            session,
+            where: (EmailAccountTable t) => t.email.equals('adminuser@example.com'),
+            transaction: transaction,
+          );
+
+          expect(emailAccount, isNull);
+        });
+      });
+
+      test('createEmailAccountLink skips if email already exists or email is empty', () async {
+        final Session session = sessionBuilder.build();
+        final UuidValue authUserId = ServerFixtures.testAuthUserId;
+        final UserProfileModel userProfile = UserProfileModel(
+          authUserId: authUserId,
+          email: 'existinglink@example.com',
+        );
+
+        await session.db.transaction((Transaction transaction) async {
+          await AuthUtils.createEmailAccountLink(session, userProfile, transaction: transaction);
+
+          final EmailAccount? firstLink = await EmailAccount.db.findFirstRow(
+            session,
+            where: (EmailAccountTable t) => t.email.equals('existinglink@example.com'),
+            transaction: transaction,
+          );
+          expect(firstLink, isNotNull);
+
+          // Second call - should return without creating a second row
+          await AuthUtils.createEmailAccountLink(session, userProfile, transaction: transaction);
+
+          final int count = await EmailAccount.db.count(
+            session,
+            where: (EmailAccountTable t) => t.email.equals('existinglink@example.com'),
+            transaction: transaction,
+          );
+          expect(count, equals(1));
         });
       });
 
@@ -214,5 +299,5 @@ void main() {
         });
       });
     });
-  });
+  }, applyMigrations: true);
 }

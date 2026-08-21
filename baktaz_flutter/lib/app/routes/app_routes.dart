@@ -21,8 +21,10 @@ import 'package:baktaz_flutter/features/account/presentation/views/screens/suppo
 import 'package:baktaz_flutter/features/account/presentation/views/screens/support/support_webview_screen.dart';
 import 'package:baktaz_flutter/features/activity/presentation/views/pages/activity_page.dart';
 import 'package:baktaz_flutter/features/activity/presentation/views/screens/activity_history_screen.dart';
-import 'package:baktaz_flutter/features/auth/presentation/views/login_mobile_screen.dart';
+import 'package:baktaz_flutter/features/auth/presentation/views/blocked_account_screen.dart';
+import 'package:baktaz_flutter/features/auth/presentation/views/login_email_screen.dart';
 import 'package:baktaz_flutter/features/auth/presentation/views/login_screen.dart';
+import 'package:baktaz_flutter/features/auth/presentation/views/otp_verification_screen.dart';
 import 'package:baktaz_flutter/features/auth/presentation/views/registration_screen.dart';
 import 'package:baktaz_flutter/features/home/presentation/views/home_page.dart';
 import 'package:baktaz_flutter/features/message/presentation/views/chat_page.dart';
@@ -30,7 +32,6 @@ import 'package:baktaz_flutter/features/message/presentation/views/message_page.
 import 'package:baktaz_flutter/features/message/presentation/views/notification_page.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_multi_formatter/formatters/phone_input_formatter.dart';
 import 'package:go_router/go_router.dart';
 
 part 'app_routes.g.dart';
@@ -70,22 +71,38 @@ class LoginRoute extends GoRouteData with $LoginRoute {
   Widget build(BuildContext context, GoRouterState state) => const LoginScreen();
 }
 
-@TypedGoRoute<LoginMobileRoute>(path: '/loginMobile', name: 'loginMobile')
-class LoginMobileRoute extends GoRouteData with $LoginMobileRoute {
-  const LoginMobileRoute();
+@TypedGoRoute<LoginEmailRoute>(path: '/loginEmail', name: 'loginEmail')
+class LoginEmailRoute extends GoRouteData with $LoginEmailRoute {
+  const LoginEmailRoute();
   @override
-  Widget build(BuildContext context, GoRouterState state) => const LoginMobileScreen();
+  Widget build(BuildContext context, GoRouterState state) => const LoginEmailScreen();
+}
+
+@TypedGoRoute<OtpRoute>(path: '/otp', name: 'otp')
+class OtpRoute extends GoRouteData with $OtpRoute {
+  const OtpRoute({required this.email});
+  final String email;
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) => OtpVerificationScreen(email: email);
+}
+
+@TypedGoRoute<BlockedRoute>(path: '/blocked', name: 'blocked')
+class BlockedRoute extends GoRouteData with $BlockedRoute {
+  const BlockedRoute();
+  @override
+  Widget build(BuildContext context, GoRouterState state) => const BlockedAccountScreen();
 }
 
 @TypedGoRoute<RegistrationRoute>(path: '/registration', name: 'registration')
 class RegistrationRoute extends GoRouteData with $RegistrationRoute {
-  const RegistrationRoute({required this.mobileNumber, required this.$extra});
-  final String mobileNumber;
-  final PhoneCountryData $extra;
+  const RegistrationRoute({required this.email, required this.registrationToken});
+  final String email;
+  final String registrationToken;
 
   @override
   Widget build(BuildContext context, GoRouterState state) =>
-      RegistrationScreen(countryCode: $extra, mobileNumber: mobileNumber);
+      RegistrationScreen(email: email, registrationToken: registrationToken);
 }
 
 @TypedGoRoute<SelectAddressRoute>(path: '/selectAddress', name: 'selectAddress')

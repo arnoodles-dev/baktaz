@@ -1,1 +1,1 @@
-enum LoginProvider { google, facebook, mobile }
+enum LoginProvider { google, facebook, email }

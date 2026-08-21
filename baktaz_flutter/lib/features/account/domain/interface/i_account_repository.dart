@@ -9,4 +9,5 @@ abstract interface class IAccountRepository {
   TaskResult<Profile> getProfile();
   TaskResult<Unit> addAddress(Address address);
   TaskResult<Address?> getDefaultAddress();
+  TaskResult<Unit> deleteAccount();
 }

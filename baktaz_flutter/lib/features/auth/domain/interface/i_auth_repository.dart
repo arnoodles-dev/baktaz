@@ -1,4 +1,4 @@
-import 'package:baktaz_flutter/features/auth/domain/entity/enum/login_provider.dart';
+import 'package:baktaz_client/baktaz_client.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
@@ -6,11 +6,20 @@ import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 abstract interface class IAuthRepository {
   AuthSuccess? get authInfo;
 
-  Future<void> loginWithProvider({
-    required LoginProvider provider,
-    required void Function(AuthSuccess?) onAuthenticated,
-    required void Function(Failure) onError,
-    MobileNumber? mobileNumber,
+  TaskResult<Unit> sendOtp({required String email});
+
+  TaskResult<AuthSuccess?> loginWithGoogle();
+
+  TaskResult<AuthSuccess?> loginWithFacebook();
+
+  TaskResult<OtpVerificationResult> verifyOtp({required String email, required String code});
+
+  TaskResult<AuthSuccess> completeRegistration({
+    required String email,
+    required String name,
+    required String gender,
+    required String registrationToken,
+    DateTime? birthday,
   });
 
   TaskResult<Unit> logout();

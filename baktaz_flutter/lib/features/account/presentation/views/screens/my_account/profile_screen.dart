@@ -6,6 +6,7 @@ import 'package:baktaz_flutter/features/account/domain/entity/model/profile.dart
 import 'package:baktaz_flutter/features/account/presentation/widgets/account_details_container.dart';
 import 'package:baktaz_flutter/features/account/presentation/widgets/account_details_content.dart';
 import 'package:baktaz_flutter/features/account/presentation/widgets/account_details_tile.dart';
+import 'package:baktaz_flutter/features/account/presentation/widgets/dialogs/delete_account_confirmation_dialog.dart';
 import 'package:baktaz_flutter/features/account/presentation/widgets/dialogs/logout_confirmation_dialog.dart';
 import 'package:baktaz_flutter/features/auth/domain/cubit/auth/auth_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
@@ -34,6 +35,19 @@ class ProfileScreen extends StatelessWidget {
   void _showLogoutDialog(BuildContext context) => DialogUtils.showBottomSheet(
     context,
     child: LogoutConfirmationDialog(onLogout: () => context.read<AuthCubit>().terminateSession()),
+  );
+
+  void _showDeleteAccountDialog(BuildContext context) => DialogUtils.showBottomSheet(
+    context,
+    child: DeleteAccountConfirmationDialog(
+      onConfirm: () async {
+        Navigator.pop(context);
+        await context.read<ProfileCubit>().deleteAccount();
+        if (context.mounted) {
+          await context.read<AuthCubit>().terminateSession();
+        }
+      },
+    ),
   );
 
   @override
@@ -129,9 +143,12 @@ class ProfileScreen extends StatelessWidget {
                   child: AccountDetailsContent(
                     title: 'Account Settings',
                     children: <Widget>[
-                      BaktazText(
-                        text: 'Request for Account Deletion',
-                        style: context.textTheme.titleMedium?.copyWith(color: context.colorScheme.error),
+                      GestureDetector(
+                        onTap: () => _showDeleteAccountDialog(context),
+                        child: BaktazText(
+                          text: 'Request for Account Deletion',
+                          style: context.textTheme.titleMedium?.copyWith(color: context.colorScheme.error),
+                        ),
                       ),
                       const BaktazDivider(padding: Paddings.verticalMedium),
                       GestureDetector(

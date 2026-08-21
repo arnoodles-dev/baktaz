@@ -2,11 +2,15 @@ import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:loader_overlay/loader_overlay.dart';
 import 'package:pinput/pinput.dart';
 
 class BaktazOtpScreen extends HookWidget {
-  const BaktazOtpScreen({super.key});
+  const BaktazOtpScreen({required this.email, this.otpError, this.onOtpVerified, this.onResend, super.key});
+
+  final String email;
+  final String? otpError;
+  final ValueChanged<String>? onOtpVerified;
+  final VoidCallback? onResend;
 
   static const int otpLength = 6;
 
@@ -14,9 +18,6 @@ class BaktazOtpScreen extends HookWidget {
   Widget build(BuildContext context) {
     final TextEditingController pinController = useTextEditingController();
     final FocusNode focusNode = useFocusNode();
-
-    final ValueNotifier<bool> canSubmit = useState<bool>(false);
-    final ValueNotifier<String?> otpError = useState<String?>(null);
 
     return Scaffold(
       backgroundColor: context.colorScheme.surface,
@@ -51,7 +52,7 @@ class BaktazOtpScreen extends HookWidget {
               child: BaktazText(
                 textType: TextType.styled,
                 textAlign: TextAlign.center,
-                text: context.i18n.otp.description(phoneNumber: '+91*****6210'),
+                text: context.i18n.otp.email_description(email: email),
                 style: context.textTheme.titleMedium?.copyWith(
                   fontWeight: AppFontWeight.regular,
                   color: context.colorScheme.onSurface,
@@ -63,8 +64,9 @@ class BaktazOtpScreen extends HookWidget {
               child: _OtpForm(
                 pinController: pinController,
                 focusNode: focusNode,
-                canSubmit: canSubmit,
                 otpError: otpError,
+                onOtpVerified: onOtpVerified,
+                onResend: onResend,
               ),
             ),
           ],
@@ -74,46 +76,23 @@ class BaktazOtpScreen extends HookWidget {
   }
 }
 
-class _OtpForm extends StatelessWidget {
+class _OtpForm extends HookWidget {
   const _OtpForm({
     required this.pinController,
     required this.focusNode,
-    required this.canSubmit,
     required this.otpError,
+    this.onOtpVerified,
+    this.onResend,
   });
 
   final TextEditingController pinController;
   final FocusNode focusNode;
-  final ValueNotifier<bool> canSubmit;
-  final ValueNotifier<String?> otpError;
-
-  Future<void> _onSubmitTap(BuildContext context) async {
-    context.loaderOverlay.show();
-    await Future<void>.delayed(const Duration(seconds: 1));
-    if (pinController.text != '123456' && context.mounted) {
-      otpError.value = context.i18n.otp.error.incorrect_code;
-      context.loaderOverlay.hide();
-    } else {
-      if (context.mounted) {
-        context.loaderOverlay.hide();
-        Navigator.pop(context);
-      }
-    }
-  }
-
-  void _onPinChanged(String text) {
-    final bool validPinLength = pinController.length == BaktazOtpScreen.otpLength;
-    if (canSubmit.value != validPinLength) {
-      canSubmit.value = validPinLength;
-      if (otpError.value != null && !canSubmit.value) {
-        otpError.value = null;
-      }
-    }
-  }
+  final String? otpError;
+  final ValueChanged<String>? onOtpVerified;
+  final VoidCallback? onResend;
 
   @override
   Widget build(BuildContext context) {
-    final Color borderColor = context.colorScheme.primary;
     final Color fillColor = context.colorScheme.surfaceContainerHighest;
     final PinTheme defaultPinTheme = PinTheme(
       width: AppSizes.size56,
@@ -135,59 +114,41 @@ class _OtpForm extends StatelessWidget {
             controller: pinController,
             focusNode: focusNode,
             defaultPinTheme: defaultPinTheme,
-            forceErrorState: otpError.value != null,
+            forceErrorState: otpError != null,
             separatorBuilder: (int index) => Gap.small(),
             hapticFeedbackType: HapticFeedbackType.lightImpact,
-            onChanged: _onPinChanged,
+            onCompleted: (String pin) {
+              onOtpVerified?.call(pin);
+            },
             focusedPinTheme: defaultPinTheme.copyWith(
-              decoration: defaultPinTheme.decoration?.copyWith(border: Border.all(color: borderColor)),
+              decoration: defaultPinTheme.decoration?.copyWith(border: Border.all(color: context.colorScheme.primary)),
             ),
             errorPinTheme: defaultPinTheme.copyWith(
               decoration: defaultPinTheme.decoration?.copyWith(border: Border.all(color: context.colorScheme.error)),
             ),
           ),
         ),
-        Gap.x2Large(),
-        ValueListenableBuilder<bool>(
-          valueListenable: canSubmit,
-          builder: (BuildContext context, bool canSubmitValue, _) => BaktazButton(
-            isExpanded: true,
-            text: context.i18n.otp.button.verify,
-            textStyle: context.textTheme.bodyLarge?.copyWith(
-              color: canSubmitValue ? context.colorScheme.onPrimary : context.colorScheme.outline,
+        Gap.large(),
+        if (otpError != null) ...<Widget>[
+          Center(
+            child: BaktazText(
+              text: otpError!,
+              style: context.textTheme.bodyLarge?.copyWith(
+                fontWeight: AppFontWeight.semiBold,
+                color: context.colorScheme.error,
+              ),
             ),
-            onPressed: canSubmitValue
-                ? () {
-                    focusNode.unfocus();
-                    _onSubmitTap(context);
-                  }
-                : null,
           ),
-        ),
-        ValueListenableBuilder<String?>(
-          valueListenable: otpError,
-          builder: (BuildContext context, String? errorValue, _) {
-            if (errorValue != null) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: AppSizes.medium, bottom: AppSizes.xSmall),
-                  child: BaktazText(
-                    text: errorValue,
-                    style: context.textTheme.bodyLarge?.copyWith(
-                      color: context.colorScheme.error,
-                      fontWeight: AppFontWeight.semiBold,
-                    ),
-                  ),
-                ),
-              );
-            }
-            return Gap.xLarge();
-          },
-        ),
+          Gap.xLarge(),
+        ] else
+          Gap.xLarge(),
         Center(
-          child: BaktazText(
-            text: context.i18n.otp.resend,
-            style: context.textTheme.bodyLarge?.copyWith(color: context.colorScheme.outline),
+          child: GestureDetector(
+            onTap: onResend,
+            child: BaktazText(
+              text: context.i18n.otp.resend,
+              style: context.textTheme.bodyLarge?.copyWith(color: context.colorScheme.outline),
+            ),
           ),
         ),
       ],

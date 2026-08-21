@@ -144,7 +144,6 @@ app.*.symbols
 app.*.map.json
 release.keystore
 baktas_flutter/android/.kotlin
-data
 node_modules
 .codegraph
 package.json
@@ -152,3 +151,4 @@ package-lock.json
 **/.flutter-plugins-dependencies
 .codebase-memory
 baktas_shared/build/ios/SourcePackages
+data/stream_store

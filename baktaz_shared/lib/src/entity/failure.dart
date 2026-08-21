@@ -16,7 +16,7 @@ sealed class Failure with _$Failure implements Exception {
 
   const factory Failure.deviceInfo(String? message) = DeviceInfoError;
 
-  const factory Failure.authentication(String? message) = AuthenticationError;
+  const factory Failure.authentication(String? message, {@Default(false) bool blocked}) = AuthenticationError;
 
   const factory Failure.sessionUnavailable() = SessionUnavailableError;
 

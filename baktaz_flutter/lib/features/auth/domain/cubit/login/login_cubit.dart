@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:baktaz_client/baktaz_client.dart';
 import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
 import 'package:baktaz_flutter/features/auth/domain/entity/enum/login_provider.dart';
 import 'package:baktaz_flutter/features/auth/domain/interface/i_auth_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:bloc_signals/bloc_signals.dart';
+import 'package:fpdart/fpdart.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:injectable/injectable.dart';
 import 'package:mobile_service_core/features/analytics/i_analytics_service.dart';
@@ -22,22 +24,7 @@ class LoginCubit extends CubitSignal<LoginState> {
   final IAnalyticsService _analyticsService;
   final FailureHandler _failureHandler;
 
-  Future<void> loginWithMobile(String countryCode, String mobileNumber) async {
-    await safeRun(
-      onException: _failureHandler.handleException,
-
-      action: () async {
-        await _authRepository.loginWithProvider(
-          provider: LoginProvider.mobile,
-          mobileNumber: MobileNumber(mobileNumber),
-          onAuthenticated: (AuthSuccess? authInfo) => _onAuthenticated(authInfo, LoginProvider.mobile),
-          onError: _onAuthError,
-        );
-      },
-    );
-  }
-
-  Future<void> loginWithProvider(LoginProvider provider, {MobileNumber? mobileNumber}) async {
+  Future<void> loginWithProvider(LoginProvider provider, {String? email}) async {
     await safeRun(
       onException: _failureHandler.handleException,
       onLoading: (bool isLoading) {
@@ -46,30 +33,91 @@ class LoginCubit extends CubitSignal<LoginState> {
         }
       },
       action: () async {
-        await Future<void>.delayed(const Duration(seconds: 2));
-        await _authRepository.loginWithProvider(
-          provider: provider,
-          mobileNumber: mobileNumber,
-          onAuthenticated: (AuthSuccess? authInfo) => _onAuthenticated(authInfo, provider),
-          onError: _onAuthError,
-        );
+        final TaskResult<dynamic> taskResult = switch (provider) {
+          LoginProvider.google => _authRepository.loginWithGoogle(),
+          LoginProvider.facebook => _authRepository.loginWithFacebook(),
+          LoginProvider.email => _authRepository.sendOtp(email: email ?? ''),
+        };
+
+        final Either<Failure, dynamic> result = await taskResult.run();
+        result.fold(_onAuthError, (dynamic value) {
+          switch (provider) {
+            case LoginProvider.google:
+            case LoginProvider.facebook:
+              _onAuthenticated(value as AuthSuccess?, provider);
+            case LoginProvider.email:
+              if (email != null && email.trim().isNotEmpty) {
+                safeEmit(LoginState.codeSent(email));
+              }
+          }
+        });
+      },
+    );
+  }
+
+  Future<void> verifyOtp({required String email, required String code}) async {
+    await safeRun(
+      onException: _failureHandler.handleException,
+      onLoading: (bool isLoading) {
+        if (isLoading) {
+          safeEmit(LoginState.verifying(email: email));
+        }
+      },
+      action: () async {
+        final Either<Failure, OtpVerificationResult> result = await _authRepository
+            .verifyOtp(email: email, code: code)
+            .run();
+        result.fold(_onAuthError, (OtpVerificationResult verificationResult) {
+          safeEmit(LoginState.verified(verificationResult));
+          if (verificationResult.authInfo != null) {
+            _onAuthenticated(verificationResult.authInfo, LoginProvider.email);
+          }
+        });
+      },
+    );
+  }
+
+  Future<void> completeRegistration({
+    required String email,
+    required String name,
+    required String gender,
+    required String registrationToken,
+    DateTime? birthday,
+  }) async {
+    await safeRun(
+      onException: _failureHandler.handleException,
+      action: () async {
+        final Either<Failure, AuthSuccess> result = await _authRepository
+            .completeRegistration(
+              email: email,
+              name: name,
+              gender: gender,
+              registrationToken: registrationToken,
+              birthday: birthday,
+            )
+            .run();
+        result.fold(_onAuthError, (AuthSuccess authInfo) {
+          safeEmit(LoginState.registrationCompleted(authInfo));
+          _onAuthenticated(authInfo, LoginProvider.email);
+        });
       },
     );
   }
 
   void _onAuthenticated(AuthSuccess? authInfo, LoginProvider provider) {
     unawaited(_analyticsService.logLogin(provider.name));
-    if (authInfo == null) {
-      safeEmit(const LoginState.registrationRequired());
-    } else {
+    if (authInfo != null) {
       safeEmit(LoginState.success(authInfo));
     }
   }
 
   void _onAuthError(Failure failure) {
     _failureHandler.handleFailure(failure);
+    if (failure is AuthenticationError && failure.blocked) {
+      safeEmit(const LoginState.blocked());
+      return;
+    }
     safeEmit(LoginState.failed(failure));
-    // emit the initial state to reset the error
     safeEmit(const LoginState.idle());
   }
 }

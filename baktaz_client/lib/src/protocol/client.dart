@@ -20,11 +20,15 @@ import 'package:baktaz_client/src/protocol/features/account/domain/model/profile
     as _i5;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i6;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+import 'package:baktaz_client/src/protocol/features/auth/domain/models/otp_verification_result.dart'
     as _i7;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i8;
-import 'package:http/http.dart' as _i9;
-import 'protocol.dart' as _i10;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i8;
+import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+    as _i9;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i10;
+import 'package:http/http.dart' as _i11;
+import 'protocol.dart' as _i12;
 
 /// {@category Endpoint}
 abstract class EndpointAdminEndpointBase extends _i1.EndpointRef {
@@ -58,6 +62,12 @@ class EndpointAccount extends _i1.EndpointRef {
         'getProfile',
         {},
       );
+
+  _i2.Future<void> deleteAccount() => caller.callServerEndpoint<void>(
+    'account',
+    'deleteAccount',
+    {},
+  );
 }
 
 /// {@category Endpoint}
@@ -114,7 +124,33 @@ class EndpointAdmin extends EndpointAdminEndpointBase {
 }
 
 /// {@category Endpoint}
-class EndpointEmailIdp extends _i7.EndpointEmailIdpBase {
+class EndpointAuth extends _i1.EndpointRef {
+  EndpointAuth(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'auth';
+
+  _i2.Future<_i7.OtpVerificationResult> completeRegistration({
+    required String email,
+    required String name,
+    required String gender,
+    required String registrationToken,
+    DateTime? birthday,
+  }) => caller.callServerEndpoint<_i7.OtpVerificationResult>(
+    'auth',
+    'completeRegistration',
+    {
+      'email': email,
+      'name': name,
+      'gender': gender,
+      'registrationToken': registrationToken,
+      'birthday': birthday,
+    },
+  );
+}
+
+/// {@category Endpoint}
+class EndpointEmailIdp extends _i8.EndpointEmailIdpBase {
   EndpointEmailIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -294,7 +330,7 @@ class EndpointEmailIdp extends _i7.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointFacebookIdp extends _i7.EndpointFacebookIdpBase {
+class EndpointFacebookIdp extends _i8.EndpointFacebookIdpBase {
   EndpointFacebookIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -322,7 +358,7 @@ class EndpointFacebookIdp extends _i7.EndpointFacebookIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointGoogleIdp extends _i7.EndpointGoogleIdpBase {
+class EndpointGoogleIdp extends _i8.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -424,20 +460,56 @@ class EndpointOtp extends _i1.EndpointRef {
         'sendOtp',
         {'email': email},
       );
+
+  _i2.Future<_i7.OtpVerificationResult> verifyOtp({
+    required String email,
+    required String code,
+  }) => caller.callServerEndpoint<_i7.OtpVerificationResult>(
+    'otp',
+    'verifyOtp',
+    {
+      'email': email,
+      'code': code,
+    },
+  );
+}
+
+/// {@category Endpoint}
+class EndpointSecurity extends EndpointAdminEndpointBase {
+  EndpointSecurity(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'security';
+
+  _i2.Future<List<_i9.SecurityEvent>> listSecurityEvents({
+    required int limit,
+    required int offset,
+    String? eventType,
+    _i1.UuidValue? authUserId,
+  }) => caller.callServerEndpoint<List<_i9.SecurityEvent>>(
+    'security',
+    'listSecurityEvents',
+    {
+      'limit': limit,
+      'offset': offset,
+      'eventType': eventType,
+      'authUserId': authUserId,
+    },
+  );
 }
 
 class Modules {
   Modules(Client client) {
     auth_core = _i6.Caller(client);
-    serverpod_auth_idp = _i7.Caller(client);
-    auth = _i8.Caller(client);
+    serverpod_auth_idp = _i8.Caller(client);
+    auth = _i10.Caller(client);
   }
 
   late final _i6.Caller auth_core;
 
-  late final _i7.Caller serverpod_auth_idp;
+  late final _i8.Caller serverpod_auth_idp;
 
-  late final _i8.Caller auth;
+  late final _i10.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -454,10 +526,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i9.Client? httpClientOverride,
+    _i11.Client? httpClientOverride,
   }) : super(
          host,
-         _i10.Protocol(),
+         _i12.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -469,17 +541,21 @@ class Client extends _i1.ServerpodClientShared {
        ) {
     account = EndpointAccount(this);
     admin = EndpointAdmin(this);
+    auth = EndpointAuth(this);
     emailIdp = EndpointEmailIdp(this);
     facebookIdp = EndpointFacebookIdp(this);
     googleIdp = EndpointGoogleIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     otp = EndpointOtp(this);
+    security = EndpointSecurity(this);
     modules = Modules(this);
   }
 
   late final EndpointAccount account;
 
   late final EndpointAdmin admin;
+
+  late final EndpointAuth auth;
 
   late final EndpointEmailIdp emailIdp;
 
@@ -491,17 +567,21 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointOtp otp;
 
+  late final EndpointSecurity security;
+
   late final Modules modules;
 
   @override
   Map<String, _i1.EndpointRef> get endpointRefLookup => {
     'account': account,
     'admin': admin,
+    'auth': auth,
     'emailIdp': emailIdp,
     'facebookIdp': facebookIdp,
     'googleIdp': googleIdp,
     'jwtRefresh': jwtRefresh,
     'otp': otp,
+    'security': security,
   };
 
   @override

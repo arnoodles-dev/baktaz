@@ -6,7 +6,6 @@ import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
 import 'package:baktaz_flutter/app/themes/app_theme.dart';
 import 'package:baktaz_flutter/app/utils/app_utils.dart';
 import 'package:baktaz_flutter/core/domain/cubit/theme/theme_cubit.dart';
-import 'package:baktaz_flutter/core/presentation/views/screens/baktaz_otp_screen.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/dialogs/country_selector_bottom_sheet.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
@@ -25,19 +24,6 @@ final class DialogUtils {
         onPositivePressed: AppUtils.closeApp,
       ) ??
       false;
-
-  static Future<dynamic> showOtpDialog({required BuildContext context}) async {
-    final dynamic result = await Navigator.push<dynamic>(
-      context,
-      MaterialPageRoute<dynamic>(fullscreenDialog: true, builder: (BuildContext context) => const BaktazOtpScreen()),
-    );
-
-    if (result is Exception) {
-      throw result;
-    } else {
-      return result;
-    }
-  }
 
   static Future<dynamic> showFullScreenDialog(BuildContext context, {required Widget screen}) async {
     final dynamic result = await Navigator.push<dynamic>(

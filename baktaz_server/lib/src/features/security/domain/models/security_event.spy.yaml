@@ -1,0 +1,8 @@
+class: SecurityEvent
+table: security_event
+fields:
+  id: UuidValue?, defaultPersist=random
+  authUserId: UuidValue?
+  eventType: String
+  metadata: String?
+  createdAt: DateTime

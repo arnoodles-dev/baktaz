@@ -1,7 +1,10 @@
 // ignore_for_file: no-empty-block
 
+import 'package:baktaz_server/src/app/injection/service_locator.dart';
+import 'package:baktaz_server/src/app/utils/auth_utils.dart';
 import 'package:baktaz_server/src/features/auth/domain/interface/i_admin_repository.dart';
 import 'package:baktaz_server/src/features/auth/endpoint/admin_endpoint.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mockito/mockito.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -12,7 +15,25 @@ import '../../utils/generated_mocks.mocks.dart';
 import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
+  if (!GetIt.I.isRegistered<IAdminRepository>()) {
+    configureDependencies();
+  }
+
   withServerpod('Given AdminEndpoint', (TestSessionBuilder sessionBuilder, TestEndpoints endpoints) {
+    setUpAll(() {
+      try {
+        AuthServices.instance;
+      } on Object catch (_) {
+        AuthServices.set(
+          userProfileConfig: const UserProfileConfig(
+            onBeforeUserProfileCreated: AuthUtils.onBeforeUserProfileCreated,
+            onAfterUserProfileCreated: AuthUtils.onAfterUserProfileCreated,
+          ),
+          tokenManagerBuilders: <TokenManagerBuilder<TokenManager>>[JwtConfigFromPasswords()],
+        );
+      }
+    });
+
     group('when unauthenticated', () {
       final TestSessionBuilder unauthedSession = sessionBuilder.copyWith(
         authentication: AuthenticationOverride.unauthenticated(),
@@ -256,13 +277,14 @@ void main() {
         final AdminEndpoint customAdminEndpoint = AdminEndpoint(mockRepo);
         final Session session = adminSession.build();
 
-        when(mockRepo.updateUserScope(session, ServerFixtures.testAuthUserId, argThat(contains(Scope.admin))))
+        when(mockRepo.updateUserScope(session, ServerFixtures.testAuthUserId, argThat(contains(const Scope('admin')))))
             .thenAnswer((Invocation _) async {});
 
         await customAdminEndpoint.updateUserScope(session, ServerFixtures.testAuthUserId, <String>['admin']);
 
-        verify(mockRepo.updateUserScope(session, ServerFixtures.testAuthUserId, argThat(contains(Scope.admin))))
-            .called(1);
+        verify(
+          mockRepo.updateUserScope(session, ServerFixtures.testAuthUserId, argThat(contains(const Scope('admin')))),
+        ).called(1);
       });
 
       test('then updateUserScope maps multiple scope names to scopes', () async {
@@ -294,7 +316,7 @@ void main() {
         final AdminEndpoint customAdminEndpoint = AdminEndpoint(mockRepo);
         final Session session = adminSession.build();
 
-        when(mockRepo.updateUserScope(session, ServerFixtures.testAuthUserId, argThat(contains(Scope.admin))))
+        when(mockRepo.updateUserScope(session, ServerFixtures.testAuthUserId, argThat(contains(const Scope('admin')))))
             .thenThrow(Exception('Invalid scope'));
 
         await expectLater(
