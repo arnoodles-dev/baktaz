@@ -13,17 +13,19 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:serverpod_test/serverpod_test.dart' as _i1;
 import 'package:serverpod/serverpod.dart' as _i2;
-
 import 'dart:io' as _i3;
 import 'dart:async' as _i4;
-
 import 'package:baktaz_server/src/generated/features/account/domain/model/account.dart' as _i5;
 import 'package:baktaz_server/src/generated/features/account/domain/model/account_summary.dart' as _i6;
 import 'package:baktaz_server/src/generated/features/account/domain/model/profile.dart' as _i7;
 import 'package:serverpod_auth_core_server/serverpod_auth_core_server.dart' as _i8;
 import 'package:baktaz_server/src/generated/protocol.dart' as _i9;
 import 'package:baktaz_server/src/generated/features/auth/domain/models/otp_verification_result.dart' as _i10;
-import 'package:baktaz_server/src/generated/features/security/domain/models/security_event.dart' as _i11;
+import 'package:baktaz_server/src/generated/features/home/domain/model/daily_step_telemetry.dart' as _i11;
+import 'package:baktaz_server/src/generated/features/home/domain/model/weekly_step_analytics.dart' as _i12;
+import 'package:baktaz_server/src/generated/features/home/domain/model/active_challenge_summary.dart' as _i13;
+import 'package:baktaz_server/src/generated/features/home/domain/model/home_leaderboard_entry.dart' as _i14;
+import 'package:baktaz_server/src/generated/features/security/domain/models/security_event.dart' as _i15;
 import 'package:baktaz_server/src/generated/protocol.dart';
 import 'package:baktaz_server/src/generated/endpoints.dart';
 export 'package:serverpod_test/serverpod_test_public_exports.dart';
@@ -168,6 +170,8 @@ class TestEndpoints {
 
   late final _OtpEndpoint otp;
 
+  late final _HomeEndpoint home;
+
   late final _SecurityEndpoint security;
 }
 
@@ -182,6 +186,7 @@ class _InternalTestEndpoints extends TestEndpoints implements _i1.InternalTestEn
     googleIdp = _GoogleIdpEndpoint(endpoints, serializationManager);
     jwtRefresh = _JwtRefreshEndpoint(endpoints, serializationManager);
     otp = _OtpEndpoint(endpoints, serializationManager);
+    home = _HomeEndpoint(endpoints, serializationManager);
     security = _SecurityEndpoint(endpoints, serializationManager);
   }
 }
@@ -207,10 +212,9 @@ class _AccountEndpoint {
           parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i5.Account?>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i5.Account?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -232,10 +236,9 @@ class _AccountEndpoint {
           parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i6.AccountSummary?>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i6.AccountSummary?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -257,10 +260,9 @@ class _AccountEndpoint {
           parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i7.Profile?>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i7.Profile?>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -342,10 +344,9 @@ class _AdminEndpoint {
           parameters: _i1.testObjectToJson({}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<List<_i8.AuthUserModel>>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<List<_i8.AuthUserModel>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -461,10 +462,9 @@ class _AuthEndpoint {
           }),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i10.OtpVerificationResult>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i10.OtpVerificationResult>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -498,10 +498,9 @@ class _EmailIdpEndpoint {
           parameters: _i1.testObjectToJson({'email': email, 'password': password}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i8.AuthSuccess>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i8.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -523,10 +522,9 @@ class _EmailIdpEndpoint {
           parameters: _i1.testObjectToJson({'email': email}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i2.UuidValue>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i2.UuidValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -555,10 +553,9 @@ class _EmailIdpEndpoint {
           }),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<String>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -584,10 +581,9 @@ class _EmailIdpEndpoint {
           parameters: _i1.testObjectToJson({'registrationToken': registrationToken, 'password': password}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i8.AuthSuccess>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i8.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -609,10 +605,9 @@ class _EmailIdpEndpoint {
           parameters: _i1.testObjectToJson({'email': email}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i2.UuidValue>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i2.UuidValue>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -641,10 +636,9 @@ class _EmailIdpEndpoint {
           }),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<String>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<String>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -727,10 +721,9 @@ class _FacebookIdpEndpoint {
           parameters: _i1.testObjectToJson({'accessToken': accessToken}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i8.AuthSuccess>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i8.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -787,10 +780,9 @@ class _GoogleIdpEndpoint {
           parameters: _i1.testObjectToJson({'idToken': idToken, 'accessToken': accessToken}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i8.AuthSuccess>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i8.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -817,10 +809,9 @@ class _GoogleIdpEndpoint {
           parameters: _i1.testObjectToJson({'code': code, 'codeVerifier': codeVerifier, 'redirectUri': redirectUri}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i8.AuthSuccess>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i8.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -876,10 +867,9 @@ class _JwtRefreshEndpoint {
           parameters: _i1.testObjectToJson({'refreshToken': refreshToken}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i8.AuthSuccess>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i8.AuthSuccess>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -936,10 +926,137 @@ class _OtpEndpoint {
           parameters: _i1.testObjectToJson({'email': email, 'code': code}),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<_i10.OtpVerificationResult>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i10.OtpVerificationResult>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+}
+
+class _HomeEndpoint {
+  _HomeEndpoint(this._endpointDispatch, this._serializationManager);
+
+  final _i2.EndpointDispatch _endpointDispatch;
+
+  final _i2.SerializationManager _serializationManager;
+
+  _i4.Future<_i11.DailyStepTelemetry> getDailyStepTelemetry(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'home',
+        method: 'getDailyStepTelemetry',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'home',
+          methodName: 'getDailyStepTelemetry',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i11.DailyStepTelemetry>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<_i12.WeeklyStepAnalytics> getWeeklyStepAnalytics(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'home',
+        method: 'getWeeklyStepAnalytics',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'home',
+          methodName: 'getWeeklyStepAnalytics',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i12.WeeklyStepAnalytics>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<_i13.ActiveChallengeSummary?> getActiveChallengeSummary(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'home',
+        method: 'getActiveChallengeSummary',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'home',
+          methodName: 'getActiveChallengeSummary',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i13.ActiveChallengeSummary?>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<List<_i14.HomeLeaderboardEntry>> getLeaderboardPreview(_i1.TestSessionBuilder sessionBuilder) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'home',
+        method: 'getLeaderboardPreview',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'home',
+          methodName: 'getLeaderboardPreview',
+          parameters: _i1.testObjectToJson({}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<List<_i14.HomeLeaderboardEntry>>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
+  _i4.Future<_i11.DailyStepTelemetry> syncSteps(_i1.TestSessionBuilder sessionBuilder, int steps, String source) async {
+    return _i1.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession = (sessionBuilder as _i1.InternalTestSessionBuilder).internalBuild(
+        endpoint: 'home',
+        method: 'syncSteps',
+      );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'home',
+          methodName: 'syncSteps',
+          parameters: _i1.testObjectToJson({'steps': steps, 'source': source}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<_i11.DailyStepTelemetry>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();
@@ -955,7 +1072,7 @@ class _SecurityEndpoint {
 
   final _i2.SerializationManager _serializationManager;
 
-  _i4.Future<List<_i11.SecurityEvent>> listSecurityEvents(
+  _i4.Future<List<_i15.SecurityEvent>> listSecurityEvents(
     _i1.TestSessionBuilder sessionBuilder, {
     required int limit,
     required int offset,
@@ -980,10 +1097,9 @@ class _SecurityEndpoint {
           }),
           serializationManager: _serializationManager,
         );
-        var _localReturnValue = await (_localCallContext.method.call(
-          _localUniqueSession,
-          _localCallContext.arguments,
-        ) as _i4.Future<List<_i11.SecurityEvent>>);
+        var _localReturnValue =
+            await (_localCallContext.method.call(_localUniqueSession, _localCallContext.arguments)
+                as _i4.Future<List<_i15.SecurityEvent>>);
         return _localReturnValue;
       } finally {
         await _localUniqueSession.close();

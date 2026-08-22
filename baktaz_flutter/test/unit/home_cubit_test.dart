@@ -1,108 +1,177 @@
-import 'package:baktaz_flutter/features/account/domain/entity/model/address.dart';
-import 'package:baktaz_flutter/features/account/domain/entity/model/profile.dart';
+import 'package:baktaz_client/baktaz_client.dart' as serverpod;
 import 'package:baktaz_flutter/features/home/domain/cubit/home/home_cubit.dart';
+import 'package:baktaz_flutter/features/home/domain/entity/active_challenge_summary.dart';
+import 'package:baktaz_flutter/features/home/domain/entity/daily_step_telemetry.dart';
+import 'package:baktaz_flutter/features/home/domain/entity/home_leaderboard_entry.dart';
+import 'package:baktaz_flutter/features/home/domain/entity/weekly_step_analytics.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
-import '../fixtures/client_fixtures.dart';
 import '../utils/generated_mocks.mocks.dart';
 
 void main() {
   group(HomeCubit, () {
-    late MockIAccountRepository accountRepository;
+    late MockIStepsRepository stepsRepository;
+    late MockIChallengeRepository challengeRepository;
     late MockFailureHandler failureHandler;
 
+    final serverpod.DailyStepTelemetry mockServerTelemetry = serverpod.DailyStepTelemetry(
+      userId: UuidValue.fromString('00000000-0000-0000-0000-000000000001'),
+      date: '2026-08-22',
+      currentSteps: 7500,
+      goalSteps: 10000,
+      syncSource: 'Health Connect',
+      lastSyncedAt: DateTime.now().toUtc(),
+      isFlaggedForReview: false,
+    );
+    final DailyStepTelemetry mockTelemetry = DailyStepTelemetry.fromServer(mockServerTelemetry);
+
+    final serverpod.WeeklyStepAnalytics mockServerWeekly = serverpod.WeeklyStepAnalytics(
+      weeklySteps: const <int>[5000, 7000, 6500, 8000, 7500, 9000, 8500],
+      averageSteps: 7357,
+      totalWeeklySteps: 51500,
+      goalTarget: 10000,
+    );
+    final WeeklyStepAnalytics mockWeekly = WeeklyStepAnalytics.fromServer(mockServerWeekly);
+
+    final serverpod.ActiveChallengeSummary mockServerChallenge = serverpod.ActiveChallengeSummary(
+      isEnrolled: true,
+      title: 'Step Master',
+      rank: 5,
+      totalParticipants: 100,
+      prizePoolText: '1,000 pts',
+      gapText: '200 steps to #4',
+      leaders: const <String>['Alice', 'Bob'],
+      currentDay: 3,
+      totalDays: 7,
+    );
+    final ActiveChallengeSummary mockChallenge = ActiveChallengeSummary.fromServer(mockServerChallenge);
+
+    final serverpod.HomeLeaderboardEntry mockServerLeaderboard = serverpod.HomeLeaderboardEntry(
+      rank: 1,
+      username: 'Alice',
+      steps: 12000,
+      avgSteps: '10,000',
+      trend: 'up',
+      avatarUrl: Uri.parse('https://example.com/avatar.png'),
+    );
+    final List<HomeLeaderboardEntry> mockLeaderboard = <HomeLeaderboardEntry>[
+      HomeLeaderboardEntry.fromServer(mockServerLeaderboard),
+    ];
+
     setUp(() {
-      accountRepository = MockIAccountRepository();
+      stepsRepository = MockIStepsRepository();
+      challengeRepository = MockIChallengeRepository();
       failureHandler = MockFailureHandler();
 
-      provideDummy<TaskResult<Address?>>(TaskResult<Address?>.right(null));
-      provideDummy<TaskResult<Profile>>(TaskResult<Profile>.right(mockProfile));
+      provideDummy<TaskResult<DailyStepTelemetry>>(TaskResult<DailyStepTelemetry>.right(mockTelemetry));
+      provideDummy<TaskResult<WeeklyStepAnalytics>>(TaskResult<WeeklyStepAnalytics>.right(mockWeekly));
+      provideDummy<TaskResult<ActiveChallengeSummary?>>(TaskResult<ActiveChallengeSummary?>.right(mockChallenge));
+      provideDummy<TaskResult<List<HomeLeaderboardEntry>>>(
+        TaskResult<List<HomeLeaderboardEntry>>.right(mockLeaderboard),
+      );
+
+      when(stepsRepository.getDailyStepTelemetry()).thenReturn(TaskResult<DailyStepTelemetry>.right(mockTelemetry));
+      when(stepsRepository.getWeeklyStepAnalytics()).thenReturn(TaskResult<WeeklyStepAnalytics>.right(mockWeekly));
+      when(challengeRepository.getActiveChallengeSummary())
+          .thenReturn(TaskResult<ActiveChallengeSummary?>.right(mockChallenge));
+      when(challengeRepository.getLeaderboardPreview())
+          .thenReturn(TaskResult<List<HomeLeaderboardEntry>>.right(mockLeaderboard));
+      when(stepsRepository.syncSteps()).thenReturn(TaskResult<DailyStepTelemetry>.right(mockTelemetry));
     });
 
     tearDown(() {
-      reset(accountRepository);
+      reset(stepsRepository);
+      reset(challengeRepository);
       reset(failureHandler);
     });
 
     group('initialize', () {
-      test('emits loading then done when both succeed with null address', () async {
-        when(accountRepository.getDefaultAddress()).thenReturn(TaskResult<Address?>.right(null));
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.right(mockProfile));
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
+      test('emits loading then done with data when all repositories succeed', () async {
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
 
-        // Allow async initialization to settle
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
 
         final HomeState state = cubit.stateValue;
         expect(state.queryStatus, isA<QueryStatus>());
-        expect(state.profile, equals(mockProfile));
-        expect(state.address, isNull);
-        verify(accountRepository.getDefaultAddress()).called(1);
-        verify(accountRepository.getProfile()).called(1);
+        expect(state.dailyTelemetry, equals(mockTelemetry));
+        expect(state.weeklyAnalytics, equals(mockWeekly));
+        expect(state.activeChallenge, equals(mockChallenge));
+        expect(state.leaderboardEntries, equals(mockLeaderboard));
+
+        verify(stepsRepository.getDailyStepTelemetry()).called(1);
+        verify(stepsRepository.getWeeklyStepAnalytics()).called(1);
+        verify(challengeRepository.getActiveChallengeSummary()).called(1);
+        verify(challengeRepository.getLeaderboardPreview()).called(1);
         await cubit.close();
       });
 
-      test('emits address and profile when both succeed with valid address', () async {
-        final Address address = Address(id: UniqueId(), street: '123 Main St', locality: 'Springfield');
-        when(accountRepository.getDefaultAddress()).thenReturn(TaskResult<Address?>.right(address));
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.right(mockProfile));
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
+      test('handles failure when getDailyStepTelemetry fails', () async {
+        const Failure failure = Failure.serverpod('Telemetry error');
+        when(stepsRepository.getDailyStepTelemetry()).thenReturn(TaskResult<DailyStepTelemetry>.left(failure));
+
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
 
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
 
-        final HomeState state = cubit.stateValue;
-        expect(state.address, equals(address));
-        expect(state.profile, equals(mockProfile));
+        verify(failureHandler.handleFailure(failure)).called(1);
         await cubit.close();
       });
 
-      test('emits failure side effect when getDefaultAddress fails', () async {
-        const Failure failure = Failure.serverpod('Address fetch failed');
-        when(accountRepository.getDefaultAddress()).thenReturn(TaskResult<Address?>.left(failure));
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.right(mockProfile));
+      test('handles failure when getWeeklyStepAnalytics fails', () async {
+        const Failure failure = Failure.serverpod('Weekly error');
+        when(stepsRepository.getWeeklyStepAnalytics()).thenReturn(TaskResult<WeeklyStepAnalytics>.left(failure));
 
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
-        final List<HomeStateSideEffect> effects = <HomeStateSideEffect>[];
-        cubit.sideEffectStream.listen(effects.add);
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
 
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
 
-        expect(effects, isNotEmpty);
-        expect(effects.first, isA<HomeStateException>());
-        verify(failureHandler.handleFailure(failure)).called(greaterThanOrEqualTo(1));
+        verify(failureHandler.handleFailure(failure)).called(1);
         await cubit.close();
       });
 
-      test('emits failure side effect when getProfile fails', () async {
-        when(accountRepository.getDefaultAddress()).thenReturn(TaskResult<Address?>.right(null));
-        const Failure failure = Failure.serverpod('Profile fetch failed');
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.left(failure));
+      test('handles failure when getActiveChallengeSummary fails', () async {
+        const Failure failure = Failure.serverpod('Challenge error');
+        when(challengeRepository.getActiveChallengeSummary())
+            .thenReturn(TaskResult<ActiveChallengeSummary?>.left(failure));
 
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
-        final List<HomeStateSideEffect> effects = <HomeStateSideEffect>[];
-        cubit.sideEffectStream.listen(effects.add);
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
 
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
 
-        expect(effects.any((HomeStateSideEffect e) => e is HomeStateException), isTrue);
-        verify(failureHandler.handleFailure(failure)).called(greaterThanOrEqualTo(1));
+        verify(failureHandler.handleFailure(failure)).called(1);
         await cubit.close();
       });
 
-      test('calls handleException on unexpected exception', () async {
-        when(accountRepository.getDefaultAddress()).thenThrow(Exception('unexpected'));
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.right(mockProfile));
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
+      test('handles failure when getLeaderboardPreview fails', () async {
+        const Failure failure = Failure.serverpod('Leaderboard error');
+        when(challengeRepository.getLeaderboardPreview())
+            .thenReturn(TaskResult<List<HomeLeaderboardEntry>>.left(failure));
+
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
+
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        verify(failureHandler.handleFailure(failure)).called(1);
+        await cubit.close();
+      });
+
+      test('calls handleException on unexpected exception during initialize', () async {
+        when(stepsRepository.getDailyStepTelemetry()).thenThrow(Exception('Unexpected error'));
+
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
 
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
@@ -113,56 +182,56 @@ void main() {
       });
     });
 
-    group('sideEffectStream', () {
-      test('emits HomeStateException when address fetch fails', () async {
-        const Failure failure = Failure.serverpod('Address error');
-        when(accountRepository.getDefaultAddress()).thenReturn(TaskResult<Address?>.left(failure));
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.right(mockProfile));
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
-
-        final List<HomeStateSideEffect> effects = <HomeStateSideEffect>[];
-        cubit.sideEffectStream.listen(effects.add);
+    group('syncDailySteps', () {
+      test('updates dailyTelemetry when sync succeeds', () async {
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
 
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
 
-        expect(effects.any((HomeStateSideEffect e) => e is HomeStateException), isTrue);
+        await cubit.syncDailySteps();
+
+        verify(stepsRepository.syncSteps()).called(1);
+        expect(cubit.stateValue.dailyTelemetry, equals(mockTelemetry));
         await cubit.close();
       });
 
-      test('emits initializeAddress when address is null', () async {
-        when(accountRepository.getDefaultAddress()).thenReturn(TaskResult<Address?>.right(null));
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.right(mockProfile));
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
+      test('handles failure when sync fails', () async {
+        const Failure failure = Failure.serverpod('Sync failed');
+        when(stepsRepository.syncSteps()).thenReturn(TaskResult<DailyStepTelemetry>.left(failure));
 
-        final List<HomeStateSideEffect> effects = <HomeStateSideEffect>[];
-        cubit.sideEffectStream.listen(effects.add);
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
 
         await Future<void>.delayed(Duration.zero);
         await Future<void>.delayed(Duration.zero);
 
-        expect(effects.any((HomeStateSideEffect e) => e is HomeStateInitializeAddress), isTrue);
+        await cubit.syncDailySteps();
+
+        verify(failureHandler.handleFailure(failure)).called(1);
         await cubit.close();
       });
     });
 
-    group('safeEmitPresentation', () {
-      test('does not emit when cubit is closed', () async {
-        when(accountRepository.getDefaultAddress()).thenReturn(TaskResult<Address?>.right(null));
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.right(mockProfile));
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
-        await cubit.close();
+    group('presentationStream', () {
+      test('emits presentation event when emitPresentation is called', () async {
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
 
-        // Should not throw
-        cubit.safeEmitPresentation(const HomeStateSideEffect.initializeAddress());
+        final List<HomeStateSideEffect> effects = <HomeStateSideEffect>[];
+        cubit.presentationStream.listen(effects.add);
+
+        cubit.emitPresentation(const HomeStateSideEffect.initializeAddress());
+
+        await Future<void>.delayed(Duration.zero);
+
+        expect(effects, isNotEmpty);
+        expect(effects.first, isA<HomeStateInitializeAddress>());
+        await cubit.close();
       });
     });
 
     group('close', () {
-      test('closes side effect stream controller', () async {
-        when(accountRepository.getDefaultAddress()).thenReturn(TaskResult<Address?>.right(null));
-        when(accountRepository.getProfile()).thenReturn(TaskResult<Profile>.right(mockProfile));
-        final HomeCubit cubit = HomeCubit(accountRepository, failureHandler);
+      test('closes presentation stream controller', () async {
+        final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
         await cubit.close();
 
         expect(cubit.isClosed, isTrue);

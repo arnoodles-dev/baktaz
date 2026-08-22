@@ -1,11 +1,8 @@
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/app/themes/app_theme.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/wrappers/hidable.dart';
-import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:dartx/dartx.dart';
 import 'package:flutter/material.dart';
-import 'package:fpdart/fpdart.dart';
 import 'package:go_router/go_router.dart';
 
 class BaktazNavBar extends StatelessWidget implements PreferredSizeWidget {
@@ -22,18 +19,18 @@ class BaktazNavBar extends StatelessWidget implements PreferredSizeWidget {
       title: context.i18n.common.home.capitalize(),
     ),
     _BaktazNavBarItem(
-      defaultIcon: Icons.history_outlined,
-      activeIcon: Icons.history,
-      title: context.i18n.common.activity.capitalize(),
+      defaultIcon: Icons.emoji_events_outlined,
+      activeIcon: Icons.emoji_events,
+      title: context.i18n.common.challenge.capitalize(),
     ),
     _BaktazNavBarItem(
-      defaultIcon: Icons.chat_outlined,
-      activeIcon: Icons.chat,
+      defaultIcon: Icons.chat_bubble_outline,
+      activeIcon: Icons.chat_bubble,
       title: context.i18n.common.messages.capitalize(),
     ),
     _BaktazNavBarItem(
-      defaultIcon: Icons.account_circle_outlined,
-      activeIcon: Icons.account_circle,
+      defaultIcon: Icons.person_outline,
+      activeIcon: Icons.person,
       title: context.i18n.common.account.capitalize(),
     ),
   ];
@@ -47,19 +44,18 @@ class BaktazNavBar extends StatelessWidget implements PreferredSizeWidget {
     return Hidable(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 800),
-        child: AnimatedBottomNavigationBar.builder(
-          backgroundColor: context.colorScheme.surfaceContainer,
-          scaleFactor: 0,
-          itemCount: navItems.length,
-          tabBuilder: (int index, bool isActive) => RepaintBoundary(
-            child: _NavBarItem(index: index, isActive: isActive, navBarItems: navItems),
-          ),
-          height: AppTheme.defaultNavBarHeight,
-          gapLocation: GapLocation.center,
-          notchSmoothness: NotchSmoothness.smoothEdge,
-          activeIndex: selectedIndex.value,
-          shadow: AppTheme.shadowLevel1(context.colorScheme).first,
-          onTap: (int index) => _onItemTapped(context, index, selectedIndex),
+        child: NavigationBar(
+          selectedIndex: selectedIndex.value,
+          onDestinationSelected: (int index) => _onItemTapped(context, index, selectedIndex),
+          destinations: navItems
+              .map(
+                (_BaktazNavBarItem item) => NavigationDestination(
+                  icon: Icon(item.defaultIcon),
+                  selectedIcon: Icon(item.activeIcon),
+                  label: item.title,
+                ),
+              )
+              .toList(),
         ),
       ),
     );
@@ -68,40 +64,6 @@ class BaktazNavBar extends StatelessWidget implements PreferredSizeWidget {
   void _onItemTapped(BuildContext context, int index, ValueNotifier<int> selectedIndex) {
     selectedIndex.value = index;
     navigationShell.goBranch(index, initialLocation: index == navigationShell.currentIndex);
-  }
-}
-
-class _NavBarItem extends StatelessWidget {
-  const _NavBarItem({required this.index, required this.isActive, required this.navBarItems});
-
-  final int index;
-  final bool isActive;
-  final List<_BaktazNavBarItem> navBarItems;
-
-  @override
-  Widget build(BuildContext context) {
-    final Color color = isActive ? context.colorScheme.primary : context.colorScheme.onSurface;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        BaktazIcon(
-          icon: right(isActive ? navBarItems[index].activeIcon : navBarItems[index].defaultIcon),
-          size: AppSizes.size26,
-          color: color,
-        ),
-        Gap.x2Small(),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall),
-          child: BaktazText(
-            text: navBarItems[index].title,
-            maxLines: 1,
-            style: context.textTheme.labelMedium?.copyWith(color: color),
-          ),
-        ),
-      ],
-    );
   }
 }
 

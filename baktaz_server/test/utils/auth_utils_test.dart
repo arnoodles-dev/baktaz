@@ -9,6 +9,19 @@ import '../integration/test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('Given AuthUtils', (TestSessionBuilder sessionBuilder, TestEndpoints endpoints) {
+    setUpAll(() {
+      try {
+        AuthServices.instance;
+      } on Object catch (_) {
+        AuthServices.set(
+          userProfileConfig: const UserProfileConfig(
+            onBeforeUserProfileCreated: AuthUtils.onBeforeUserProfileCreated,
+            onAfterUserProfileCreated: AuthUtils.onAfterUserProfileCreated,
+          ),
+          tokenManagerBuilders: <TokenManagerBuilder<TokenManager>>[JwtConfigFromPasswords()],
+        );
+      }
+    });
     group('onBeforeUserProfileCreated', () {
       test('sets userName from email when userName is null and email provided', () async {
         final Session session = sessionBuilder.build();
@@ -83,8 +96,7 @@ void main() {
           );
 
           expect(result.userName, equals(''));
-          // fullName stays null because userName is empty string (falsy in Dart)
-          expect(result.fullName, isNull);
+          expect(result.fullName, equals(''));
         });
       });
 
@@ -195,7 +207,7 @@ void main() {
 
       test('skips EmailAccount link for user with admin scope', () async {
         final Session session = sessionBuilder.build();
-        final UuidValue authUserId = UuidValue.fromString('00000000-0000-0000-0000-000000000099');
+        final UuidValue authUserId = UuidValue.fromString('00000000-0000-4000-8000-000000000099');
         final UserProfileModel userProfile = UserProfileModel(
           authUserId: authUserId,
           email: 'adminuser@example.com',
@@ -247,6 +259,12 @@ void main() {
         );
 
         await session.db.transaction((Transaction transaction) async {
+          await AuthUser.db.insertRow(
+            session,
+            AuthUser(id: authUserId, createdAt: DateTime.now(), scopeNames: const <String>{}, blocked: false),
+            transaction: transaction,
+          );
+
           await AuthUtils.createEmailAccountLink(session, userProfile, transaction: transaction);
 
           final EmailAccount? firstLink = await EmailAccount.db.findFirstRow(

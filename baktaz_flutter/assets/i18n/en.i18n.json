@@ -33,6 +33,7 @@
     "yes": "yes",
     "post": "post",
     "activity": "activity",
+    "challenge": "challenge",
     "messages": "messages",
     "chats": "chats",
     "notifications": "notifications",
@@ -135,26 +136,43 @@
     "loading": "Loading...",
     "greeting": "Good Morning 👋",
     "greeting_fallback": "Hello 👋",
-    "special_offers": "Special Offers",
-    "special_offer_item": "Special Offer ${index: int}",
-    "services": "Services",
-    "shops_you_might_like": "Shops you might like",
-    "packages_for_you": "Packages for you",
-    "heroes_near_you": "Heroes near you",
-    "ads_item": "Ads ${index: int}",
-    "banner_ads": "Banner Ads",
-    "thats_all": "That's all for now!",
+    "todays_steps": "TODAY'S STEPS",
+    "goal_percentage": "${percentage: String}% of ${goal: String} Goal",
+    "synced_via": "Synced via ${source: String} • ${time: String}",
+    "weekly_activity": "Weekly Activity",
+    "weekly_avg": "Avg: ${avg: String} steps/day",
+    "weekly_total": "7-Day Total: ${total: String} steps",
+    "thats_all": "You're all caught up! 🎉",
+    "search_hints": [
+      "Search steps, challenges...",
+      "Find local walking routes...",
+      "Check today's ranking..."
+    ],
     "services_list": {
       "shops": "Shops",
       "requests": "Requests",
       "heroes": "Heroes",
       "express": "Express"
     },
-    "search_hints": [
-      "Search for heroes...",
-      "Search for packages...",
-      "Search for shops..."
-    ]
+    "active_challenge": {
+      "take_challenge_title": "🏆 Take on a Challenge",
+      "take_challenge_desc": "Put your daily steps to work. Join a public pool or enter a private invite code to compete for prizes!",
+      "explore_btn": "Explore Challenges ➔",
+      "go_to_btn": "Go to Challenge Page ➔",
+      "rank_label": "Rank #${rank: Object} / ${total: Object}",
+      "prize_pool": "Prize Pool: ${amount: String}",
+      "leaders": "Leaders:",
+      "day_progress": "Day ${currentDay: Object} of ${totalDays: Object} (${percent: Object}%)",
+      "days_remaining": "${days: Object} Days Remaining"
+    },
+    "leaderboard": {
+      "title": "Challenge Leaderboard",
+      "view_full": "View Full Leaderboard ➔",
+      "rank_header": "RANK",
+      "participant_header": "PARTICIPANT",
+      "progress_header": "PROGRESS / STEPS",
+      "avg_header": "AVG/DAY"
+    }
   },
   "post": {
     "create_post": "Create Post"

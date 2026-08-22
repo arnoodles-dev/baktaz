@@ -34,6 +34,8 @@ targets:
           - lib/app/utils/**.dart
           - lib/core/data/repository/**.dart
           - lib/features/**/data/repository/**.dart
+          - lib/core/data/service/**.dart
+          - lib/features/**/data/service/**.dart
           - lib/core/domain/bloc/**.dart
           - lib/core/domain/cubit/**.dart
           - lib/features/**/domain/bloc/**.dart

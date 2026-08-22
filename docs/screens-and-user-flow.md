@@ -1,7 +1,7 @@
 # Screens & User Flow Specification
 
 > **Document Version:** 1.0  
-> **Target Audience:** UX/UI Designers, Mobile Engineers (Flutter)  
+> **Target Audience:** UX/UI Designers, Mobile Engineers (Flutter)
 
 ---
 
@@ -24,6 +24,7 @@ Bottom Navigation Bar
 The Home Screen serves as the daily operational dashboard for personal progress and challenge quick-glance data.
 
 ### 1.1 UI Layout Breakdown
+
 - **AppBar Header**:
   - App Brand Logo (`Baktaz`)
   - User Avatar (taps redirect to `/account/profile`)
@@ -35,12 +36,12 @@ The Home Screen serves as the daily operational dashboard for personal progress 
 - **Weekly Steps Analytics Chart**:
   - 7-day bar graph showing daily totals vs daily goal line.
   - Quick stats: 7-day average steps, total distance (km), estimated calories.
-- **Active Challenge Ticker Card** *(Visible if user has an active challenge)*:
+- **Active Challenge Ticker Card** _(Visible if user has an active challenge)_:
   - Challenge Title, User's current rank (e.g., `Rank #3 of 25`), Time remaining countdown.
   - Direct button: `Go to Challenge Page ->`.
 - **Daily Mission Widget**:
   - Current daily step milestone objective (e.g., "Walk 10,000 steps today to earn your Daily Streak Badge").
-- **Leaderboard Preview Component** *(Visible if user has an active challenge)*:
+- **Leaderboard Preview Component** _(Visible if user has an active challenge)_:
   - Mini top-5 ranked participants list (Rank #1–#5) with avatars and step counts.
   - `View Full Leaderboard` link redirecting to `/challenge/joined`.
 
@@ -65,6 +66,7 @@ The Challenge tab dynamically shifts between **Discovery/Invite Mode** (when no 
 ```
 
 ### 2.1 State A: Initial / Unenrolled State
+
 - **Invite Code Banner**:
   - Quick input field for 6-digit private invite codes with a `Join Private Challenge` button.
 - **Explore Public Challenges**:
@@ -78,14 +80,15 @@ The Challenge tab dynamically shifts between **Discovery/Invite Mode** (when no 
     - CTA button: `View Challenge Details`.
 
 ### 2.2 State B: Enrolled / Active Challenge Dashboard
+
 - **Header Actions**:
   - `Rules & Guidelines` icon button -> opens modal with rules, dispute terms, and step validation policy.
 - **Challenge Overview Card**:
   - Total Gross Prize Pool display (e.g. `₱25,000`).
   - Breakdown breakdown pill: `R_app% App Service Fee • R_host% Host Cut • Net Prize Pool` (e.g. `1.0% App Service Fee • 0.5% Host Cut • 98.5% Net Prize Pool`).
   - Challenge Lifecycle Indicator:
-    - *Public Challenge*: Initial Phase countdown timer to launch date.
-    - *Private Challenge*: Host `Start Challenge Now` CTA button (active once required minimum participants join).
+    - _Public Challenge_: Initial Phase countdown timer to launch date.
+    - _Private Challenge_: Host `Start Challenge Now` CTA button (active once required minimum participants join).
   - Duration bar: Start Date ── Current Progress ── End Date (1–3 months).
   - Buy-in fee & max participant cap indicator.
   - Selected Reward Mode badge (e.g., `Top 3 Tiered Split`).
@@ -102,17 +105,19 @@ The Challenge tab dynamically shifts between **Discovery/Invite Mode** (when no 
 The Chat screen facilitates social engagement and rivalry among participants.
 
 ### 3.1 Initial State (Unenrolled)
+
 - Empty state screen with an energetic illustration.
-- Message: *"Join a challenge to unlock your automated challenge group chat!"*
+- Message: _"Join a challenge to unlock your automated challenge group chat!"_
 - Button: `Explore Challenges`.
 
 ### 3.2 Active Challenge State
+
 - **Automated Group Chat Room**: Group chat room automatically created upon challenge initialization.
 - **Features**:
   - Real-time text messaging, emoji reactions, photo sharing (e.g., workout pictures).
   - **Automated Milestone Bot**: System messages triggered on key events:
-    - *"⚡ @Sarah just took over 1st place with 12,400 steps today!"*
-    - *"🔥 Halfway mark reached! 15 days remaining in the challenge."*
+    - _"⚡ @Sarah just took over 1st place with 12,400 steps today!"_
+    - _"🔥 Halfway mark reached! 15 days remaining in the challenge."_
   - **Participant Drawer**: Side slide-out panel listing all active chat members and their current rankings.
 
 ---
@@ -122,6 +127,7 @@ The Chat screen facilitates social engagement and rivalry among participants.
 The central hub for user profile, monetization, wallet management, and app configurations.
 
 ### 4.1 UI Component Breakdown
+
 - **Profile Header**:
   - Avatar, Username, Bio, Member since date.
   - Lifetime Stats grid: Total Lifetime Steps, Total Challenges Joined, Challenges Won.
@@ -129,7 +135,7 @@ The central hub for user profile, monetization, wallet management, and app confi
   - Banner indicating `Standard Walker` or `Verified Host (Subscribed)`.
   - CTA button: `Upgrade to Host ($S_{host}$/month, e.g. ₱99/month)` -> unlocks custom challenge creation and $R_{host}$ host fee cut.
 - **Achievements & Badges Showcase**:
-  - Badge Grid: Visual collection of unlocked milestone badges (e.g. *30-Day Streak*, *100k Steps*, *Podium Finisher*).
+  - Badge Grid: Visual collection of unlocked milestone badges (e.g. _30-Day Streak_, _100k Steps_, _Podium Finisher_).
   - XP Bar & Current Level badge with progress to next level perk.
 - **Referral & Affiliate Hub**:
   - Personal Invite Link generator & QR code (`baktaz.app/invite/USER123`).
@@ -147,6 +153,8 @@ The central hub for user profile, monetization, wallet management, and app confi
   - **Theme**: Light Mode / Dark Mode switcher.
   - **Language**: English (default) with future Visayan/Tagalog options.
 - **Legal & Help**:
-  - `Privacy Policy` modal view.
-  - `Terms & Conditions` (Financial escrow rules, dispute resolution).
-  - `Help & Anti-Cheat Guidelines`.
+  - `Privacy Policy` Webview.
+  - `Terms & Conditions` Webview (Financial escrow rules, dispute resolution).
+  - `Help Center` Webview.
+  - Share Feedback
+  - About Us

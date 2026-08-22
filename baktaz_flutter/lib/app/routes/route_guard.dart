@@ -7,11 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 
 @lazySingleton
-final class RouteGuard(
-  final RemoteConfigCubit _remoteConfigBloc,
-  final AppCoreCubit _appCoreBloc,
-  final AuthCubit _authBloc,
-) {
+final class RouteGuard {
+  RouteGuard(this._remoteConfigBloc, this._appCoreBloc, this._authBloc);
+
+  final RemoteConfigCubit _remoteConfigBloc;
+  final AppCoreCubit _appCoreBloc;
+  final AuthCubit _authBloc;
   String? guard(BuildContext context, GoRouterState goRouterState) {
     if (_remoteConfigBloc.isMaintenance) {
       return const MaintenanceRoute().location;
@@ -53,7 +54,9 @@ final class RouteGuard(
   String? _authenticatedRouteGuard(String matchedLocation) {
     final bool isLoginScreen = matchedLocation == const LoginRoute().location;
     final bool isSplashScreen = matchedLocation == const SplashRoute().location;
+    final bool isRegistrationScreen = matchedLocation.startsWith('/registration');
+    final bool isOtpScreen = matchedLocation == '/otp';
 
-    return (isLoginScreen || isSplashScreen) ? const HomeRoute().location : null;
+    return (isLoginScreen || isSplashScreen || isRegistrationScreen || isOtpScreen) ? const HomeRoute().location : null;
   }
 }

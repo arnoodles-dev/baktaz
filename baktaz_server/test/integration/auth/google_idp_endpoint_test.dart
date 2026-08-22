@@ -1,3 +1,6 @@
+import 'package:baktaz_server/src/app/utils/auth_utils.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/google.dart';
 import 'package:test/test.dart';
 
 import '../../fixtures/server_fixtures.dart';
@@ -5,6 +8,26 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('Given GoogleIdpEndpoint', (TestSessionBuilder sessionBuilder, TestEndpoints endpoints) {
+    setUpAll(() {
+      try {
+        AuthServices.instance;
+      } on Object catch (_) {
+        AuthServices.set(
+          userProfileConfig: const UserProfileConfig(
+            onBeforeUserProfileCreated: AuthUtils.onBeforeUserProfileCreated,
+            onAfterUserProfileCreated: AuthUtils.onAfterUserProfileCreated,
+          ),
+          tokenManagerBuilders: <TokenManagerBuilder<TokenManager>>[JwtConfigFromPasswords()],
+          identityProviderBuilders: <IdentityProviderBuilder<IdentityProvider>>[
+            GoogleIdpConfig(
+              clientSecret: GoogleClientSecret.fromJsonString(
+                '{"web":{"client_id":"test","client_secret":"secret","redirect_uris":["http://localhost"]}}',
+              ),
+            ),
+          ],
+        );
+      }
+    });
     group('when unauthenticated', () {
       final TestSessionBuilder unauthedSession = sessionBuilder.copyWith(
         authentication: AuthenticationOverride.unauthenticated(),

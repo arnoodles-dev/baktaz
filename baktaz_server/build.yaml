@@ -5,6 +5,7 @@ targets:
         generate_for:
           - lib/src/app/injection/**.dart
           - lib/src/features/**/data/repository/**.dart
+          - lib/src/features/**/data/service/**.dart
       chopper_generator:
         generate_for:
           - lib/src/features/**/data/service/**.dart

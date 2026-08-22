@@ -6,12 +6,12 @@ globs: **/test/**
 
 # Testing
 
-### Test-Driven Development (TDD)
+### Implementation-First Testing Workflow
 
-- Write test first (**RED**, must fail).
-- Write minimal code to pass (**GREEN**, must pass).
-- Refactor (**IMPROVE**).
-- Verify coverage ≥ 80%.
+- Implement code, entities, repositories, and UI components first.
+- Execute batch codegen (`slang`, `build_runner`, `serverpod generate`) after code implementation is complete.
+- Write unit tests (Repository, Bloc/Cubit) and Alchemist golden component tests after codegen.
+- Run full test suite and verify coverage ≥ 80%.
 
 ### Test Structure & Organization
 
@@ -46,4 +46,4 @@ globs: **/test/**
   - Unit Tests (Repository, Bloc): 100%
   - Widget Tests: ≥80%
   - Exclusions per `.coverage_exclude`.
-- ***_site**: Exempt from Flutter goldens, use Jaspr patterns.
+  - ***_site**: Exempt from Flutter goldens, use Jaspr patterns.

@@ -1,0 +1,10 @@
+class: DailyStepTelemetry
+table: home_daily_step_telemetry
+fields:
+  userId: UuidValue #userId
+  date: String #currentDateKey - formatted YYYY-MM-DD
+  currentSteps: int
+  goalSteps: int
+  syncSource: String
+  lastSyncedAt: DateTime
+  isFlaggedForReview: bool

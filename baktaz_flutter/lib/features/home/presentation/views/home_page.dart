@@ -3,17 +3,14 @@ import 'dart:async';
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
 import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
-import 'package:baktaz_flutter/app/routes/app_routes.dart';
-import 'package:baktaz_flutter/app/themes/app_theme.dart';
 import 'package:baktaz_flutter/core/domain/cubit/hidable/hidable_cubit.dart';
-import 'package:baktaz_flutter/core/domain/entity/enum/select_address_entry.dart';
 import 'package:baktaz_flutter/features/home/domain/cubit/home/home_cubit.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_app_bar.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_carousel.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_featured_content.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_search_bar.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_services_grid.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_title_header.dart';
+import 'package:baktaz_flutter/features/home/domain/entity/home_leaderboard_entry.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_active_challenge_ticker.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_app_header.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_daily_step_hero_card.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_leaderboard_preview.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_weekly_steps_chart.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
@@ -40,12 +37,8 @@ class HomePage extends HookWidget {
       case HomeStateException(:final Exception exception):
         getIt<FailureHandler>().handleException(exception, null);
       case HomeStateInitializeAddress():
-        const SelectAddressRoute($extra: SelectAddressEntry.home).push<void>(context);
+        break;
     }
-  }
-
-  void _changeAddress(BuildContext context) {
-    const SelectAddressRoute($extra: SelectAddressEntry.home).push<void>(context);
   }
 
   @override
@@ -61,7 +54,7 @@ class HomePage extends HookWidget {
 
     useEffect(() {
       final HomeCubit homeCubit = context.read<HomeCubit>();
-      final StreamSubscription<HomeStateSideEffect> sub = homeCubit.sideEffectStream.listen((
+      final StreamSubscription<HomeStateSideEffect> sub = homeCubit.presentationStream.listen((
         HomeStateSideEffect sideEffect,
       ) {
         if (context.mounted) {
@@ -71,278 +64,123 @@ class HomePage extends HookWidget {
       return sub.cancel;
     }, <Object?>[]);
 
-    return Scaffold(
-      body: RepaintBoundary(
-        child: BlocSignalBuilder<HomeCubit, HomeState>(
-          builder: (BuildContext context, HomeState state) => RepaintBoundary(
-            child: Scaffold(
-              body: NestedScrollView(
-                controller: scrollController,
-                headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) => <Widget>[
-                  SliverOverlapAbsorber(
-                    handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-                    sliver: SliverAppBar.large(
-                      scrolledUnderElevation: 0,
-                      flexibleSpace: FlexibleSpaceBar(
-                        centerTitle: true,
-                        background: HomeAppBar(
-                          isLoading: state.queryStatus.isLoading,
-                          onChangeAddress: () => _changeAddress(context),
-                          name: state.profile?.fullName.getValue() ?? context.i18n.home.loading,
-                          profileImage: state.profile?.imageUrl?.getValue(),
-                          greeting: context.i18n.home.greeting,
-                        ),
-                        expandedTitleScale: 1,
-                        title: const HomeSearchBar(),
-                      ),
-                      forceElevated: innerBoxIsScrolled,
-                    ),
+    return BlocSignalBuilder<HomeCubit, HomeState>(
+      builder: (BuildContext context, HomeState state) => RepaintBoundary(
+        child: Scaffold(
+          body: NestedScrollView(
+            controller: scrollController,
+            headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) => <Widget>[
+              SliverOverlapAbsorber(
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+                sliver: SliverAppBar.large(
+                  scrolledUnderElevation: 0,
+                  flexibleSpace: const FlexibleSpaceBar(
+                    centerTitle: true,
+                    background: HomeAppHeader(),
+                    expandedTitleScale: 1,
                   ),
-                ],
-                body: Builder(
-                  builder: (BuildContext context) => CustomScrollView(
-                    physics: const ClampingScrollPhysics(),
-                    slivers: <Widget>[
-                      SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-                      _HomeSectionSpecialOffers(state: state),
-                      _HomeSectionCarousel(state: state),
-                      _HomeSectionServices(state: state),
-                      _HomeContentSections(state: state),
-                      SliverToBoxAdapter(child: Gap.large()),
-                      SliverToBoxAdapter(
-                        child: Center(child: BaktazText(text: context.i18n.home.thats_all)),
-                      ),
-                      SliverToBoxAdapter(child: Gap.medium()),
-                    ],
-                  ),
+                  forceElevated: innerBoxIsScrolled,
                 ),
               ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _HomeSectionSpecialOffers extends StatelessWidget {
-  const _HomeSectionSpecialOffers({required this.state});
-
-  final HomeState state;
-
-  @override
-  Widget build(BuildContext context) => SliverToBoxAdapter(
-    child: RepaintBoundary(
-      child: Skeletonizer(
-        enabled: state.queryStatus.isLoading,
-        child: HomeTitleHeader(title: context.i18n.home.special_offers, onSeeAllPressed: () {}),
-      ),
-    ),
-  );
-}
-
-class _HomeSectionCarousel extends StatelessWidget {
-  const _HomeSectionCarousel({required this.state});
-
-  final HomeState state;
-
-  @override
-  Widget build(BuildContext context) => SliverToBoxAdapter(
-    child: RepaintBoundary(
-      child: Skeletonizer(
-        enabled: state.queryStatus.isLoading,
-        child: HomeCarousel(
-          itemsCount: 5,
-          itemBuilder: (BuildContext context, int index, _) => Container(
-            margin: Paddings.horizontalLarge,
-            decoration: BoxDecoration(
-              color: <Color>[
-                context.colorScheme.primary,
-                context.colorScheme.secondary,
-                context.colorScheme.error,
-                context.colorScheme.primary,
-                context.colorScheme.secondary,
-              ][index],
-              borderRadius: AppTheme.cardBorderRadius,
-            ),
-            child: Center(
-              child: BaktazText(
-                text: context.i18n.home.special_offer_item(index: index),
-                style: context.textTheme.headlineMedium?.copyWith(color: context.colorScheme.onPrimary),
-              ),
-            ),
-          ),
-        ),
-      ),
-    ),
-  );
-}
-
-class _HomeSectionServices extends StatelessWidget {
-  const _HomeSectionServices({required this.state});
-
-  final HomeState state;
-
-  @override
-  Widget build(BuildContext context) => SliverToBoxAdapter(
-    child: Column(
-      children: <Widget>[
-        RepaintBoundary(child: HomeTitleHeader(title: context.i18n.home.services)),
-        RepaintBoundary(
-          child: Skeletonizer(enabled: state.queryStatus.isLoading, child: const HomeServicesGrid()),
-        ),
-      ],
-    ),
-  );
-}
-
-class _HomeContentSections extends StatelessWidget {
-  const _HomeContentSections({required this.state});
-
-  final HomeState state;
-
-  @override
-  Widget build(BuildContext context) {
-    if (state.contentList == null || state.contentList!.isEmpty) {
-      return const SliverToBoxAdapter(child: SizedBox.shrink());
-    }
-
-    return SliverMainAxisGroup(
-      slivers: state.contentList!.map((String content) {
-        Widget child;
-        switch (content) {
-          case 'featuredShops':
-            child = RepaintBoundary(
-              child: HomeFeaturedContent(
-                height: 300,
-                title: context.i18n.home.shops_you_might_like,
-                isLoading: state.queryStatus.isLoading,
-                itemCount: (state.homeContent?['featuredShops'] as List<dynamic>?)?.length ?? 0,
-                itemBuilder: (BuildContext context, int index) {
-                  final String item = (state.homeContent?['featuredShops'] as List<dynamic>)[index] as String;
-                  return BaktazCard(
-                    body: Container(
-                      width: 160,
-                      height: 100,
-                      color: context.colorScheme.primaryContainer,
-                      child: Center(
-                        child: BaktazText(
-                          text: item,
-                          style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onPrimaryContainer),
-                        ),
-                      ),
-                    ),
-                  );
+            ],
+            body: Builder(
+              builder: (BuildContext context) => RefreshIndicator(
+                onRefresh: () async {
+                  final HomeCubit homeCubit = context.read<HomeCubit>();
+                  await homeCubit.syncDailySteps();
                 },
-              ),
-            );
-          case 'featuredPackages':
-            child = RepaintBoundary(
-              child: HomeFeaturedContent(
-                height: 300,
-                title: context.i18n.home.packages_for_you,
-                onSeeAllPressed: () {},
-                isLoading: state.queryStatus.isLoading,
-                itemCount: (state.homeContent?['featuredPackages'] as List<dynamic>?)?.length ?? 0,
-                itemBuilder: (BuildContext context, int index) {
-                  final String item = (state.homeContent?['featuredPackages'] as List<dynamic>)[index] as String;
-                  return BaktazCard(
-                    body: Container(
-                      width: 160,
-                      height: 100,
-                      color: context.colorScheme.secondaryContainer,
-                      child: Center(
-                        child: BaktazText(
-                          text: item,
-                          style: context.textTheme.bodyMedium?.copyWith(
-                            color: context.colorScheme.onSecondaryContainer,
+                child: CustomScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  slivers: <Widget>[
+                    SliverOverlapInjector(handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
+                    SliverPadding(
+                      padding: Paddings.screenMarginH,
+                      sliver: SliverList.list(
+                        children: <Widget>[
+                          Gap.medium(),
+                          RepaintBoundary(
+                            child: Skeletonizer(
+                              enabled: state.telemetryQueryStatus.isLoading,
+                              child: HomeDailyStepHeroCard(
+                                currentSteps: state.dailyTelemetry?.currentSteps.getValue().toInt() ?? 0,
+                                goalSteps: state.dailyTelemetry?.goalSteps.getValue().toInt() ?? 10000,
+                                syncSource: state.dailyTelemetry?.syncSource.getValue() ?? 'Health Connect',
+                                lastSyncedText: state.dailyTelemetry != null
+                                    ? state.dailyTelemetry!.lastSyncedAt.value.toLocal().toString().split(' ').first
+                                    : 'Never synced',
+                                onRefresh: () => context.read<HomeCubit>().syncDailySteps(),
+                              ),
+                            ),
                           ),
-                        ),
+                          Gap.medium(),
+                          RepaintBoundary(
+                            child: Skeletonizer(
+                              enabled: state.weeklyQueryStatus.isLoading,
+                              child: HomeWeeklyStepsChart(
+                                weeklySteps: state.weeklyAnalytics?.weeklySteps ?? List<int>.filled(7, 0),
+                                averageSteps: state.weeklyAnalytics?.averageSteps.getValue().toInt() ?? 0,
+                                totalWeeklySteps: state.weeklyAnalytics?.totalWeeklySteps.getValue().toInt() ?? 0,
+                                goalTarget: state.weeklyAnalytics?.goalTarget.getValue().toInt() ?? 10000,
+                              ),
+                            ),
+                          ),
+                          Gap.medium(),
+                          RepaintBoundary(
+                            child: Skeletonizer(
+                              enabled: state.activeChallengeQueryStatus.isLoading,
+                              child: HomeActiveChallengeTicker(
+                                isEnrolled: state.activeChallenge?.isEnrolled.getValue() ?? false,
+                                onOpenChallenge: () {},
+                                title: state.activeChallenge?.title?.getValue(),
+                                rank: state.activeChallenge?.rank?.getValue().toInt(),
+                                totalParticipants: state.activeChallenge?.totalParticipants?.getValue().toInt(),
+                                prizePoolText: state.activeChallenge?.prizePoolText?.getValue(),
+                                gapText: state.activeChallenge?.gapText?.getValue(),
+                                leaders: state.activeChallenge?.leaders?.map((dynamic e) => e.toString()).toList(),
+                                currentDay: state.activeChallenge?.currentDay?.getValue().toInt(),
+                                totalDays: state.activeChallenge?.totalDays?.getValue().toInt(),
+                              ),
+                            ),
+                          ),
+                          if ((state.activeChallenge?.isEnrolled.getValue() ?? false) &&
+                              (state.leaderboardQueryStatus.isLoading ||
+                                  (state.leaderboardEntries?.isNotEmpty ?? false))) ...<Widget>[
+                            Gap.medium(),
+                            RepaintBoundary(
+                              child: Skeletonizer(
+                                enabled: state.leaderboardQueryStatus.isLoading,
+                                child: HomeLeaderboardPreview(
+                                  topEntries: (state.leaderboardEntries ?? <HomeLeaderboardEntry>[])
+                                      .take(5)
+                                      .map(
+                                        (HomeLeaderboardEntry e) => LeaderboardEntry(
+                                          rank: e.rank.getValue().toInt(),
+                                          username: e.username.getValue(),
+                                          steps: e.steps.getValue().toInt(),
+                                          avgSteps: e.avgSteps.getValue(),
+                                          trend: e.trend.getValue(),
+                                          avatarUrl: e.avatarUrl?.getValue(),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onViewFull: () {},
+                                ),
+                              ),
+                            ),
+                          ],
+                          Gap.large(),
+                          Center(child: BaktazText(text: context.i18n.home.thats_all)),
+                          Gap.medium(),
+                        ],
                       ),
                     ),
-                  );
-                },
-              ),
-            );
-          case 'featuredHeroes':
-            child = RepaintBoundary(
-              child: HomeFeaturedContent(
-                height: 300,
-                title: context.i18n.home.heroes_near_you,
-                onSeeAllPressed: () {},
-                isLoading: state.queryStatus.isLoading,
-                itemCount: (state.homeContent?['featuredHeroes'] as List<dynamic>?)?.length ?? 0,
-                itemBuilder: (BuildContext context, int index) {
-                  final String item = (state.homeContent?['featuredHeroes'] as List<dynamic>)[index] as String;
-                  return BaktazCard(
-                    body: Container(
-                      width: 160,
-                      height: 100,
-                      color: context.colorScheme.tertiaryContainer,
-                      child: Center(
-                        child: BaktazText(
-                          text: item,
-                          style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onTertiaryContainer),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            );
-          case 'carouselAds':
-            child = RepaintBoundary(
-              child: Skeletonizer(
-                enabled: state.queryStatus.isLoading,
-                child: Container(
-                  padding: Paddings.horizontalLarge,
-                  height: 200,
-                  child: ListView.separated(
-                    separatorBuilder: (BuildContext context, int index) => Gap.small(),
-                    padding: EdgeInsets.zero,
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (state.homeContent?['carouselAds'] as List<dynamic>?)?.length ?? 0,
-                    itemBuilder: (BuildContext context, int index) => Container(
-                      width: context.screenWidth * 0.35,
-                      decoration: BoxDecoration(
-                        color: <Color>[
-                          context.colorScheme.primaryContainer,
-                          context.colorScheme.secondaryContainer,
-                          context.colorScheme.tertiaryContainer,
-                          context.colorScheme.primary,
-                          context.colorScheme.secondary,
-                        ][index],
-                        borderRadius: AppTheme.cardBorderRadius,
-                      ),
-                      child: Center(
-                        child: BaktazText(
-                          text: context.i18n.home.ads_item(index: index),
-                          style: context.textTheme.headlineMedium?.copyWith(color: context.colorScheme.onPrimary),
-                        ),
-                      ),
-                    ),
-                  ),
+                  ],
                 ),
               ),
-            );
-          case 'bannerAds':
-            child = RepaintBoundary(
-              child: Skeletonizer(
-                enabled: state.queryStatus.isLoading,
-                child: Container(
-                  padding: Paddings.allLarge,
-                  margin: Paddings.allLarge,
-                  height: 100,
-                  color: context.colorScheme.primaryContainer,
-                  child: Center(child: BaktazText(text: context.i18n.home.banner_ads)),
-                ),
-              ),
-            );
-          default:
-            child = const SizedBox.shrink();
-        }
-        return SliverToBoxAdapter(child: child);
-      }).toList(),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

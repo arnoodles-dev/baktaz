@@ -6,7 +6,9 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
 final class AccountEndpoint extends Endpoint {
-  AccountEndpoint([SecurityLogger? securityLogger]) : _securityLogger = securityLogger ?? getIt<SecurityLogger>();
+  AccountEndpoint([SecurityLogger? securityLogger])
+    : _securityLogger =
+          securityLogger ?? (getIt.isRegistered<SecurityLogger>() ? getIt<SecurityLogger>() : SecurityLogger());
 
   final SecurityLogger _securityLogger;
 

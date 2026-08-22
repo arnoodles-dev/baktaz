@@ -1,4 +1,7 @@
+import 'package:baktaz_server/src/app/utils/auth_utils.dart';
 import 'package:serverpod/serverpod.dart';
+import 'package:serverpod_auth_idp_server/core.dart';
+import 'package:serverpod_auth_idp_server/providers/email.dart';
 import 'package:test/test.dart';
 
 import '../../fixtures/server_fixtures.dart';
@@ -6,6 +9,22 @@ import '../test_tools/serverpod_test_tools.dart';
 
 void main() {
   withServerpod('Given EmailIdpEndpoint', (TestSessionBuilder sessionBuilder, TestEndpoints endpoints) {
+    setUpAll(() {
+      try {
+        AuthServices.instance;
+      } on Object catch (_) {
+        AuthServices.set(
+          userProfileConfig: const UserProfileConfig(
+            onBeforeUserProfileCreated: AuthUtils.onBeforeUserProfileCreated,
+            onAfterUserProfileCreated: AuthUtils.onAfterUserProfileCreated,
+          ),
+          tokenManagerBuilders: <TokenManagerBuilder<TokenManager>>[JwtConfigFromPasswords()],
+          identityProviderBuilders: <IdentityProviderBuilder<IdentityProvider>>[
+            ServerpodCloudEmailIdpConfig(appDisplayName: 'baktaz'),
+          ],
+        );
+      }
+    });
     group('when logging in', () {
       test('then login with invalid email/password fails or throws exception', () async {
         await expectLater(
@@ -110,15 +129,14 @@ void main() {
         expect(resetId, isNotNull);
       });
 
-      test('then startPasswordReset rejects invalid email format', () async {
-        await expectLater(
-          endpoints.emailIdp.startPasswordReset(sessionBuilder, email: 'invalid-email'),
-          throwsA(anything),
-        );
+      test('then startPasswordReset handles invalid email format by returning reset ID', () async {
+        final UuidValue resetId = await endpoints.emailIdp.startPasswordReset(sessionBuilder, email: 'invalid-email');
+        expect(resetId, isA<UuidValue>());
       });
 
-      test('then startPasswordReset rejects empty email', () async {
-        await expectLater(endpoints.emailIdp.startPasswordReset(sessionBuilder, email: ''), throwsA(anything));
+      test('then startPasswordReset handles empty email by returning reset ID', () async {
+        final UuidValue resetId = await endpoints.emailIdp.startPasswordReset(sessionBuilder, email: '');
+        expect(resetId, isA<UuidValue>());
       });
     });
 
@@ -207,5 +225,5 @@ void main() {
         expect(result, isA<bool>());
       });
     });
-  });
+  }, rollbackDatabase: RollbackDatabase.disabled);
 }

@@ -1,4 +1,4 @@
-import 'package:baktaz_flutter/features/activity/presentation/widgets/activity_app_bar.dart';
+import 'package:baktaz_flutter/features/challenge/presentation/widgets/challenge_app_bar.dart';
 import 'package:baktaz_flutter/features/message/presentation/widgets/message_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +9,7 @@ import '../../utils/mock_go_router_provider.dart';
 import '../../utils/mock_material_app.dart';
 
 void main() {
-  group(ActivityAppBar, () {
+  group(ChallengeAppBar, () {
     late MockGoRouter mockGoRouter;
 
     setUp(() {
@@ -20,16 +20,16 @@ void main() {
       reset(mockGoRouter);
     });
 
-    testWidgets('renders activity title and history button', (WidgetTester tester) async {
+    testWidgets('renders challenge title and history button', (WidgetTester tester) async {
       await tester.pumpWidget(
         MockMaterialApp(
-          child: MockGoRouterProvider(router: mockGoRouter, child: const ActivityAppBar()),
+          child: MockGoRouterProvider(router: mockGoRouter, child: const ChallengeAppBar()),
         ),
       );
 
       await tester.pumpAndSettle();
 
-      expect(find.text('Activity'), findsOneWidget);
+      expect(find.text('Challenge'), findsOneWidget);
       expect(find.text('History'), findsOneWidget);
       expect(find.byIcon(Icons.history), findsOneWidget);
     });

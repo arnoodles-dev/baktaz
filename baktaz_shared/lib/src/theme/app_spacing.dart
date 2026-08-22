@@ -25,6 +25,8 @@ final class Gap extends StatelessWidget {
 }
 
 abstract final class Paddings {
+  static const EdgeInsets screenMarginH = EdgeInsets.symmetric(horizontal: AppSizes.screenMarginH);
+
   // all paddings
   static const EdgeInsets allX3Small = EdgeInsets.all(AppSizes.x3Small);
   static const EdgeInsets allX2Small = EdgeInsets.all(AppSizes.x2Small);

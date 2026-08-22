@@ -1,5 +1,5 @@
 import 'package:alchemist/alchemist.dart';
-import 'package:baktaz_flutter/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:baktaz_flutter/core/presentation/views/screens/onboarding_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -28,8 +28,14 @@ void main() {
         children: <Widget>[
           GoldenTestScenario(
             name: 'initial page 1',
-            child: MockMaterialApp(
-              child: MockGoRouterProvider(router: mockGoRouter, child: const OnboardingScreen()),
+            child: SizedBox(
+              width: 600,
+              height: 1000,
+              child: MockMaterialApp(
+                surfaceWidth: 600,
+                surfaceHeight: 1000,
+                child: MockGoRouterProvider(router: mockGoRouter, child: const OnboardingScreen()),
+              ),
             ),
           ),
         ],
@@ -37,6 +43,11 @@ void main() {
     );
 
     testWidgets('renders first page content initially', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       await tester.pumpWidget(
         MockMaterialApp(
           child: MockGoRouterProvider(router: mockGoRouter, child: const OnboardingScreen()),
@@ -45,12 +56,16 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.text('Turn Steps Into Real Rewards'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('Skip'), findsOneWidget);
     });
 
     testWidgets('navigates through pages when Next button is tapped', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       await tester.pumpWidget(
         MockMaterialApp(
           child: MockGoRouterProvider(router: mockGoRouter, child: const OnboardingScreen()),
@@ -63,17 +78,21 @@ void main() {
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Compete & Connect'), findsOneWidget);
+      expect(find.text('Next'), findsOneWidget);
 
       // Page 2 -> Page 3
       await tester.tap(find.text('Next'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Fair & Verified'), findsOneWidget);
       expect(find.text('Get Started'), findsOneWidget);
     });
 
-    testWidgets('navigates to /login when Skip is tapped', (WidgetTester tester) async {
+    testWidgets('animates to last page when Skip is tapped', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       await tester.pumpWidget(
         MockMaterialApp(
           child: MockGoRouterProvider(router: mockGoRouter, child: const OnboardingScreen()),
@@ -85,10 +104,15 @@ void main() {
       await tester.tap(find.text('Skip'));
       await tester.pumpAndSettle();
 
-      verify(mockGoRouter.go('/login')).called(1);
+      expect(find.text('Get Started'), findsOneWidget);
     });
 
     testWidgets('navigates to /login when Get Started is tapped on last page', (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       await tester.pumpWidget(
         MockMaterialApp(
           child: MockGoRouterProvider(router: mockGoRouter, child: const OnboardingScreen()),

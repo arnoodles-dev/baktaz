@@ -117,7 +117,7 @@ void main() {
       await pumpNavBar(tester);
 
       expect(find.text('Home'), findsOneWidget);
-      expect(find.text('Activity'), findsOneWidget);
+      expect(find.text('Challenge'), findsOneWidget);
       expect(find.text('Messages'), findsOneWidget);
       expect(find.text('Account'), findsOneWidget);
     });
@@ -130,7 +130,7 @@ void main() {
     testWidgets('goBranch called when item tapped', (WidgetTester tester) async {
       await pumpNavBar(tester);
 
-      await tester.tap(find.text('Activity'));
+      await tester.tap(find.text('Challenge'));
       await tester.pumpAndSettle();
 
       expect(selectedIndex.value, equals(1));

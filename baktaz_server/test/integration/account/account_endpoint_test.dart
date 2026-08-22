@@ -70,6 +70,16 @@ void main() {
       setUp(() async {
         final Session session = sessionBuilder.build();
 
+        await AuthUser.db.insertRow(
+          session,
+          AuthUser(
+            id: ServerFixtures.testAuthUserId,
+            createdAt: DateTime.now(),
+            scopeNames: const <String>{},
+            blocked: false,
+          ),
+        );
+
         final UserProfile userProfile = await UserProfile.db.insertRow(
           session,
           UserProfile(
@@ -128,7 +138,7 @@ void main() {
         expect(profile.gender, equals(Gender.male));
         expect(profile.email, equals('john@example.com'));
         expect(profile.mobileNumber, equals('+1234567890'));
-        expect(profile.birthday, equals(DateTime(1995, 5, 15)));
+        expect(profile.birthday?.toLocal(), equals(DateTime(1995, 5, 15)));
       });
     });
 
@@ -140,6 +150,14 @@ void main() {
           ServerFixtures.userScopes,
         ),
       );
+
+      setUp(() async {
+        final Session session = sessionBuilder.build();
+        await AuthUser.db.insertRow(
+          session,
+          AuthUser(id: ledgerAuthUserId, createdAt: DateTime.now(), scopeNames: const <String>{}, blocked: false),
+        );
+      });
 
       test('handles zero wallet balances and null user profile fallbacks', () async {
         final Session session = sessionBuilder.build();
@@ -298,6 +316,19 @@ void main() {
           ServerFixtures.userScopes,
         ),
       );
+
+      setUp(() async {
+        final Session session = sessionBuilder.build();
+        await AuthUser.db.insertRow(
+          session,
+          AuthUser(
+            id: ServerFixtures.testAuthUserId,
+            createdAt: DateTime.now(),
+            scopeNames: const <String>{},
+            blocked: false,
+          ),
+        );
+      });
 
       test('then getAccountSummary returns negative balances', () async {
         final Session session = sessionBuilder.build();

@@ -1,0 +1,11 @@
+class: ActiveChallengeSummary
+fields:
+  isEnrolled: bool
+  title: String?
+  rank: int?
+  totalParticipants: int?
+  prizePoolText: String?
+  gapText: String?
+  leaders: List<String>?
+  currentDay: int?
+  totalDays: int?

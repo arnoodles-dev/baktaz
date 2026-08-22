@@ -1,0 +1,8 @@
+class: HomeLeaderboardEntry
+fields:
+  rank: int
+  username: String
+  avatarUrl: Uri?
+  steps: int
+  avgSteps: String
+  trend: String

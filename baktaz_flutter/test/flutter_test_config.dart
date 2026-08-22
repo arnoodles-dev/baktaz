@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:baktaz_client/baktaz_client.dart' as sp;
@@ -7,6 +9,7 @@ import 'package:baktaz_flutter/app/themes/app_theme.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/model/profile.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -40,6 +43,30 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   );
   provideDummy<TaskResult<(String, String)>>(TaskResult<(String, String)>.right(('dummy', 'dummy')));
   provideDummy<Either<Failure, String>>(right<Failure, String>('dummy'));
+
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler('flutter/assets', (
+    ByteData? message,
+  ) async {
+    if (message == null) {
+      return null;
+    }
+    final String key = utf8.decode(message.buffer.asUint8List());
+    if (key == 'FontManifest.json' || key == 'FontManifest.bin') {
+      return ByteData.sublistView(utf8.encode('[]'));
+    }
+    if (key == 'AssetManifest.json' || key == 'AssetManifest.bin') {
+      return ByteData.sublistView(utf8.encode('{}'));
+    }
+    File file = File(key);
+    if (!file.existsSync()) {
+      file = File('baktaz_flutter/$key');
+    }
+    if (file.existsSync()) {
+      final Uint8List bytes = await file.readAsBytes();
+      return ByteData.sublistView(bytes);
+    }
+    return null;
+  });
 
   await Future.wait(<Future<void>>[setupInjection()]);
 

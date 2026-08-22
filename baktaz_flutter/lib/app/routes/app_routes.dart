@@ -19,13 +19,13 @@ import 'package:baktaz_flutter/features/account/presentation/views/screens/setti
 import 'package:baktaz_flutter/features/account/presentation/views/screens/settings/language_screen.dart';
 import 'package:baktaz_flutter/features/account/presentation/views/screens/support/share_feedback_screen.dart';
 import 'package:baktaz_flutter/features/account/presentation/views/screens/support/support_webview_screen.dart';
-import 'package:baktaz_flutter/features/activity/presentation/views/pages/activity_page.dart';
-import 'package:baktaz_flutter/features/activity/presentation/views/screens/activity_history_screen.dart';
 import 'package:baktaz_flutter/features/auth/presentation/views/blocked_account_screen.dart';
 import 'package:baktaz_flutter/features/auth/presentation/views/login_email_screen.dart';
 import 'package:baktaz_flutter/features/auth/presentation/views/login_screen.dart';
 import 'package:baktaz_flutter/features/auth/presentation/views/otp_verification_screen.dart';
 import 'package:baktaz_flutter/features/auth/presentation/views/registration_screen.dart';
+import 'package:baktaz_flutter/features/challenge/presentation/views/pages/challenge_page.dart';
+import 'package:baktaz_flutter/features/challenge/presentation/views/screens/challenge_history_screen.dart';
 import 'package:baktaz_flutter/features/home/presentation/views/home_page.dart';
 import 'package:baktaz_flutter/features/message/presentation/views/chat_page.dart';
 import 'package:baktaz_flutter/features/message/presentation/views/message_page.dart';
@@ -121,11 +121,11 @@ class SelectAddressRoute extends GoRouteData with $SelectAddressRoute {
     TypedStatefulShellBranch<HomeBranch>(
       routes: <TypedRoute<RouteData>>[TypedGoRoute<HomeRoute>(path: '/home', name: 'home')],
     ),
-    TypedStatefulShellBranch<ActivityBranch>(
+    TypedStatefulShellBranch<ChallengeBranch>(
       routes: <TypedRoute<RouteData>>[
-        TypedGoRoute<ActivityRoute>(
-          path: '/activity',
-          name: 'activity',
+        TypedGoRoute<ChallengeRoute>(
+          path: '/challenge',
+          name: 'challenge',
           routes: <TypedRoute<RouteData>>[TypedGoRoute<HistoryRoute>(path: 'history', name: 'history')],
         ),
       ],
@@ -183,16 +183,16 @@ class HomeRoute extends GoRouteData with $HomeRoute {
       FadeTransitionPage(key: state.pageKey, child: const HomePage());
 }
 
-class ActivityBranch extends StatefulShellBranchData {
-  const ActivityBranch();
+class ChallengeBranch extends StatefulShellBranchData {
+  const ChallengeBranch();
   static final GlobalKey<NavigatorState> $navigatorKey = RouteNavigatorKeys.mainMessage;
 }
 
-class ActivityRoute extends GoRouteData with $ActivityRoute {
-  const ActivityRoute();
+class ChallengeRoute extends GoRouteData with $ChallengeRoute {
+  const ChallengeRoute();
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
-      FadeTransitionPage(key: state.pageKey, child: const ActivityPage());
+      FadeTransitionPage(key: state.pageKey, child: const ChallengePage());
 }
 
 class HistoryRoute extends GoRouteData with $HistoryRoute {
@@ -203,7 +203,7 @@ class HistoryRoute extends GoRouteData with $HistoryRoute {
     transitionType: SlideTransitionType.rightToLeft,
     key: state.pageKey,
     fullscreenDialog: true,
-    child: const ActivityHistoryScreen(),
+    child: const ChallengeHistoryScreen(),
   );
 }
 

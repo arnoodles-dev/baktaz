@@ -24,11 +24,19 @@ import 'package:baktaz_client/src/protocol/features/auth/domain/models/otp_verif
     as _i7;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i8;
-import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+import 'package:baktaz_client/src/protocol/features/home/domain/model/daily_step_telemetry.dart'
     as _i9;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i10;
-import 'package:http/http.dart' as _i11;
-import 'protocol.dart' as _i12;
+import 'package:baktaz_client/src/protocol/features/home/domain/model/weekly_step_analytics.dart'
+    as _i10;
+import 'package:baktaz_client/src/protocol/features/home/domain/model/active_challenge_summary.dart'
+    as _i11;
+import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
+    as _i12;
+import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+    as _i13;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i14;
+import 'package:http/http.dart' as _i15;
+import 'protocol.dart' as _i16;
 
 /// {@category Endpoint}
 abstract class EndpointAdminEndpointBase extends _i1.EndpointRef {
@@ -475,18 +483,66 @@ class EndpointOtp extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointHome extends _i1.EndpointRef {
+  EndpointHome(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'home';
+
+  _i2.Future<_i9.DailyStepTelemetry> getDailyStepTelemetry() =>
+      caller.callServerEndpoint<_i9.DailyStepTelemetry>(
+        'home',
+        'getDailyStepTelemetry',
+        {},
+      );
+
+  _i2.Future<_i10.WeeklyStepAnalytics> getWeeklyStepAnalytics() =>
+      caller.callServerEndpoint<_i10.WeeklyStepAnalytics>(
+        'home',
+        'getWeeklyStepAnalytics',
+        {},
+      );
+
+  _i2.Future<_i11.ActiveChallengeSummary?> getActiveChallengeSummary() =>
+      caller.callServerEndpoint<_i11.ActiveChallengeSummary?>(
+        'home',
+        'getActiveChallengeSummary',
+        {},
+      );
+
+  _i2.Future<List<_i12.HomeLeaderboardEntry>> getLeaderboardPreview() =>
+      caller.callServerEndpoint<List<_i12.HomeLeaderboardEntry>>(
+        'home',
+        'getLeaderboardPreview',
+        {},
+      );
+
+  _i2.Future<_i9.DailyStepTelemetry> syncSteps(
+    int steps,
+    String source,
+  ) => caller.callServerEndpoint<_i9.DailyStepTelemetry>(
+    'home',
+    'syncSteps',
+    {
+      'steps': steps,
+      'source': source,
+    },
+  );
+}
+
+/// {@category Endpoint}
 class EndpointSecurity extends EndpointAdminEndpointBase {
   EndpointSecurity(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'security';
 
-  _i2.Future<List<_i9.SecurityEvent>> listSecurityEvents({
+  _i2.Future<List<_i13.SecurityEvent>> listSecurityEvents({
     required int limit,
     required int offset,
     String? eventType,
     _i1.UuidValue? authUserId,
-  }) => caller.callServerEndpoint<List<_i9.SecurityEvent>>(
+  }) => caller.callServerEndpoint<List<_i13.SecurityEvent>>(
     'security',
     'listSecurityEvents',
     {
@@ -502,14 +558,14 @@ class Modules {
   Modules(Client client) {
     auth_core = _i6.Caller(client);
     serverpod_auth_idp = _i8.Caller(client);
-    auth = _i10.Caller(client);
+    auth = _i14.Caller(client);
   }
 
   late final _i6.Caller auth_core;
 
   late final _i8.Caller serverpod_auth_idp;
 
-  late final _i10.Caller auth;
+  late final _i14.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -526,10 +582,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i11.Client? httpClientOverride,
+    _i15.Client? httpClientOverride,
   }) : super(
          host,
-         _i12.Protocol(),
+         _i16.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -547,6 +603,7 @@ class Client extends _i1.ServerpodClientShared {
     googleIdp = EndpointGoogleIdp(this);
     jwtRefresh = EndpointJwtRefresh(this);
     otp = EndpointOtp(this);
+    home = EndpointHome(this);
     security = EndpointSecurity(this);
     modules = Modules(this);
   }
@@ -567,6 +624,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointOtp otp;
 
+  late final EndpointHome home;
+
   late final EndpointSecurity security;
 
   late final Modules modules;
@@ -581,6 +640,7 @@ class Client extends _i1.ServerpodClientShared {
     'googleIdp': googleIdp,
     'jwtRefresh': jwtRefresh,
     'otp': otp,
+    'home': home,
     'security': security,
   };
 

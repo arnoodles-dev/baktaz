@@ -1,11 +1,18 @@
 import 'package:baktaz_server/src/app/injection/service_locator.dart';
 import 'package:baktaz_server/src/core/endpoint/admin_endpoint_base.dart';
+import 'package:baktaz_server/src/features/auth/data/repository/admin_repository.dart';
 import 'package:baktaz_server/src/features/auth/domain/interface/i_admin_repository.dart';
+import 'package:baktaz_server/src/features/security/data/service/security_logger.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
 class AdminEndpoint extends AdminEndpointBase {
-  AdminEndpoint([IAdminRepository? adminService]) : _adminService = adminService ?? getIt<IAdminRepository>();
+  AdminEndpoint([IAdminRepository? adminService])
+    : _adminService =
+          adminService ??
+          (getIt.isRegistered<IAdminRepository>()
+              ? getIt<IAdminRepository>()
+              : AdminRepository(getIt.isRegistered<SecurityLogger>() ? getIt<SecurityLogger>() : SecurityLogger()));
 
   final IAdminRepository _adminService;
 

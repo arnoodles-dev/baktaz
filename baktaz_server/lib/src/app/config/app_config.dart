@@ -1,3 +1,4 @@
+/// Application configuration.
 abstract final class AppConfig {
   static const Duration defaultTimeout = Duration(minutes: 1);
   static const Duration defaultCacheLifetime = Duration(minutes: 5);
@@ -12,4 +13,7 @@ abstract final class AppConfig {
 
   // Feature Flags
   static const bool accountDeletionEnabled = true;
+
+  // Step Tracking
+  static const int maxDailyStepCeiling = 30000;
 }

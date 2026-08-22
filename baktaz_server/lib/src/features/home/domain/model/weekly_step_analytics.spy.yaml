@@ -1,0 +1,6 @@
+class: WeeklyStepAnalytics
+fields:
+  weeklySteps: List<int>
+  averageSteps: int
+  totalWeeklySteps: int
+  goalTarget: int

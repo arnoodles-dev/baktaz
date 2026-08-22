@@ -1,13 +1,16 @@
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_app_bar.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_carousel.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_featured_content.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_search_bar.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_services_grid.dart';
+import 'package:alchemist/alchemist.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_active_challenge_ticker.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_app_header.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_challenge_discovery_banner.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_daily_step_hero_card.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_leaderboard_preview.dart';
 import 'package:baktaz_flutter/features/home/presentation/widgets/home_title_header.dart';
+import 'package:baktaz_flutter/features/home/presentation/widgets/home_weekly_steps_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../utils/mock_material_app.dart';
+import '../../utils/test_utils.dart';
 
 void main() {
   group(HomeTitleHeader, () {
@@ -48,116 +51,45 @@ void main() {
     });
   });
 
-  group(HomeFeaturedContent, () {
-    testWidgets('renders items via itemBuilder', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MockMaterialApp(
-          surfaceHeight: 300,
-          child: Scaffold(
-            body: HomeFeaturedContent(
-              title: 'Featured',
-              isLoading: false,
-              itemCount: 2,
-              height: 200,
-              itemBuilder: (BuildContext context, int index) => SizedBox(width: 100, child: Text('Item $index')),
+  group(HomeDailyStepHeroCard, () {
+    goldenTest(
+      'renders correctly',
+      fileName: 'home_daily_step_hero_card'.goldensVersion,
+      builder: () => GoldenTestGroup(
+        children: <Widget>[
+          GoldenTestScenario(
+            name: 'default',
+            child: MockMaterialApp(
+              surfaceWidth: 600,
+              child: Scaffold(
+                body: HomeDailyStepHeroCard(
+                  currentSteps: 7500,
+                  goalSteps: 10000,
+                  syncSource: 'Health Connect',
+                  lastSyncedText: '10 mins ago',
+                  onRefresh: () {},
+                ),
+              ),
             ),
           ),
-        ),
-      );
+        ],
+      ),
+    );
 
-      await tester.pumpAndSettle();
-
-      expect(find.text('Featured'), findsOneWidget);
-      expect(find.text('Item 0'), findsOneWidget);
-      expect(find.text('Item 1'), findsOneWidget);
-    });
-
-    testWidgets('renders skeleton when loading', (WidgetTester tester) async {
+    testWidgets('renders step counts and sync source', (WidgetTester tester) async {
+      bool refreshed = false;
       await tester.pumpWidget(
         MockMaterialApp(
-          surfaceHeight: 300,
+          surfaceWidth: 600,
           child: Scaffold(
-            body: HomeFeaturedContent(
-              title: 'Featured',
-              isLoading: true,
-              itemCount: 2,
-              height: 200,
-              itemBuilder: (BuildContext context, int index) => const SizedBox(width: 100),
-            ),
-          ),
-        ),
-      );
-
-      await tester.pump();
-
-      expect(find.text('Featured'), findsOneWidget);
-    });
-  });
-
-  group(HomeServicesGrid, () {
-    testWidgets('renders four service cards', (WidgetTester tester) async {
-      await tester.pumpWidget(const MockMaterialApp(child: Scaffold(body: HomeServicesGrid())));
-
-      await tester.pumpAndSettle();
-
-      expect(find.text('Shops'), findsOneWidget);
-      expect(find.text('Requests'), findsOneWidget);
-      expect(find.text('Heroes'), findsOneWidget);
-      expect(find.text('Express'), findsOneWidget);
-    });
-  });
-
-  group(HomeSearchBar, () {
-    testWidgets('renders search icon and hint text', (WidgetTester tester) async {
-      await tester.pumpWidget(const MockMaterialApp(child: Scaffold(body: HomeSearchBar())));
-
-      await tester.pumpAndSettle();
-
-      expect(find.byIcon(Icons.search), findsOneWidget);
-    });
-  });
-
-  group(HomeAppBar, () {
-    testWidgets('renders greeting fallback and name', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MockMaterialApp(
-          child: Scaffold(
-            body: HomeAppBar(isLoading: false, onChangeAddress: () {}, name: 'Jane Doe'),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      expect(find.text('Jane Doe'), findsOneWidget);
-      expect(find.byIcon(Icons.location_on), findsOneWidget);
-    });
-
-    testWidgets('renders custom greeting', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MockMaterialApp(
-          child: Scaffold(
-            body: HomeAppBar(isLoading: false, onChangeAddress: () {}, name: 'Jane Doe', greeting: 'Good morning'),
-          ),
-        ),
-      );
-
-      await tester.pumpAndSettle();
-
-      expect(find.text('Good morning'), findsOneWidget);
-    });
-
-    testWidgets('invokes onChangeAddress when location tapped', (WidgetTester tester) async {
-      bool? addressChanged;
-      await tester.pumpWidget(
-        MockMaterialApp(
-          child: Scaffold(
-            body: HomeAppBar(
-              isLoading: false,
-              onChangeAddress: () {
-                addressChanged = true;
+            body: HomeDailyStepHeroCard(
+              currentSteps: 7500,
+              goalSteps: 10000,
+              syncSource: 'Health Connect',
+              lastSyncedText: '10 mins ago',
+              onRefresh: () {
+                refreshed = true;
               },
-              name: 'Jane Doe',
             ),
           ),
         ),
@@ -165,21 +97,26 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.location_on));
-      await tester.pumpAndSettle();
-      expect(addressChanged, isTrue);
+      expect(find.text("TODAY'S STEPS"), findsOneWidget);
+      expect(find.text('7,500 steps'), findsOneWidget);
+      expect(find.byIcon(Icons.refresh), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.refresh));
+      expect(refreshed, isTrue);
     });
   });
 
-  group(HomeCarousel, () {
-    testWidgets('renders carousel items and indicator', (WidgetTester tester) async {
+  group(HomeWeeklyStepsChart, () {
+    testWidgets('renders weekly steps chart and header', (WidgetTester tester) async {
       await tester.pumpWidget(
-        MockMaterialApp(
-          surfaceHeight: 300,
+        const MockMaterialApp(
+          surfaceWidth: 600,
           child: Scaffold(
-            body: HomeCarousel(
-              itemsCount: 1,
-              itemBuilder: (BuildContext context, int index, int pageCount) => Text('Slide $index'),
+            body: HomeWeeklyStepsChart(
+              weeklySteps: <int>[5000, 6000, 7000, 8000, 7500, 9000, 8500],
+              averageSteps: 7285,
+              totalWeeklySteps: 51000,
+              goalTarget: 10000,
             ),
           ),
         ),
@@ -187,7 +124,180 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      expect(find.text('Slide 0'), findsOneWidget);
+      expect(find.text('Weekly Activity'), findsOneWidget);
+      expect(find.text('Mon'), findsOneWidget);
+      expect(find.text('Sun'), findsOneWidget);
+    });
+  });
+
+  group(HomeAppHeader, () {
+    testWidgets('renders brand title and notifications icon', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MockMaterialApp(
+          child: Scaffold(
+            body: HomeAppHeader(),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Baktaz'), findsOneWidget);
+      expect(find.byIcon(Icons.notifications_outlined), findsOneWidget);
+    });
+  });
+
+  group(HomeChallengeDiscoveryBanner, () {
+    testWidgets('renders prompt and explore button', (WidgetTester tester) async {
+      bool explored = false;
+      await tester.pumpWidget(
+        MockMaterialApp(
+          child: Scaffold(
+            body: HomeChallengeDiscoveryBanner(
+              onOpenChallenge: () {
+                explored = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('🏆 Take on a Challenge'), findsOneWidget);
+      expect(find.text('Explore Challenges ➔'), findsOneWidget);
+
+      await tester.tap(find.text('Explore Challenges ➔'));
+      await tester.pumpAndSettle();
+      expect(explored, isTrue);
+    });
+  });
+
+  group(HomeActiveChallengeTicker, () {
+    testWidgets('renders enrollment discovery banner when isEnrolled is false', (WidgetTester tester) async {
+      bool opened = false;
+      await tester.pumpWidget(
+        MockMaterialApp(
+          child: Scaffold(
+            body: HomeActiveChallengeTicker(
+              isEnrolled: false,
+              onOpenChallenge: () {
+                opened = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('🏆 Take on a Challenge'), findsOneWidget);
+      await tester.tap(find.text('Explore Challenges ➔'));
+      await tester.pumpAndSettle();
+      expect(opened, isTrue);
+    });
+
+    testWidgets('renders active challenge details when isEnrolled is true', (WidgetTester tester) async {
+      bool opened = false;
+      await tester.pumpWidget(
+        MockMaterialApp(
+          child: Scaffold(
+            body: HomeActiveChallengeTicker(
+              isEnrolled: true,
+              title: 'August Marathon',
+              rank: 12,
+              totalParticipants: 500,
+              prizePoolText: '5,000 pts',
+              gapText: '50 steps to #11',
+              leaders: const <String>['Alice', 'Bob', 'Charlie'],
+              currentDay: 4,
+              totalDays: 7,
+              onOpenChallenge: () {
+                opened = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('🏆 August Marathon'), findsOneWidget);
+      expect(find.text('Rank #12 / 500'), findsOneWidget);
+      expect(find.text('Prize Pool: 5,000 pts'), findsOneWidget);
+      expect(find.text('50 steps to #11'), findsOneWidget);
+      expect(find.text('Go to Challenge Page ➔'), findsOneWidget);
+
+      await tester.tap(find.text('Go to Challenge Page ➔'));
+      await tester.pumpAndSettle();
+      expect(opened, isTrue);
+    });
+  });
+
+  group(HomeLeaderboardPreview, () {
+    testWidgets('renders title, top entries, and view-full button', (WidgetTester tester) async {
+      bool viewedFull = false;
+      const List<LeaderboardEntry> entries = <LeaderboardEntry>[
+        LeaderboardEntry(rank: 1, username: 'Alice', steps: 15000, avgSteps: '12,000', trend: 'up'),
+        LeaderboardEntry(rank: 2, username: 'Bob', steps: 12000, avgSteps: '11,000', trend: 'down'),
+      ];
+
+      await tester.pumpWidget(
+        MockMaterialApp(
+          child: Scaffold(
+            body: HomeLeaderboardPreview(
+              topEntries: entries,
+              onViewFull: () {
+                viewedFull = true;
+              },
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Challenge Leaderboard'), findsOneWidget);
+      expect(find.text('View Full Leaderboard ➔'), findsOneWidget);
+      expect(find.text('Alice'), findsOneWidget);
+      expect(find.text('Bob'), findsOneWidget);
+
+      await tester.tap(find.text('View Full Leaderboard ➔'));
+      await tester.pumpAndSettle();
+      expect(viewedFull, isTrue);
+    });
+
+    testWidgets('renders current user entry when not in top list', (WidgetTester tester) async {
+      const List<LeaderboardEntry> entries = <LeaderboardEntry>[
+        LeaderboardEntry(rank: 1, username: 'Alice', steps: 15000, avgSteps: '12,000', trend: 'up'),
+      ];
+      const LeaderboardEntry userEntry = LeaderboardEntry(
+        rank: 99,
+        username: 'Me',
+        steps: 4000,
+        avgSteps: '4,500',
+        trend: 'flat',
+      );
+
+      await tester.pumpWidget(
+        const MockMaterialApp(
+          child: Scaffold(
+            body: HomeLeaderboardPreview(
+              topEntries: entries,
+              currentUserEntry: userEntry,
+              onViewFull: _noop,
+            ),
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+
+      expect(find.text('Alice'), findsOneWidget);
+      expect(find.text('Me'), findsOneWidget);
+      expect(find.text('📍 #99'), findsOneWidget);
     });
   });
 }
+
+void _noop() {}
