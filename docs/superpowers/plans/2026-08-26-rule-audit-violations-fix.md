@@ -1025,7 +1025,21 @@ For admin `login_screen.dart`, since `LoginCubit` is `@injectable` but needs ini
 
 Actually re-checking: the rule says `@injectable` → `create:`. Admin login_screen uses `create:`. This is CORRECT. No fix needed.
 
-- [ ] **Step 3: Verify no remaining violations**
+- [ ] **Step 3: Verify BlocSignalProvider annotations**
+
+Run: `rtk grep -rn "BlocSignalProvider" baktaz_flutter/lib baktaz_admin/lib`
+For each match, verify the Cubit annotation matches the provider pattern:
+- `@lazySingleton` Cubit → must use `.value(value:)`
+- `@injectable` Cubit → must use `create:`
+
+Run: `rtk grep -B2 "BlocSignalProvider" baktaz_flutter/lib/core/presentation/views/screens/main_screen.dart`
+Expected: `create:` for AccountCubit and HomeCubit (both @injectable).
+
+- [ ] **Step 3b: Verify state usage is correct**
+
+- `.state.subscribe()` in `route_refresh_listener.dart` — CORRECT (reactive side effect)
+- `.stateValue` in `context.select` callbacks — ACCEPTABLE (selector needs comparable value)
+- No violations found in state access patterns.
 
 Run:
 ```bash
