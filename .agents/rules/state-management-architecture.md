@@ -13,7 +13,10 @@ globs: *_flutter/lib/**, *_admin/lib/**, *_shared/lib/**, lib/**
 | `signal()` | Ephemeral local UI state | tab index, toggle |
 | `computed()` | Derive from signals, no side effects | filtered list |
 | `CubitSignal<State>` | State-driven UI with external inputs | `AccountCubit` |
-| `BlocSignal<Event, State>` | Complex event routing, concurrency | search with droppable events |
+| `BlocSignalPresentationMixin<SideEffect, State>` | One-shot side effects without state change (rare — use only when needed) | `HomeCubit` |
+| `BlocSignal<Event, State>` | Complex event routing, concurrency | `HomeCubit` (mixin variant) |
+
+> **Signals vs Cubits:** Local toggle → `signal()`. Cross-screen state → `CubitSignal`.
 
 ## Hooks (HookWidget)
 
@@ -36,12 +39,21 @@ globs: *_flutter/lib/**, *_admin/lib/**, *_shared/lib/**, lib/**
 | `BlocSignalConsumer<C, S>` | Combined builder + listener |
 | `context.select<C, R>(fn)` | Narrow selectors |
 
-## Common Mistakes
+## State Access Patterns
 
+- **`stateValue`**: Use for synchronous reads in non-reactive contexts (init, dialogs, one-time reads)
+- **`state`**: Use for reactive subscriptions and stream-based listeners
 
-## Common Mistakes
+Example:
+```dart
+// ✅ Sync read in dialog
+final state = cubit.stateValue;
 
-See `.agents/reference/state-management-mistakes.md` for code examples of common mistakes (signals in build(), calling Cubit after dispose, setState during build).
+// ✅ Reactive subscription
+final sub = cubit.state.listen((s) => ...);
+
+// ❌ Don't use stateValue in build() — causes unnecessary rebuilds
+```
 
 ## Error Handling Contract
 
@@ -60,9 +72,14 @@ Per error-handling-architecture.md:
 | Side effect | `useSignalEffect(fn)` | `signals_hooks` |
 | Global state (simple) | `CubitSignal<State>` | `bloc_signals` |
 | Global state (events) | `BlocSignal<Event, State>` | `bloc_signals` |
+| Side effects (rare) | `BlocSignalPresentationMixin<SideEffect, State>` | `bloc_signals_flutter` |
 | DI singleton | `BlocSignalProvider.value(value:)` | `bloc_signals_flutter` |
 | DI factory | `BlocSignalProvider(create:)` | `bloc_signals_flutter` |
 | Result folding | `taskResult.fold(onLeft, onRight)` | `fpdart` |
+
+## Common Mistakes
+
+See `.agents/reference/state-management-mistakes.md` for code examples of common mistakes (signals in build(), calling Cubit after dispose, setState during build).
 
 ## Reference Docs
 
