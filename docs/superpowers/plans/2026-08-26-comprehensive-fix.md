@@ -11,6 +11,11 @@
 **Spec:** Audit report 2026-08-26 (session memory) + `.agents/rules/*.md` + `.agents/reference/error-handling-*.md`.
 
 **Sub-plans:**
+- [Flutter Audit Fixes](2026-08-26-flutter-audit-fixes.md) — Tasks 1-3, 6, 9
+- [Admin Audit Fixes](2026-08-26-admin-audit-fixes.md) — Tasks 4, 10
+- [Server Audit Fixes](2026-08-26-server-audit-fixes.md) — Task 7
+- [Shared Audit Fixes](2026-08-26-shared-audit-fixes.md) — Tasks 6, 8
+- [Error Handling Docs Cleanup](2026-08-26-error-handling-docs-fix.md) — Tasks 11-16
 - [Error Handling Docs Cleanup](2026-08-26-error-handling-docs-fix.md) — Tasks 11-16 only
 
 ## Global Constraints
