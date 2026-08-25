@@ -19,6 +19,9 @@ permission:
     "reviewer": allow
     "designer": allow
     "writer": allow
+    "debugger": allow
+    "general": allow
+    "ask": allow
     "ask": allow
     "general": allow
     "debugger": allow
@@ -212,7 +215,7 @@ Prefer codebase‑memory‑mcp tools (`search_graph`, `trace_path`, `get_code_sn
 
 ### Verification
 [lint/test status summary]
-```
+
 ## Context-Layer Tool Routing
 - Code structure/impact -> `codebase-memory-mcp_*` tools.
 - History/decisions -> `agentmemory_*` tools.

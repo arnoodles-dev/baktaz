@@ -66,6 +66,7 @@ baktas_server/coverage/
 !.agents/agents/
 !.agents/rules/
 !.agents/rules/**
+!.agents/reference
 !.agents/workflows/
 !.agents/workflows/**
 !.agents/skills/

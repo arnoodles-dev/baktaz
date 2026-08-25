@@ -1,49 +1,70 @@
 ---
 trigger: glob
-description: Unit, widget, and integration testing, golden tests, mocking, and coverage rules
+description: Unit, widget, golden, integration testing, mocking, coverage, and DTD automation (see package-specific rules in flutter-architecture.md, serverpod-architecture.md)
 globs: **/test/**
 ---
 
 # Testing
 
-### Implementation-First Testing Workflow
+## Implementation-First Workflow
 
-- Implement code, entities, repositories, and UI components first.
-- Execute batch codegen (`slang`, `build_runner`, `serverpod generate`) after code implementation is complete.
-- Write unit tests (Repository, Bloc/Cubit) and Alchemist golden component tests after codegen.
-- Run full test suite and verify coverage ≥ 80%.
+1. Implement code, entities, repositories, UI components
+2. Run codegen — see operations.md for full codegen order
+3. Write tests after codegen complete
+4. Verify coverage ≥ 80%
 
-### Test Structure & Organization
+## Test Structure
 
-- **AAA pattern**: Arrange-Act-Assert.
-- **Test Naming**: Use descriptive names: e.g., `returns null when user does not exist`, `throws NotFoundException when id is empty string`, `disables submit button while form is invalid`.
-- **Async & Cubits**: `bloc_test` for Cubits, `fake_async` for async.
-- **Modifying Implementation Code**: Do not change implementation files when adding tests; request review if truly needed.
+- **AAA pattern**: Arrange-Act-Assert
+- **Naming**: Descriptive names — `returns null when user does not exist`, `throws NotFoundException when id is empty`
+- **Async & Cubits**: `bloc_test` for Cubits, `fake_async` for async
 
-### Mocking
+## Mocking
 
 - **Library**: `mockito` only. Never `mocktail` unless specified.
-- **Mocks > Fakes**: Prioritize generated mocks over manual fakes.
-- **Reusability**: Generate mocks in `test/utils/generated_mocks.dart` with `@GenerateMocks` or `@GenerateNiceMocks`; reuse across tests, do not regenerate per file.
-- **Stubs**: Use `mockito` stub methods (`when`, `thenReturn`, `thenAnswer`).
-- **Mockito Type Errors**: Register dummy with `provideDummy<T>(dummyValue)` in `flutter_test_config.dart` or test's `setUpAll` instead of custom wrappers.
+- **Generated mocks**: `@GenerateMocks` or `@GenerateNiceMocks` in `test/utils/generated_mocks.dart`. Reuse across tests.
+- **Stubs**: `when`, `thenReturn`, `thenAnswer`
+- **Type errors**: `provideDummy<T>(dummyValue)` in `flutter_test_config.dart`
 
-### Integration & Server Testing
+## Coverage Targets
 
-- Server integration tests in `test/integration/`; excluded from CI.
-- Run in `*_server` directory: `fvm dart test --concurrency=1` or from root: `make test_server`.
-- Forbidden: full-screen widget tests, UI component unit tests.
+| Type | Target |
+|---|---|
+| Overall | ≥80% |
+| Unit (Repository, Bloc/Cubit) | 100% | (see state-management-architecture.md)
+| Widget | ≥80% | (see flutter-architecture.md)
+| `*_site` | Exempt from Flutter goldens |
 
-### Widget & Golden Testing
+Exclusions in `.coverage_exclude`.
 
-- **Widget tests**: Must mainly be golden tests (Alchemist, 15% tolerance).
-- **Goldens**: Versioned by date. Update with `--update-goldens`.
+## Widget & Golden Testing
 
-### Coverage & Commands
+- Widget tests = golden tests (Alchemist, 15% tolerance) — see flutter-architecture.md
+- Goldens versioned by date
+- Update with `--update-goldens`
+- `*_site` exempt — use Jaspr testing patterns
 
-- **Coverage Targets**:
-  - Overall: ≥80%
-  - Unit Tests (Repository, Bloc): 100%
-  - Widget Tests: ≥80%
-  - Exclusions per `.coverage_exclude`.
-  - ***_site**: Exempt from Flutter goldens, use Jaspr patterns.
+## Integration & Server Testing
+
+- Server integration tests in `test/integration/` — see serverpod-architecture.md
+- Excluded from CI — require Docker/Postgres
+- Run: `fvm dart test --concurrency=1` in `*_server` or `make test_server`
+
+## Forbidden
+
+- Full-screen widget tests
+- UI component unit tests
+- `mocktail` (unless specified)
+
+## Automated App Testing via DTD
+
+See `.agents/reference/testing-dtd-workflow.md` for step-by-step DTD automation procedure.
+
+## Advanced Patterns
+
+See `.agents/reference/testing-advanced.md` for:
+- Advanced mocking strategies
+- Stream testing
+- BlocSignal testing
+- Serverpod session testing
+- Golden test maintenance

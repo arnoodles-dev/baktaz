@@ -45,8 +45,9 @@ Senior engineer who reproduces failures, reads stack traces, and isolates root c
 6. Report root cause + minimal fix; hand fix to `developer` for implementation if needed.
 
 ## Memory Protocol
-- BEFORE: call `memory_smart_search` (agentmemory MCP) for prior similar bugs on this component.
-- AFTER: call `memory_save` (agentmemory MCP) tagged #debug, #[component-name], #root-cause.
+1. BEFORE: call `memory_smart_search` (agentmemory MCP) for prior similar bugs on this component.
+2. Review findings for relevant patterns.
+3. AFTER: call `memory_save` (agentmemory MCP) tagged #debug, #[component-name], #root-cause.
 
 ## Boundaries
 - Diagnose and propose fixes; delegate implementation to `developer` when full fix is needed.
@@ -88,16 +89,5 @@ TO:
 STOP CONDITION: root cause confirmed and fix path is clear
 ```
 ```
-## Context-Layer Tool Routing
-- Code structure/impact -> `codebase-memory-mcp_*` tools.
-- History/decisions -> `agentmemory_*` tools.
-- Docs/PDFs/media -> `Graphify` commands (`/graphify .`).
-- Domain onboarding -> NOT implemented (`Understand Anything` external).
-  Fallback: `codebase-memory-mcp_get_architecture` + `read`.
 
-## Tools
-- `codebase-memory-mcp`: `codebase-memory-mcp_search_graph`, `codebase-memory-mcp_trace_path`, `codebase-memory-mcp_get_architecture`, etc.
-- `agentmemory`: `agentmemory_memory_smart_search`, `agentmemory_memory_recall`, `agentmemory_memory_timeline`, etc.
-- `Graphify`: `/graphify .`, `graphify export callflow-html`
-- `Understand Anything` (External): `/understand`, `/understand-dashboard`
-- Standard: `glob`, `grep`, `read`
+See `.agents/agents/main.md` for shared tool routing and tools reference.

@@ -18,60 +18,28 @@
 
 ---
 
-## Endpoints & Administrative Infrastructure
+## Endpoints
 
-### 1. Admin Endpoint (`lib/src/features/auth/endpoint/admin_endpoint.dart`)
-- **Base Class**: `AdminEndpointBase` (`requireLogin = true`, `requiredScopes = {Scope.admin}`).
-- **Repository**: `IAdminRepository` / `AdminRepository`.
-- **Operations**:
-  - `listAdminUsers(session)` — List all administrative user accounts.
-  - `listAuthUsers(session)` — List all registered authentication user accounts.
-  - `blockUser(session, authUserId)` — Block a user account by UUID.
-  - `unblockUser(session, authUserId)` — Unblock a user account by UUID.
-  - `updateUserScope(session, authUserId, scopeNames)` — Update assigned authorization scopes.
-
-### 2. Authentication & Identity Providers (`lib/src/features/auth/endpoint/`)
-- `EmailIdpEndpoint` — Email/Password authentication flow.
-- `GoogleIdpEndpoint` — Google OAuth authentication flow.
-- `FacebookIdpEndpoint` — Facebook OAuth authentication flow.
-- `JwtRefreshEndpoint` — JWT token refresh mechanism.
-- **Utilities**: `AuthUtils` for session token validation, `SeedingUtils` for automated initial admin account seeding.
-
-### 3. Account & Core Endpoints (`lib/src/features/account/endpoint/`)
-- `AccountEndpoint` — Manages user accounts, profiles, addresses, contacts, user states, and wallets.
+Admin endpoints (`AdminEndpointBase`, `Scope.admin`): user management, blocking, scoping.
+Auth endpoints: email/password, Google OAuth, Facebook OAuth, JWT refresh.
+Account endpoints: profiles, addresses, contacts, wallets.
 
 ---
 
-## Data Models (`.spy.yaml`)
+## Data Models
 
-- `account` & `account_summary` — User account state and aggregated summaries.
-- `address` — User physical address data.
-- `contact` — Contact details and phone numbers.
-- `user_info` — User details.
-- `profile` — Profile metadata and preferences.
-- `account_state` — Active/blocked/pending state flags.
-- `wallet` & `wallet_transactions` — Financial balance and transaction ledger.
+See `.spy.yaml` — account, address, contact, profile, wallet entities.
 
 ---
 
-## Verification & Quality Checklist
+## Verification
 
-Run the following checks after modifying `baktaz_server`:
+See `.agents/rules/operations.md` for verification commands and MCP tools.
 
-1. **Linting**:
-   ```bash
-   dart analyze baktaz_server
-   ```
-2. **Formatting**:
-   ```bash
-   dart format baktaz_server/lib baktaz_server/test
-   ```
-3. **Database Migrations (MCP)**:
-   - When `.spy.yaml` models change, run `create_migration` followed by `apply_migrations` using the `serverpod` MCP.
-4. **Server Restart & Logs (MCP)**:
-   - Run `hot_restart` via `serverpod` MCP to reload server isolate changes.
-   - Monitor backend logs with `tail_server_logs` (`serverpod` MCP).
-5. **Tests**:
-   ```bash
-   make test_server
-   ```
+---
+
+## DOX Compliance
+
+This is a binding DOX contract. Read before editing `baktaz_server/` paths.
+Walk the DOX chain: root → child. Closer docs control local details.
+Update this file when purpose, scope, or workflows change.

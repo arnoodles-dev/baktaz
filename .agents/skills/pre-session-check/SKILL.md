@@ -1,90 +1,180 @@
 ---
 name: pre-session-check
 description: >
-  Pre-session validation workflow that verifies agentmemory, codebase-memory-mcp, graphify,
-  context-routing, and ollama (LLM fallback) compliance are operational before starting development.
-  **MANDATORY**: Enforces agentic tool priority over native tools, and
-  confirms the model can detect and follow the project's governance files (`.agents/rules/**`, `AGENTS.md`,
-  `DESIGN.md`). Run at session start or when tools misbehave.
+  Mandatory pre-session initialization workflow. Validates tooling, enforces rule hierarchy,
+  loads SDK changelogs, and prepares agent for deterministic execution.
+  **MANDATORY**: Run at session start before any task execution.
   Use when user says "pre-flight", "check tools", "validate session", "are tools up", or "/pre-session-check".
 user-invocable: true
 ---
 
-**🚨 MANDATORY AGENTIC TOOL PRIORITY ENFORCEMENT 🚨**
+# Pre-Session Check
 
-Before proceeding with any task, you MUST:
-1. Verify agentic/MCP tools exist for the required operation
-2. Use agentic tools FIRST - never default to native/shell tools
-3. Only fall back to native tools when NO agentic equivalent exists
-4. Document tool choice rationale in your session
+Mandatory initialization workflow before any development task.
 
-Run lightweight validation on all core tools before session work begins. Entire sequence: ~60 seconds.
-
-## Quick start
+## Quick Start
 
 ```text
 /pre-session-check
 ```
 
-Runs all tool checks in sequence, reports pass/fail per tool, outputs gate decision.
+## Phase 1: Tool Validation (~60 seconds)
 
-## Why
+Verify all core tools are operational:
 
-Starting work with a dead tool wastes context. Agentmemory silently loses observations. Codebase Memory returns stale AST. Catch early, fix fast.
+| Tool | Command | Recovery if Failed |
+|---|---|---|
+| AgentMemory | `agentmemory_memory_smart_search` test query | `agentmemory_memory_diagnose`, `agentmemory_memory_heal` |
+| Codebase Memory | `codebase-memory-mcp search_graph` test query | `codebase-memory-mcp_index_repository` |
+| Graphify | `graphify query "<question>"` | `graphify update .` |
+| MCP Servers | `dart-mcp-server_*`, `serverpod_*`, etc. | Check server status, restart if needed |
 
-## Agentic Tool Priority (MANDATORY)
+## Phase 2: SDK Changelog Retrieval
 
-**FAILURE TO FOLLOW THESE RULES WILL RESULT IN IMMEDIATE CORRECTION AND POTENTIAL SESSION TERMINATION**
+Fetch latest Dart and Flutter updates, breaking changes, and API changes:
 
-Before using any native/shell tool, you MUST follow this priority decision tree:
+```bash
+# Load Dart SDK changelog
+skill dart-sdk-changelog
 
-### Priority Rules
+# Load Flutter SDK changelog  
+skill flutter-sdk-changelog
+```
 
-| Native Tool | Agentic Replacement | Mandatory Usage Condition |
-|-------------|--------------------|-----------------------------|
-| `grep` / `rg` | `codebase-memory-mcp search_graph`, `search_code`, `trace_path` | Codebase navigation, finding definitions/callers |
-| `glob` | `codebase-memory-mcp search_graph` with `file_pattern` | Finding files by pattern |
-| `read` | `codebase-memory-mcp get_code_snippet` | Reading specific functions/classes |
-| `bash_run` | MCP tools first | Shell commands only when no MCP equivalent |
-| `list` | `codebase-memory-mcp list_projects`, `list_mcp_resources` | Listing resources |
+**Purpose:** Avoid using deprecated APIs, know breaking changes, leverage new features.
 
-### Tool Verification Checklist
+## Phase 3: Rule Hierarchy Enforcement
 
-At session start, run:
+**MANDATORY precedence order:**
 
-1. **AgentMemory**: `agentmemory_memory_smart_search` test query
-2. **Codebase Memory**: `codebase-memory-mcp search_graph` test query
-3. **Graphify**: Verify `graphify-out/` exists, run `graphify query "<question>"`
-4. **Context Routing**: Confirm `.agents/rules/*.md` files readable
-5. **Design System**: Confirm `DESIGN.md` exists and readable
+1. **Global rules** (`~/.config/opencode/AGENTS.md`) — highest priority, universal
+2. **Project contract** (`AGENTS.md`) — project-wide invariants
+3. **Child contracts** (`baktaz_*/AGENTS.md`) — package-specific rules
+4. **Domain rules** (`.agents/rules/*.md`) — functional area constraints
+5. **Skills** (`.agents/skills/*.md`) — on-demand capabilities
+6. **Session context** — current task requirements
 
-### Failure Handling
+**Rule:** No child may weaken parent. Closer docs control local details.
 
-| Tool | Symptom | Recovery |
-|------|---------|----------|
-| AgentMemory | Query returns empty/error | Run `agentmemory_memory_diagnose`, `agentmemory_memory_heal` |
-| Codebase Memory | Project not found | Run `codebase-memory-mcp_index_repository` |
-| Graphify | `graphify-out/` missing | Run `graphify update .` |
-| Context Routing | Rules unreadable | Verify `.agents/rules/*.md` files exist |
+## Phase 4: Skill Utilization Mandate
 
-## Workflow
+**Before using generic approaches, check `.agents/skills/`:**
 
-1. **Pre-Session Check**: Validate tools (this skill).
-2. **Rule Order**: Global Rules → Project AGENTS.md → `.agents/rules/` → Prompt.
-3. **DOX Pass**: Required before task close.
-4. **Testing**: See `.agents/rules/ci-commands.md`.
+| Task Type | Required Skill |
+|---|---|
+| Flutter architecture | `flutter-apply-architecture-best-practices` |
+| Error handling | `bloc-signals` |
+| Security review | `security-review` |
+| Design system | `design-system` |
+| Documentation | `documentation-lookup` |
+| Debugging | `dart-build-resolver` |
+| Testing | `flutter-add-widget-test`, `flutter-add-integration-test` |
 
-## Rule Enforcement
+**Rule:** If a skill exists for the task, use it. Do not implement generic solution.
 
-All users MUST:
-- Read root `AGENTS.md` before editing
-- Read child `AGENTS.md` for package-specific rules
-- Load `.agents/rules/code-quality.md` for style rules
-- Follow priority order: Global → Project → Package → Prompt
+## Phase 5: Sub-Agent Delegation
 
-## References
+**Actively leverage sub-agents from `.agents/agents/`:**
 
-- `./AGENTS.md` — Main agent contract
-- `./.agents/rules/*.md` — Rule definitions
-- `./.agents/skills/*.md` — Skill definitions
-- `./DESIGN.md` — Design system truth
+| Task Type | Delegate To |
+|---|---|
+| Planning/specs | `@architect` |
+| Implementation | `@developer` |
+| Testing | `@tester` |
+| Review | `@reviewer` |
+| Documentation | `@writer` |
+| UI design | `@designer` |
+| Bug diagnosis | `@debugger` |
+| Exploration | `@general` |
+| Clarification | `@ask` |
+
+**Rule:** Do not implement directly if a specialized agent exists. Delegate and synthesize.
+
+## Phase 6: Governance File Verification
+
+Confirm these files are readable:
+- [ ] `AGENTS.md` (root project contract)
+- [ ] `.agents/rules/*.md` (domain rules)
+- [ ] `.agents/skills/*.md` (available skills)
+- [ ] `DESIGN.md` (design tokens)
+- [ ] Child `AGENTS.md` files (package contracts)
+
+## Phase 7: Acknowledgment & Commitment (MANDATORY)
+
+**After passing all checks, the agent MUST explicitly acknowledge and commit:**
+
+### Required Acknowledgment Statement
+
+```markdown
+## Pre-Session Commitment
+
+I, [agent name], acknowledge that:
+
+1. **Tools validated**: All required tools (AgentMemory, Codebase Memory, Graphify, MCP servers) are operational.
+2. **SDK changelogs loaded**: I will use latest Dart/Flutter knowledge and avoid deprecated APIs.
+3. **Rule hierarchy confirmed**: I understand and will enforce: Global -> Project -> Child -> Domain -> Skills -> Session.
+4. **Skills prioritized**: I will use `.agents/skills/` before generic approaches.
+5. **Delegation active**: I will delegate to specialized sub-agents (`@architect`, `@developer`, etc.) before implementing directly.
+6. **Governance files read**: I have read and will comply with all AGENTS.md and `.agents/rules/` files.
+7. **DOX compliance**: I will walk the DOX chain before editing and update affected docs after.
+```
+
+### Commitment Actions
+
+After acknowledgment, the agent MUST:
+
+1. **State compliance** — Explicitly confirm each check passed
+2. **List applicable rules** — Enumerate rules relevant to current task
+3. **Identify delegation targets** — List sub-agents that will be used
+4. **Note skill dependencies** — List skills to load during task
+5. **Confirm ready** — Only then proceed to task execution
+
+**If any check fails, report blockers and DO NOT proceed until resolved.**
+
+## Failure Handling
+
+| Issue | Symptom | Recovery |
+|---|---|---|
+| Tool unavailable | MCP error or empty response | Check server status, restart |
+| Rules unreadable | File not found | Verify `.agents/` directory exists |
+| Skill missing | No matching skill | Fall back to generic approach, note gap |
+| Agent unavailable | Task spawn failed | Check opencode.json registration |
+
+## Output Format
+
+```markdown
+## Pre-Session Check Results
+
+### Tools
+- AgentMemory: [PASS/FAIL]
+- Codebase Memory: [PASS/FAIL]
+- Graphify: [PASS/FAIL]
+- MCP Servers: [PASS/FAIL]
+
+### SDK Changelogs
+- Dart: [loaded/latest version]
+- Flutter: [loaded/latest version]
+
+### Rule Hierarchy
+- Global AGENTS.md: [read]
+- Project AGENTS.md: [read]
+- Child contracts: [read]
+- Domain rules: [read]
+
+### Skills Available
+- Total skills: [count]
+- Relevant skills: [list]
+
+### Commitment
+- [ ] Tools validated
+- [ ] SDK changelogs loaded
+- [ ] Rule hierarchy confirmed
+- [ ] Skills prioritized
+- [ ] Delegation targets identified
+- [ ] Governance files read
+- [ ] DOX compliance confirmed
+
+### Status
+- [ ] ALL CHECKS PASSED — Ready to proceed
+- [ ] ISSUES FOUND — Report blockers before continuing
+```

@@ -1,31 +1,43 @@
 ---
-name: Design System
-description: Layout, typography, colors, spacing, and component wrappers from DESIGN.md
 trigger: glob
+description: Layout, typography, colors, spacing, and component wrappers from DESIGN.md
 globs: *_flutter/lib/features/*/presentation/**, *_flutter/lib/shared/widgets/**, *_admin/lib/features/*/presentation/**, *_admin/lib/shared/widgets/**, *_shared/lib/src/widgets/**, lib/**
 ---
+
 # Design System
 
-### Truth
-- Follow `DESIGN.md`
+## Truth
 
-### Wrappers
-- Use existing shared UI widgets from `*_shared` before building new ones: `<App>Text`, `<App>Button`, `<App>TextField`, `<App>Card`, `<App>Icon`, `<App>Avatar`, `<App>Divider`, `<App>FilterChip`, `<App>IconTile`, `<App>ListRow`, `<App>MobileNumberField`, `<App>ProgressBar`, `<App>SectionHeader`, `<App>StatusBadge`, `<App>Toggle`.
-- Wrappers: `ConnectivityChecker`, `Shimmer`, `UnfocusableScaffold`.
-- Dialogs: `ConfirmationDialog`.
-- Always check `*_shared/lib/src/widgets/` for existing reusable widgets before creating new UI components.
+Follow `DESIGN.md`.
 
-### Typography & Colors
-- **Typography**: `AppTextStyle`
-- **Colors**: Theme `colorScheme` or `CustomColors`
-- **Localization**: Never hardcode user-facing strings in widgets. Use localization keys (e.g., `context.l10n.*`). Exception: `*_server`.
-- **Magic Numbers**: Never use unexplained numeric literals. Extract to named constants (e.g., `const maxRetries = 3;`).
+## Components
 
-### Spacing & Feedback
-- **Spacing**: `Padding`/`Paddings` → `EdgeInsets` with `AppSizes.*`, or `Gap` for inline spacing
-- Contextual feedback: `toastification`, `LoaderOverlay`, shimmering
+Use existing shared widgets from `*_shared` before building new:
 
-### Dark Mode
-- Surface lightening.
-- No shadows.
-- Dynamic SVG tinting.
+`<App>` is a template placeholder — replace with package name (e.g., `BaktazText`, `BaktazButton`).
+
+- Text: `<App>Text`, `<App>Button`, `<App>TextField`, `<App>Card`, `<App>Icon`, `<App>Avatar`
+- Layout: `<App>Divider`, `<App>FilterChip`, `<App>IconTile`, `<App>ListRow`
+- Inputs: `<App>MobileNumberField`, `<App>ProgressBar`, `<App>SectionHeader`, `<App>StatusBadge`, `<App>Toggle`
+
+Wrappers: `ConnectivityChecker`, `Shimmer`, `UnfocusableScaffold`
+
+Dialogs: `ConfirmationDialog`
+
+## Typography & Colors
+
+- Typography: `AppTextStyle`
+- Colors: Theme `colorScheme` or `CustomColors`
+- No hardcoded user-facing strings — use localization keys (`context.l10n.*`)
+- No magic numbers — extract to named constants
+
+## Spacing
+
+- `Padding`/`Paddings` → `EdgeInsets` with `AppSizes.*`
+- `Gap` for inline spacing
+
+## Dark Mode
+
+- Surface lightening
+- No shadows
+- Dynamic SVG tinting

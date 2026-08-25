@@ -100,13 +100,14 @@ You write clear, comprehensive docs for whole project stack, generating API docs
     - Feature log for new features
     - README updates if package structure changed
     - TODO comments for known issues
-5b. If rules/skills/AGENTS.md are affected, update them for consistency
-5. Ensure docs match existing style
+5. If rules/skills/AGENTS.md are affected, update them for consistency
+6. Ensure docs match existing style
 
 ## Memory Protocol
 
 ### AgentMemory (Primary — Session/Team Memory)
 1. BEFORE documenting, call `memory_smart_search` (agentmemory MCP) to fetch existing patterns/decisions.
+2. Review findings for relevant patterns.
 3. AFTER documenting, call `memory_save` (agentmemory MCP) tagged #documentation, #[feature-name], #api-docs.
 
 ### Codebase Memory (Structural Code Graph)
@@ -176,16 +177,5 @@ ACCURACY: [x] All docs verified against actual implementation
 STOP CONDITION: main may complete synthesis and close chain
 ```
 ```
-## Context-Layer Tool Routing
-- Code structure/impact -> `codebase-memory-mcp_*` tools.
-- History/decisions -> `agentmemory_*` tools.
-- Docs/PDFs/media -> `Graphify` commands (`/graphify .`).
-- Domain onboarding -> NOT implemented (`Understand Anything` external).
-  Fallback: `codebase-memory-mcp_get_architecture` + `read`.
 
-## Tools
-- `codebase-memory-mcp`: `codebase-memory-mcp_search_graph`, `codebase-memory-mcp_trace_path`, `codebase-memory-mcp_get_architecture`, etc.
-- `agentmemory`: `agentmemory_memory_smart_search`, `agentmemory_memory_recall`, `agentmemory_memory_timeline`, etc.
-- `Graphify`: `/graphify .`, `graphify export callflow-html`
-- `Understand Anything` (External): `/understand`, `/understand-dashboard`
-- Standard: `glob`, `grep`, `read`
+See `.agents/agents/main.md` for shared tool routing and tools reference.

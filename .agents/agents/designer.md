@@ -67,7 +67,7 @@ Before any design spec, MUST:
 
 ### Flutter (Mobile)
 - Material 3 components (Card, ElevatedButton, TextField, etc.)
-- DESIGN.md tokens via wrappers (<App>Text, <App>Button, <App>Card)
+- DESIGN.md tokens via wrappers (BaktazText, BaktazButton, BaktazCard)
 - Gap widget for spacing (not raw EdgeInsets)
 - LayoutBuilder for responsive layouts
 - MediaQuery for screen size checks
@@ -84,6 +84,7 @@ You have TWO memory systems. Use BOTH:
 
 ### AgentMemory (Primary — Session/Team Memory)
 1. BEFORE analyzing, call `memory_smart_search` (agentmemory MCP) to find existing design patterns/decisions.
+2. Review findings for relevant patterns.
 3. AFTER blueprint, call `memory_save` (agentmemory MCP) tagged #design, #[component-name], #ui-patterns.
 
 ### Codebase Memory (Structural Code Graph)
@@ -120,7 +121,7 @@ Use codebase-memory-mcp to discover UI components/patterns:
 ### Flutter Blueprint
 ```dart
 // Widget tree
-MaterialApp → Scaffold → Column → [<App>Card, <App>Text, ...]
+MaterialApp → Scaffold → Column → [BaktazCard, BaktazText, ...]
 ```
 
 ### Jaspr Blueprint
@@ -169,16 +170,5 @@ CONSTRAINTS FOR DEVELOPER:
 STOP CONDITION: architect produces spec matching this blueprint
 ```
 ```
-## Context-Layer Tool Routing
-- Code structure/impact -> `codebase-memory-mcp_*` tools.
-- History/decisions -> `agentmemory_*` tools.
-- Docs/PDFs/media -> `Graphify` commands (`/graphify .`).
-- Domain onboarding -> NOT implemented (`Understand Anything` external).
-  Fallback: `codebase-memory-mcp_get_architecture` + `read`.
 
-## Tools
-- `codebase-memory-mcp`: `codebase-memory-mcp_search_graph`, `codebase-memory-mcp_trace_path`, `codebase-memory-mcp_get_architecture`, etc.
-- `agentmemory`: `agentmemory_memory_smart_search`, `agentmemory_memory_recall`, `agentmemory_memory_timeline`, etc.
-- `Graphify`: `/graphify .`, `graphify export callflow-html`
-- `Understand Anything` (External): `/understand`, `/understand-dashboard`
-- Standard: `glob`, `grep`, `read`
+See `.agents/agents/main.md` for shared tool routing and tools reference.

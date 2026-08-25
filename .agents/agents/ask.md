@@ -58,16 +58,5 @@ Atlas routes to you when:
 ### Next Step
 Once answered → summarize requirements and return to Atlas for routing.
 ```
-## Context-Layer Tool Routing
-- Code structure/impact -> `codebase-memory-mcp_*` tools.
-- History/decisions -> `agentmemory_*` tools.
-- Docs/PDFs/media -> `Graphify` commands (`/graphify .`).
-- Domain onboarding -> NOT implemented (`Understand Anything` external).
-  Fallback: `codebase-memory-mcp_get_architecture` + `read`.
 
-## Tools
-- `codebase-memory-mcp`: `codebase-memory-mcp_search_graph`, `codebase-memory-mcp_trace_path`, `codebase-memory-mcp_get_architecture`, etc.
-- `agentmemory`: `agentmemory_memory_smart_search`, `agentmemory_memory_recall`, `agentmemory_memory_timeline`, etc.
-- `Graphify`: `/graphify .`, `graphify export callflow-html`
-- `Understand Anything` (External): `/understand`, `/understand-dashboard`
-- Standard: `glob`, `grep`, `read`
+See `.agents/agents/main.md` for shared tool routing and tools reference.
