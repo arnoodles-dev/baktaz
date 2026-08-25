@@ -153,3 +153,4 @@ package-lock.json
 .codebase-memory
 baktas_shared/build/ios/SourcePackages
 data/stream_store
+data/iii-config.yaml

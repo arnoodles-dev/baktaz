@@ -29,6 +29,13 @@ Verify all core tools are operational:
 | Graphify | `graphify query "<question>"` | `graphify update .` |
 | MCP Servers | `dart-mcp-server_*`, `serverpod_*`, etc. | Check server status, restart if needed |
 
+
+### Known Issues
+
+| Feature | Status | Details |
+|---------|--------|---------|
+| Memory Slots | ⛔ Disabled | Bug in MCP bridge — slot tools crash when `AGENTMEMORY_SLOTS` is off. Pending fix: [PR #894](https://github.com/rohitg00/agentmemory/pull/894). Enable after merge. |
+
 ## Phase 2: SDK Changelog Retrieval
 
 Fetch latest Dart and Flutter updates, breaking changes, and API changes:
@@ -71,6 +78,8 @@ skill flutter-sdk-changelog
 | Testing | `flutter-add-widget-test`, `flutter-add-integration-test` |
 
 **Rule:** If a skill exists for the task, use it. Do not implement generic solution.
+
+**Scripting Preference:** When creating temporary scripts (migration helpers, codegen tools, data transforms), prefer Dart over Python. Use `dart run` or write a Dart script. Python only when no Dart equivalent exists (Firebase CLI, ML pipelines).
 
 ## Phase 5: Sub-Agent Delegation
 
@@ -117,6 +126,7 @@ I, [agent name], acknowledge that:
 5. **Delegation active**: I will delegate to specialized sub-agents (`@architect`, `@developer`, etc.) before implementing directly.
 6. **Governance files read**: I have read and will comply with all AGENTS.md and `.agents/rules/` files.
 7. **DOX compliance**: I will walk the DOX chain before editing and update affected docs after.
+8. **Scripting preference**: I will use Dart for scripting unless Python is the only viable option.
 ```
 
 ### Commitment Actions
@@ -145,36 +155,21 @@ After acknowledgment, the agent MUST:
 ```markdown
 ## Pre-Session Check Results
 
-### Tools
-- AgentMemory: [PASS/FAIL]
-- Codebase Memory: [PASS/FAIL]
-- Graphify: [PASS/FAIL]
-- MCP Servers: [PASS/FAIL]
+| Check | Status | Notes |
+|-------|--------|-------|
+| AgentMemory | ✅/❌ | |
+| Codebase Memory | ✅/❌ | |
+| Graphify | ✅/❌ | |
+| MCP Servers | ✅/❌ | |
+| Memory Slots | ⏳ Pending | PR #894 — do not enable |
 
-### SDK Changelogs
-- Dart: [loaded/latest version]
-- Flutter: [loaded/latest version]
-
-### Rule Hierarchy
-- Global AGENTS.md: [read]
-- Project AGENTS.md: [read]
-- Child contracts: [read]
-- Domain rules: [read]
-
-### Skills Available
-- Total skills: [count]
-- Relevant skills: [list]
-
-### Commitment
-- [ ] Tools validated
-- [ ] SDK changelogs loaded
-- [ ] Rule hierarchy confirmed
-- [ ] Skills prioritized
-- [ ] Delegation targets identified
-- [ ] Governance files read
-- [ ] DOX compliance confirmed
+### Rules Loaded
+- [x] Global AGENTS.md
+- [x] Project AGENTS.md
+- [x] Child contracts
+- [x] Domain rules
 
 ### Status
-- [ ] ALL CHECKS PASSED — Ready to proceed
-- [ ] ISSUES FOUND — Report blockers before continuing
+- ✅ Ready — proceed to task
+- ❌ Blocked — report blockers
 ```

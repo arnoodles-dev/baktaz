@@ -26,7 +26,6 @@ User-facing Flutter mobile app (iOS, Android, Web) connecting to baktaz_server v
 - State: `bloc_signals`, `bloc_signals_flutter`, `signals_hooks`
 - HTTP: `chopper`
 - Utilities: `fpdart`, `trust_but_verify`, `envied`
-- Forbidden: `serverpod_auth_*` legacy packages
 
 ## Work Guidance
 

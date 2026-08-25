@@ -51,8 +51,7 @@ See `.agents/reference/flutter-feature-structure.md` for complete directory tree
 
 ## Tooling
 
-- **Forbidden**: `serverpod_auth_*` legacy packages
-- **Allowed**: `fpdart`, `trust_but_verify`, `envied`, `chopper`, `bloc_signals`, `bloc_signals_flutter`, `signals_hooks`
+- **Allowed**: `fpdart`, `trust_but_verify`, `envied`, `chopper`, `bloc_signals`, `bloc_signals_flutter`, `signals_hooks`, `serverpod_auth_idp_flutter*`
 
 ## Feature Workflow
 
