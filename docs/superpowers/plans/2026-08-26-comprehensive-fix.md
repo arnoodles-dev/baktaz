@@ -10,6 +10,9 @@
 
 **Spec:** Audit report 2026-08-26 (session memory) + `.agents/rules/*.md` + `.agents/reference/error-handling-*.md`.
 
+**Sub-plans:**
+- [Error Handling Docs Cleanup](2026-08-26-error-handling-docs-fix.md) — Tasks 11-16 only
+
 ## Global Constraints
 
 - Use `fvm` for all flutter/dart commands: `fvm flutter test`, `fvm dart analyze`.
