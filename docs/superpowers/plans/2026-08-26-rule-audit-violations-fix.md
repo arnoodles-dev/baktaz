@@ -757,117 +757,155 @@ class HomeWeeklyStepsChart extends HookWidget {
 
 ---
 
-### Task 7: Server param-count fixes (records + params object)
+### Task 7: Server param-count fixes (RegistrationForm model + records)
 
 **Files:**
-- Create: `baktaz_server/lib/src/features/auth/domain/model/complete_registration_params.dart`
+- Create: `baktaz_server/lib/src/features/auth/domain/models/registration_form.spy.yaml`
+- Modify: `baktaz_server/lib/src/features/auth/endpoint/auth_endpoint.dart` (endpoint signature + body)
 - Modify: `baktaz_server/lib/src/features/auth/domain/interface/i_auth_repository.dart`
 - Modify: `baktaz_server/lib/src/features/auth/data/repository/auth_repository.dart`
 - Modify: `baktaz_server/lib/src/app/utils/auth_utils.dart:114-131`
-- NOTE: `auth_endpoint.dart` is EXEMPT — its named params are the public Serverpod RPC wire contract; changing them breaks generated clients. Record as accepted deviation.
+- Modify: `baktaz_client/lib/src/protocol/features/auth/domain/models/registration_form.dart` (auto-generated, verify)
+- NOTE: `auth_endpoint.dart` signature CHANGES — this requires `serverpod generate` to update client. Document as required deviation.
 
 **Interfaces:**
-- Produces:
+- Produces `RegistrationForm` Serverpod model:
+```yaml
+# registration_form.spy.yaml
+class: RegistrationForm
+table: none
+fields:
+  email: String
+  name: String
+  gender: String
+  registrationToken: String
+  birthday: DateTime?
+```
+Generated class: `RegistrationForm` with fields `email`, `name`, `gender`, `registrationToken`, `birthday`.
+Endpoint becomes: `Future<OtpVerificationResult> completeRegistration(Session session, RegistrationForm form) async`
+Interface becomes: `Future<OtpVerificationResult> completeRegistration(Session session, RegistrationForm form);`
+Repo becomes: `Future<OtpVerificationResult> completeRegistration(Session session, RegistrationForm form) async`
+
+- [ ] **Step 1: Create RegistrationForm spy.yaml**
+
+Create `baktaz_server/lib/src/features/auth/domain/models/registration_form.spy.yaml`:
+```yaml
+class: RegistrationForm
+table: none
+fields:
+  email: String
+  name: String
+  gender: String
+  registrationToken: String
+  birthday: DateTime?
+```
+
+- [ ] **Step 2: Run serverpod generate**
+
+Run: `cd baktaz_server && fvm dart run serverpod generate`
+Expected: Generated `registration_form.dart` in `baktaz_server/lib/src/generated/protocol.dart` and `baktaz_client/lib/src/protocol/features/auth/domain/models/registration_form.dart`.
+
+- [ ] **Step 3: Update endpoint**
+
+Replace `auth_endpoint.dart`:
 ```dart
-// complete_registration_params.dart
+import 'package:baktaz_server/src/features/auth/data/repository/auth_repository.dart';
+import 'package:baktaz_server/src/features/auth/domain/interface/i_auth_repository.dart';
+import 'package:baktaz_server/src/features/security/data/service/security_logger.dart';
 import 'package:baktaz_server/src/generated/protocol.dart';
+import 'package:get_it/get_it.dart';
 import 'package:serverpod/serverpod.dart';
 
-/// Bundles completeRegistration inputs past the endpoint boundary.
-final class CompleteRegistrationParams {
-  CompleteRegistrationParams({
-    required this.session,
-    required this.email,
-    required this.name,
-    required this.gender,
-    required this.registrationToken,
-    this.birthday,
-  });
+final class AuthEndpoint extends Endpoint {
+  AuthEndpoint([IAuthRepository? authRepository])
+    : _authRepository =
+          authRepository ??
+          (GetIt.I.isRegistered<IAuthRepository>()
+              ? GetIt.I<IAuthRepository>()
+              : AuthRepository(GetIt.I.isRegistered<SecurityLogger>() ? GetIt.I<SecurityLogger>() : SecurityLogger()));
 
-  final Session session;
-  final String email;
-  final String name;
-  final String gender;
-  final String registrationToken;
-  final DateTime? birthday;
+  final IAuthRepository _authRepository;
+
+  @override
+  bool get requireLogin => false;
+
+  Future<OtpVerificationResult> completeRegistration(
+    Session session,
+    RegistrationForm form,
+  ) async => _authRepository.completeRegistration(session, form);
 }
 ```
-Interface/method become: `Future<OtpVerificationResult> completeRegistration(CompleteRegistrationParams params);`
 
-- [ ] **Step 1: Create params class** (code above).
+- [ ] **Step 4: Update interface + repo**
 
-- [ ] **Step 2: Rewire interface + repo** — `i_auth_repository.dart`:
+`i_auth_repository.dart`:
 ```dart
 // ignore_for_file: one_member_abstracts
 
-import 'package:baktaz_server/src/features/auth/domain/model/complete_registration_params.dart';
 import 'package:baktaz_server/src/generated/protocol.dart';
+import 'package:serverpod/serverpod.dart';
 
 abstract interface class IAuthRepository {
-  Future<OtpVerificationResult> completeRegistration(CompleteRegistrationParams params);
+  Future<OtpVerificationResult> completeRegistration(
+    Session session,
+    RegistrationForm form,
+  );
 }
 ```
-`auth_repository.dart`: signature `Future<OtpVerificationResult> completeRegistration(CompleteRegistrationParams params) async {` then destructure at top:
-```dart
-    final Session session = params.session;
-    final String normalizedEmail = params.email.trim().toLowerCase();
-```
-and rename subsequent `name→params.name`, `gender→params.gender`, `birthday→params.birthday`, `registrationToken→params.registrationToken` throughout the try-block.
 
-- [ ] **Step 3: Fix `_createAccount` via record** — in `auth_utils.dart` replace `_createAccount` (114-131) and its call site (62-69) with record-tuple form:
+`auth_repository.dart` — change signature and destructure form at top:
 ```dart
-    // 4. Tie everything together in Account
-    final (AuthUserModel, UserProfile, UserInfo, Wallet) seed =
-        (authUser, userProfileDb, userInfoDb, walletDb);
-    final Account insertedAccount = await _createAccount(session, seed, transaction);
-```
-and:
-```dart
-  static Future<Account> _createAccount(
-    Session session,
-    (AuthUserModel, UserProfile, UserInfo, Wallet) seed,
-    Transaction transaction,
-  ) async {
-    final (AuthUserModel authUser, UserProfile userProfileDb, UserInfo userInfoDb, Wallet walletDb) = seed;
-    final Account account = Account(
-      id: authUser.id,
-      authUserId: authUser.id,
-      userProfileId: userProfileDb.id,
-      userInfoId: userInfoDb.id,
-      walletId: walletDb.id,
-      createdAt: authUser.createdAt,
-    );
-
-    return Account.db.insertRow(session, account, transaction: transaction);
-  }
-```
-
-- [ ] **Step 4: Fix endpoint delegation** — `auth_endpoint.dart` body becomes:
-```dart
+  @override
   Future<OtpVerificationResult> completeRegistration(
-    Session session, {
-    required String email,
-    required String name,
-    required String gender,
-    required String registrationToken,
-    DateTime? birthday,
-  }) async => _authRepository.completeRegistration(
-    CompleteRegistrationParams(
-      session: session,
-      email: email,
-      name: name,
-      gender: gender,
-      birthday: birthday,
-      registrationToken: registrationToken,
-    ),
-  );
+    Session session,
+    RegistrationForm form,
+  ) async {
+    try {
+      final String normalizedEmail = form.email.trim().toLowerCase();
+
+      final String? expectedToken = await session.caches.local.get<String>('otp:token:$normalizedEmail');
+      if (expectedToken == null || expectedToken != form.registrationToken) {
+        throw OtpException(message: 'Invalid or expired registration token');
+      }
+      await session.caches.local.invalidateKey('otp:token:$normalizedEmail');
+
+      return await session.db.transaction((Transaction transaction) async {
+        // ... rest uses form.name, form.gender, form.birthday
 ```
-(add import of params model). Wire-format unchanged → NO `serverpod generate` needed, NO migration.
 
-- [ ] **Step 5: Verify** — `cd baktaz_server && fvm dart analyze`. Integration tests need Postgres: if `docker ps | grep postgres` healthy run `fvm dart test --concurrency=1 test/integration/` else note skipped-per-CI-policy.
+- [ ] **Step 5: Fix `_createAccount` via record** — same as before (see steps 3-4 in original plan).
 
-- [ ] **Step 6: Commit** — `git commit -m "refactor(server): bundle completeRegistration params, record-seed _createAccount"`.
+- [ ] **Step 6: Regenerate client** — since endpoint signature changed, client must regenerate.
+Run: `cd baktaz_client && fvm dart run serverpod generate`
+Verify: `baktaz_client/lib/src/protocol/features/auth/domain/models/registration_form.dart` exists.
 
+- [ ] **Step 7: Update flutter admin calls** — search for `completeRegistration` calls in `baktaz_flutter` and `baktaz_admin`, update to pass `RegistrationForm` object:
+```dart
+// Before:
+await _serverpod.client.auth.completeRegistration(
+  email: email,
+  name: name,
+  gender: gender,
+  birthday: birthday,
+  registrationToken: registrationToken,
+);
+
+// After:
+await _serverpod.client.auth.completeRegistration(
+  session,
+  RegistrationForm(
+    email: email,
+    name: name,
+    gender: gender,
+    birthday: birthday,
+    registrationToken: registrationToken,
+  ),
+);
+```
+
+- [ ] **Step 8: Verify** — `cd baktaz_server && fvm dart analyze`, `cd baktaz_flutter && fvm dart analyze`, `cd baktaz_admin && fvm dart analyze`. Integration tests if Postgres up.
+
+- [ ] **Step 9: Commit** — `git commit -m "refactor(server): promote RegistrationForm to Serverpod model, fix param counts"`.
 ---
 
 ### Task 8: BaktazTextField complexity (merge duplicate branches)
@@ -942,71 +980,10 @@ Complexity drops 21 → ~17 (one fewer case arm + ternary).
 
 ---
 
-### Task 9: ConnectivityChecker.scaffold chrome config
-
-**Files:**
-- Create: `baktaz_shared/lib/src/widgets/wrappers/scaffold_chrome.dart`
-- Modify: `baktaz_shared/lib/src/widgets/wrappers/connectivity_checker.dart:23-53`
-- Modify: all callers of `ConnectivityChecker.scaffold(` in `baktaz_flutter` + `baktaz_admin` (discover via `rtk grep -rln "ConnectivityChecker.scaffold(" */lib`)
-
-**Interfaces:**
-- Produces:
-```dart
-// scaffold_chrome.dart
-import 'package:flutter/material.dart';
-
-/// Scaffold chrome bundle for ConnectivityChecker.scaffold.
-final class ScaffoldChrome {
-  const ScaffoldChrome({
-    this.appBar,
-    this.bottomNavigationBar,
-    this.backgroundColor,
-    this.floatingActionButton,
-    this.floatingActionButtonLocation,
-    this.extendBody = false,
-  });
-
-  final PreferredSizeWidget? appBar;
-  final Widget? bottomNavigationBar;
-  final Color? backgroundColor;
-  final Widget? floatingActionButton;
-  final FloatingActionButtonLocation? floatingActionButtonLocation;
-  final bool extendBody;
-}
-```
-`scaffold` becomes: `static Widget scaffold({required Widget body, required String offlineMessage, ScaffoldChrome chrome = const ScaffoldChrome(), bool isUnfocusable = false})` forwarding `chrome.appBar`, `chrome.backgroundColor`, etc.
-
-- [ ] **Step 1: Create ScaffoldChrome** (above), export from `baktaz_shared.dart` barrel next to wrappers.
-
-- [ ] **Step 2: Refactor scaffold factory** — body of `ConnectivityChecker.scaffold` forwards chrome fields into UnfocusableScaffold/Scaffold exactly as today.
-
-- [ ] **Step 3: Mechanical caller sweep** — for EVERY hit from `rtk grep -rln "ConnectivityChecker.scaffold(" */lib`, transform named args into `chrome: ScaffoldChrome(appBar: X, backgroundColor: Y, ...)`. Example before/after (pattern applies identically per site):
-Before:
-```dart
-          child: ConnectivityChecker.scaffold(
-            offlineMessage: context.i18n.common.error.no_internet_connection,
-            appBar: AppBar(backgroundColor: AppColors.transparent, elevation: 0),
-            body: SafeArea(child: SizedBox.shrink()),
-          ),
-```
-After:
-```dart
-          child: ConnectivityChecker.scaffold(
-            offlineMessage: context.i18n.common.error.no_internet_connection,
-            chrome: ScaffoldChrome(appBar: AppBar(backgroundColor: AppColors.transparent, elevation: 0)),
-            body: SafeArea(child: SizedBox.shrink()),
-          ),
-```
-Callers passing ONLY body/offlineMessage/isUnfocusable need no change.
-
-- [ ] **Step 4: Verify** — analyze both apps + run both suites; goldens refresh automatically.
-
-- [ ] **Step 5: Commit** — `git commit -m "refactor(shared): ScaffoldChrome config object slims ConnectivityChecker.scaffold to 4 params"`.
-
----
 
 ### Task 10: Admin magic numbers → named constants
 
+**Files:**
 **Files:**
 - Modify: `baktaz_shared/lib/src/theme/app_sizes.dart` (append 4 tokens)
 - Modify: `baktaz_admin/lib/features/dashboard/presentation/widgets/activities_overview_chart.dart:125`
@@ -1014,10 +991,9 @@ Callers passing ONLY body/offlineMessage/isUnfocusable need no change.
 - Modify: `baktaz_admin/lib/features/content/presentation/widgets/content_table_header.dart:75`
 - Modify: `baktaz_admin/lib/features/localization/presentation/widgets/dialogs/edit_translation_dialog.dart:46`
 - Modify: `baktaz_admin/lib/features/localization/presentation/widgets/dialogs/add_translation_dialog.dart:26`
-- Modify: `baktaz_admin/lib/features/remote_config/presentation/views/remote_config_screen.dart:307,433,477`
+- Modify: `baktaz_admin/lib/features/remote_config/presentation/views/remote_config_screen.dart:307-317,433-439,477-483`
 
 **Interfaces:** Produces `AppSizes.dialogWidth = 400`, `AppSizes.chartHeightLarge = 250`, `AppSizes.chartHeightMedium = 200`, `AppSizes.tableSearchWidth = 240`.
-
 - [ ] **Step 1: Tokens** — append to `app_sizes.dart` after avatar block:
 ```dart
   // Component dimensions — DESIGN.md §component-sizes
@@ -1027,14 +1003,24 @@ Callers passing ONLY body/offlineMessage/isUnfocusable need no change.
   static const double tableSearchWidth = 240;
 ```
 
-- [ ] **Step 2: Swap** — each listed site: `height: 250`→`height: AppSizes.chartHeightLarge`; `height: 200`→`AppSizes.chartHeightMedium`; `width: 400`→`AppSizes.dialogWidth` (both dialogs); `width: 240`→`AppSizes.tableSearchWidth`; ensure `baktaz_shared` import present.
+- [ ] **Step 2: Swap existing AppSizes** — each listed site:
+  - `height: 250` → `height: AppSizes.chartHeightLarge`
+  - `height: 200` → `AppSizes.chartHeightMedium`
+  - `width: 400` → `AppSizes.dialogWidth` (both dialogs)
+  - `width: 240` → `AppSizes.tableSearchWidth`
+  - Ensure `baktaz_shared` import present.
 
-Shimmer skeletons in `remote_config_screen.dart` (150/120/16): add file-local consts at top of the `_Skeleton`-style widget class:
-```dart
-  static const double _shimmerTitleWidth = 150;
-  static const double _shimmerChipWidth = 120;
-  static const double _shimmerBarHeight = 16;
-```
+- [ ] **Step 3: Shimmer skeletons** — `remote_config_screen.dart` lines 307-317, 433-439, 477-483. Replace:
+  - `height: 16` → `AppSizes.medium`
+  - `height: 12` → `AppSizes.small`
+  - `width: 150` → file-local `static const double _shimmerTitleWidth = 150;`
+  - `width: 120` → file-local `static const double _shimmerChipWidth = 120;`
+  - `height: 14` → file-local `static const double _shimmerBarHeight = 14;`
+  (No close AppSizes tokens exist for 14/120/150; use file-local for these.)
+
+- [ ] **Step 4: Verify** — `cd baktaz_admin && fvm dart analyze && fvm flutter test` → green.
+
+- [ ] **Step 5: Commit** — `git commit -m "fix(admin): extract magic dimensions into named constants"`.
 and swap lines 307 (`width: _shimmerTitleWidth`), 433 & 477 (`width: _shimmerChipWidth`), plus their paired `height: 16`→`_shimmerBarHeight`.
 
 - [ ] **Step 3: Verify** — `cd baktaz_admin && fvm dart analyze && fvm flutter test` → green.
@@ -1056,6 +1042,6 @@ and swap lines 307 (`width: _shimmerTitleWidth`), 433 & 477 (`width: _shimmerChi
 
 ## Accepted Deviations (documented non-fixes)
 
-- `auth_endpoint.completeRegistration` keeps 5 named RPC params — public wire contract.
+- `auth_endpoint.completeRegistration` signature changes to `(Session, RegistrationForm)` — requires `serverpod generate` for client. Documented as required deviation.
 - `connectivity_checker` instance-constructor (child/offlineMessage/2 callbacks) stays 4-param compliant; only static `scaffold` slimmed.
 - Serverpod `return null` endpoints (NP1/NP2) — legitimate business absence per error-handling rules.
