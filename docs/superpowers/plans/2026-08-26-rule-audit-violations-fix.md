@@ -965,6 +965,90 @@ Complexity drops 21 → ~17 (one fewer case arm + ternary).
 - [ ] **Step 3: Commit** — `git commit -m "refactor(shared): collapse BaktazTextField duplicate TextField branches"`.
 
 
+
+### Task 9: BlocSignalProvider annotation compliance
+
+**Files:**
+- Modify: `baktaz_flutter/lib/core/presentation/views/screens/main_screen.dart:37-38`
+- Modify: `baktaz_admin/lib/features/auth/presentation/views/login_screen.dart:30-35`
+
+**Rule reference:** `state-management-architecture.md`:
+- `@lazySingleton` Cubits → `BlocSignalProvider.value(value: getIt<T>())`
+- `@injectable` Cubits → `BlocSignalProvider(create: (_) => getIt<T>())`
+
+**Violations found:**
+
+| File | Cubit | Annotation | Current | Fix |
+|------|-------|-----------|---------|-----|
+| `flutter/main_screen.dart:37` | `AccountCubit` | `@injectable` | `.value(value:)` | → `create:` |
+| `flutter/main_screen.dart:38` | `HomeCubit` | `@injectable` | `.value(value:)` | → `create:` |
+| `admin/login_screen.dart:30` | `LoginCubit` | `@injectable` | `create:` | → `.value(value:)` (but needs init) |
+
+**Note:** Admin `login_screen.dart` calls `cubit.initialize()` before returning — this initialization MUST happen. Use pattern:
+```dart
+BlocSignalProvider<LoginCubit>.value(
+  value: () {
+    final LoginCubit cubit = getIt<LoginCubit>();
+    unawaited(cubit.initialize());
+    return cubit;
+  }(),
+  child: ...
+)
+```
+Or keep `create:` but rename to clarify it's an init wrapper.
+
+For `main_screen.dart`, the `AccountCubit` and `HomeCubit` don't need init — just swap to `create:`:
+```dart
+BlocSignalProvider<AccountCubit>(
+  create: (BuildContext context) => getIt<AccountCubit>(),
+  lazy: false,
+  child: ...
+),
+BlocSignalProvider<HomeCubit>(
+  create: (BuildContext context) => getIt<HomeCubit>(),
+  lazy: false,
+  child: ...
+),
+```
+
+- [ ] **Step 1: Fix main_screen.dart**
+
+Replace lines 37-38 in `baktaz_flutter/lib/core/presentation/views/screens/main_screen.dart`:
+```dart
+        BlocSignalProvider<AccountCubit>(lazy: false, create: (BuildContext context) => getIt<AccountCubit>()),
+        BlocSignalProvider<HomeCubit>(lazy: false, create: (BuildContext context) => getIt<HomeCubit>()),
+```
+
+- [ ] **Step 2: Fix admin login_screen.dart**
+
+For admin `login_screen.dart`, since `LoginCubit` is `@injectable` but needs initialization, use `create:` (current form is correct per rule) — NO CHANGE NEEDED. The violation was misidentified; `@injectable` → `create:` is correct.
+
+Actually re-checking: the rule says `@injectable` → `create:`. Admin login_screen uses `create:`. This is CORRECT. No fix needed.
+
+- [ ] **Step 3: Verify no remaining violations**
+
+Run:
+```bash
+rtk grep -rn "BlocSignalProvider" baktaz_flutter/lib baktaz_admin/lib | grep -v "BlocSignalProvider.value" | grep -v "BlocSignalProvider(" | grep -v "//" || true
+rtk grep -rn "BlocSignalProvider.*create" baktaz_flutter/lib baktaz_admin/lib | while read line; do
+  cubit=$(echo "$line" | grep -oP '<\K[^>]+')
+  grep -q "@injectable" baktaz_flutter/lib/features/auth/domain/cubit/login/login_cubit.dart 2>/dev/null || true
+done
+```
+
+Verify each `BlocSignalProvider` usage matches the annotation of its Cubit.
+
+- [ ] **Step 4: Analyze**
+
+Run: `cd baktaz_flutter && fvm dart analyze` and `cd baktaz_admin && fvm dart analyze`
+Expected: clean.
+
+- [ ] **Step 5: Commit**
+
+`git commit -m "refactor: ensure BlocSignalProvider matches Cubit annotations"`.
+
+---
+
 ### Task 10: Admin magic numbers → named constants
 
 **Files:**
