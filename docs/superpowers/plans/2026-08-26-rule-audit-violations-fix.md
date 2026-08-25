@@ -23,8 +23,6 @@
 - Commits: conventional `<type>: <description>`; commit after every passing task.
 - Worktree: execute in isolated git worktree created via superpowers:using-git-worktrees.
 
----
-
 ### Task 1: LoginState Pattern-B fix (no Failure in state)
 
 **Files:**
@@ -265,8 +263,6 @@ git add -A
 git commit -m "refactor(flutter): enforce Pattern B — LoginState.failed carries no Failure payload"
 ```
 
----
-
 ### Task 2: Localize challenge/message/common strings (slang batch A)
 
 **Files:**
@@ -394,8 +390,6 @@ Expected: clean, green.
 git add -A && git commit -m "fix(flutter): localize challenge/message/common strings per code-quality rule"
 ```
 
----
-
 ### Task 3: Localize remaining flutter strings (batch B)
 
 **Files:**
@@ -460,8 +454,6 @@ Expected: no remaining literal-title hits (comments ok). Any hit → localize sa
 
 `cd baktaz_flutter && fvm dart analyze && fvm flutter test` → clean/green.
 `git add -A && git commit -m "fix(flutter): localize remaining hardcoded strings (challenge history, reviews, contacts, settings)"`
-
----
 
 ### Task 4: PopupMenuButton → MenuAnchor (admin)
 
@@ -565,8 +557,6 @@ If a running app is connected: hot restart via dart MCP `hot_restart`, open Remo
 
 `git add -A && git commit -m "refactor(admin): migrate PopupMenuButton to Material 3 MenuAnchor"`
 
----
-
 ### Task 5: Typed RemoteConfigState
 
 **Files:**
@@ -667,8 +657,6 @@ Run build_runner. Fix any cascade errors until analyze clean.
 
 - [ ] **Step 6: Commit** — `git commit -m "refactor(flutter): typed RemoteConfigState replaces raw Map state"`.
 
----
-
 ### Task 6: HomeWeeklyStepsChart → HookWidget + named chart constant
 
 **Files:**
@@ -754,8 +742,6 @@ class HomeWeeklyStepsChart extends HookWidget {
 - [ ] **Step 3: Analyze + home goldens** — `cd baktaz_flutter && fvm dart analyze && fvm flutter test test/widget/features/home/ test/unit/` → green (goldens auto-refresh if pixel-shift).
 
 - [ ] **Step 4: Commit** — `git commit -m "refactor(flutter): HomeWeeklyStepsChart to HookWidget, extract chart height token"`.
-
----
 
 ### Task 7: Server param-count fixes (RegistrationForm model + records)
 
@@ -978,8 +964,6 @@ Complexity drops 21 → ~17 (one fewer case arm + ternary).
 
 - [ ] **Step 3: Commit** — `git commit -m "refactor(shared): collapse BaktazTextField duplicate TextField branches"`.
 
----
-
 
 ### Task 10: Admin magic numbers → named constants
 
@@ -997,7 +981,7 @@ Complexity drops 21 → ~17 (one fewer case arm + ternary).
 - [ ] **Step 1: Tokens** — append to `app_sizes.dart` after avatar block:
 ```dart
   // Component dimensions — DESIGN.md §component-sizes
-  static const double dialogWidth = 400;
+
   static const double chartHeightLarge = 250;
   static const double chartHeightMedium = 200;
   static const double tableSearchWidth = 240;
@@ -1026,8 +1010,6 @@ and swap lines 307 (`width: _shimmerTitleWidth`), 433 & 477 (`width: _shimmerChi
 - [ ] **Step 3: Verify** — `cd baktaz_admin && fvm dart analyze && fvm flutter test` → green.
 
 - [ ] **Step 4: Commit** — `git commit -m "fix(admin): extract magic dimensions into named constants"`.
-
----
 
 ## Final Verification (all tasks done)
 
