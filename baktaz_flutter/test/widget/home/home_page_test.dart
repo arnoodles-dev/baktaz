@@ -102,11 +102,7 @@ void main() {
           value: hidableCubit,
           child: BlocSignalProvider<HomeCubit>.value(
             value: homeCubit,
-            child: const MockMaterialApp(
-              surfaceWidth: 800,
-              surfaceHeight: 1200,
-              child: HomePage(),
-            ),
+            child: const MockMaterialApp(surfaceWidth: 800, surfaceHeight: 1200, child: HomePage()),
           ),
         ),
       );

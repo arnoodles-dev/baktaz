@@ -9,20 +9,13 @@ class HomeWeeklyChartHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          BaktazText(
-            text: context.i18n.home.weekly_activity,
-            style: context.textTheme.titleMedium,
-          ),
-          BaktazText(
-            text: context.i18n.home.weekly_avg(
-              avg: StepFormatter.formatSteps(averageSteps, includeUnit: false),
-            ),
-            style: context.textTheme.bodyMedium?.copyWith(
-              color: context.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      );
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: <Widget>[
+      BaktazText(text: context.i18n.home.weekly_activity, style: context.textTheme.titleMedium),
+      BaktazText(
+        text: context.i18n.home.weekly_avg(avg: StepFormatter.formatSteps(averageSteps, includeUnit: false)),
+        style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
+      ),
+    ],
+  );
 }

@@ -16,19 +16,19 @@ class HomeDailyStepSyncFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(
-            child: BaktazText(
-              text: context.i18n.home.synced_via(source: syncSource, time: lastSyncedText),
-              style: context.textTheme.bodySmall,
-            ),
-          ),
-          IconButton(
-            constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-            icon: const Icon(Icons.refresh),
-            onPressed: onRefresh,
-          ),
-        ],
-      );
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: <Widget>[
+      Expanded(
+        child: BaktazText(
+          text: context.i18n.home.synced_via(source: syncSource, time: lastSyncedText),
+          style: context.textTheme.bodySmall,
+        ),
+      ),
+      IconButton(
+        constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+        icon: const Icon(Icons.refresh),
+        onPressed: onRefresh,
+      ),
+    ],
+  );
 }

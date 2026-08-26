@@ -19,7 +19,6 @@ Shared Flutter UI library providing reusable widgets, design tokens (DESIGN.md),
 
 ### Shared Utilities
 - `Failure` sealed class — error taxonomy (see `.agents/rules/error-handling-architecture.md`)
-- `ErrorActions` mixin — handler routing
 - `TaskResult<T>` — repo return type
 - `safeRun()` — error handling utility
 

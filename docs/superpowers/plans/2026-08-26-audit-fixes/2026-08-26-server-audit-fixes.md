@@ -126,13 +126,30 @@ abstract interface class IAuthRepository {
         // ... rest uses form.name, form.gender, form.birthday
 ```
 
-- [ ] **Step 5: Fix `_createAccount` via record** — same as before (see steps 3-4 in original plan).
 
-- [ ] **Step 6: Regenerate client** — since endpoint signature changed, client must regenerate.
+- [ ] **Step 6: Commit A** — `git commit -m "refactor(server): promote RegistrationForm to Serverpod model (spy.yaml + server-side codegen)"`
+
+**NOTE:** This is Commit A only. Commit B (client regen + call-site updates) comes AFTER verify step.
+
+- [ ] **Step 6b: Verify server-side analyze is clean BEFORE proceeding to Commit B**
+
+Run: `cd baktaz_server && fvm dart analyze`
+Expected: clean. If not, fix before regenerating client.
+
+- [ ] **Step 7: Regenerate client** — since endpoint signature changed, client must regenerate.
 Run: `cd baktaz_client && fvm dart run serverpod generate`
 Verify: `baktaz_client/lib/src/protocol/features/auth/domain/models/registration_form.dart` exists.
 
-- [ ] **Step 7: Update flutter admin calls** — search for `completeRegistration` calls in `baktaz_flutter` and `baktaz_admin`, update to pass `RegistrationForm` object:
+- [ ] **Step 8: Update flutter call-sites** — exactly 4 hand-written sites, ALL in baktaz_flutter, NONE in baktaz_admin:
+
+  1. `baktaz_flutter/lib/features/auth/presentation/views/registration_screen.dart:160`
+  2. `baktaz_flutter/lib/features/auth/data/repository/auth_repository.dart:135,143` (interface impl + Serverpod client call)
+  3. `baktaz_flutter/lib/features/auth/domain/cubit/login/login_cubit.dart:80,91` (cubit method + repo call)
+  4. `baktaz_flutter/lib/features/auth/domain/interface/i_auth_repository.dart:17`
+
+  Fifth reference is auto-generated (`baktaz_client/lib/src/protocol/client.dart:141`) — regenerates via serverpod generate, never hand-edit.
+
+  Update each to pass `RegistrationForm` object:
 ```dart
 // Before:
 await _serverpod.client.auth.completeRegistration(
@@ -155,9 +172,95 @@ await _serverpod.client.auth.completeRegistration(
   ),
 );
 ```
+  Note: `DateTime? birthday` passes through Serverpod codegen as plain `DateTime?` (verified convention) — no special handling step needed.
 
-- [ ] **Step 8: Verify** — `cd baktaz_server && fvm dart analyze`, `cd baktaz_flutter && fvm dart analyze`, `cd baktaz_admin && fvm dart analyze`. Integration tests if Postgres up.
-
-- [ ] **Step 9: Commit** — `git commit -m "refactor(server): promote RegistrationForm to Serverpod model, fix param counts"`.
+- [ ] **Step 9: Commit B** — `git commit -m "refactor(server): client regen + update completeRegistration call sites"`.
 ---
 
+- [ ] **Step 5: Fix `_createAccount` via record** — replace `_createAccount` (auth_utils.dart lines 114-131) and its call site (lines 62-69) with record-tuple form:
+
+Call site (in `onAfterUserProfileCreated`) — replace:
+```dart
+    // 4. Tie everything together in Account
+    final Account insertedAccount = await _createAccount(
+      session,
+      authUser,
+      userProfileDb,
+      userInfoDb,
+      walletDb,
+      transaction,
+    );
+```
+with:
+```dart
+    // 4. Tie everything together in Account
+    final (AuthUserModel, UserProfile, UserInfo, Wallet) seed =
+        (authUser, userProfileDb, userInfoDb, walletDb);
+    final Account insertedAccount = await _createAccount(session, seed, transaction);
+```
+
+Method — replace:
+```dart
+  static Future<Account> _createAccount(
+    Session session,
+    AuthUserModel authUser,
+    UserProfile userProfileDb,
+    UserInfo userInfoDb,
+    Wallet walletDb,
+    Transaction transaction,
+  ) async {
+    final Account account = Account(
+      id: authUser.id,
+      authUserId: authUser.id,
+      userProfileId: userProfileDb.id,
+      userInfoId: userInfoDb.id,
+      walletId: walletDb.id,
+      createdAt: authUser.createdAt,
+    );
+
+    return Account.db.insertRow(session, account, transaction: transaction);
+  }
+```
+with:
+```dart
+  static Future<Account> _createAccount(
+    Session session,
+    (AuthUserModel, UserProfile, UserInfo, Wallet) seed,
+    Transaction transaction,
+  ) async {
+    final (AuthUserModel authUser, UserProfile userProfileDb, UserInfo userInfoDb, Wallet walletDb) = seed;
+    final Account account = Account(
+      id: authUser.id,
+      authUserId: authUser.id,
+      userProfileId: userProfileDb.id,
+      userInfoId: userInfoDb.id,
+      walletId: walletDb.id,
+      createdAt: authUser.createdAt,
+    );
+
+    return Account.db.insertRow(session, account, transaction: transaction);
+  }
+```
+This drops `_createAccount` from 6 params → 3.
+
+
+## Final Verification
+
+1. Monorepo analyze: `melos exec -- fvm dart analyze`
+2. Suites: `make test_server` if Postgres up.
+3. DCM re-audit: confirm cyclomatic-complexity >20 and number-of-parameters >5 lists are empty (using bare `dcm analyze`).
+4. Three-tier grep gates:
+   - ✅ **BLOCKING** (must be zero before merge):
+     - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero (indirect — via client)
+     - `rtk grep -rn "LoginState\.failed\(|LoginStateFailed" baktaz_flutter/lib` → zero (indirect — via client)
+     - `rtk grep -rn "completeRegistration" baktaz_server/lib` — verify only 1 hand-written site in auth_endpoint
+   - ⚠️ **FIX-BEFORE-CLOSE** (non-blocking but tracked): none
+   - ℹ️ **INFORMATIONAL**:
+     - `rtk grep -rn "lastFailure|shouldReportToCrashlytics" .agents/` → zero
+5. Update `.coverage_exclude` if new test utils appear; bump nothing else.
+
+## Accepted Deviations
+
+- `auth_endpoint.completeRegistration` signature changes to `(Session, RegistrationForm)` — requires `serverpod generate` for client. Documented as required deviation.
+- Server `throw Exception()` in `session_ext.dart` and `admin_endpoint.dart` — future `ApiException` migration (separate plan).
+- Serverpod `return null` endpoints (NP1/NP2) — legitimate business absence per error-handling rules.

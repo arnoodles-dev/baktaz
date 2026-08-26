@@ -29,6 +29,8 @@ Verify all core tools are operational:
 | Graphify | `graphify query "<question>"` | `graphify update .` |
 | MCP Servers | `dart-mcp-server_*`, `serverpod_*`, etc. | Check server status, restart if needed |
 
+> **Verification note:** Check Graphify by running `graphify query "<question>"` — do NOT use `glob` for `graphify-out/graph.json`. The glob pattern may fail on relative path resolution even when the graph exists and is queryable. If `graphify query` returns nodes, Graphify is operational regardless of whether `graphify-out/graph.json` appears in glob results.
+
 
 ### Known Issues
 

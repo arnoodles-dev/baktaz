@@ -101,8 +101,10 @@ Delete the now-dead `PopupMenuItem` rows if analyzer flags anything.
 
 - [ ] **Step 2: Analyze**
 
-Run: `cd baktaz_admin && fvm dart analyze && fvm dart run dcm analyze 2>/dev/null || true`
-(dcm via MCP preferred at review time.) Expected: no issues.
+Run: `cd baktaz_admin && fvm dart analyze && dcm analyze 2>/dev/null || true`
+(DCM is globally installed CLI at /opt/homebrew/bin/dcm, NOT a pub dependency — `fvm dart run dcm` fails. MCP preferred at review time.) Expected: no issues.
+
+- Confirm `Either<String, IconData>.right(...)` usage is CORRECT as written (BaktazIcon API: left=SVG path, right=IconData; 75+ precedent call-sites). Only one PopupMenuButton exists (parameter_table.dart:165) — scope confirmed.
 
 - [ ] **Step 3: Smoke via DTD (optional, server running)**
 
@@ -116,8 +118,7 @@ If a running app is connected: hot restart via dart MCP `hot_restart`, open Remo
 ### Task 10: Admin magic numbers → named constants
 
 **Files:**
-**Files:**
-- Modify: `baktaz_shared/lib/src/theme/app_sizes.dart` (append 4 tokens)
+- Modify: `baktaz_shared/lib/src/theme/app_sizes.dart` (append 5 tokens)
 - Modify: `baktaz_admin/lib/features/dashboard/presentation/widgets/activities_overview_chart.dart:125`
 - Modify: `baktaz_admin/lib/features/dashboard/presentation/widgets/activities_reports_chart.dart:71`
 - Modify: `baktaz_admin/lib/features/content/presentation/widgets/content_table_header.dart:75`
@@ -125,21 +126,27 @@ If a running app is connected: hot restart via dart MCP `hot_restart`, open Remo
 - Modify: `baktaz_admin/lib/features/localization/presentation/widgets/dialogs/add_translation_dialog.dart:26`
 - Modify: `baktaz_admin/lib/features/remote_config/presentation/views/remote_config_screen.dart:307-317,433-439,477-483`
 
-**Interfaces:** Produces `AppSizes.dialogWidth = 400`, `AppSizes.chartHeightLarge = 250`, `AppSizes.chartHeightMedium = 200`, `AppSizes.tableSearchWidth = 240`.
+**Interfaces:** Produces `AppSizes.dialogWidth = 400`, `AppSizes.tableSearchWidth = 240`, `AppSizes.chartHeightLarge = 250`, `AppSizes.chartHeightMedium = 200`, `AppSizes.chartBarAreaHeight = 120`.
+
+**Note on width-type values:** `dialogWidth` (400) and `tableSearchWidth` (240) get `ConstrainedBox(maxWidth:)` semantics at call sites — dialogs/search shrink on narrow viewports and cap on wide ones. Chart heights (`chartHeightLarge` 250, `chartHeightMedium` 200, `chartBarAreaHeight` 120) REMAIN FIXED tokens (chart proportions are designed; fluid heights = separate future plan with designer input + golden regen).
+
 - [ ] **Step 1: Tokens** — append to `app_sizes.dart` after avatar block:
 ```dart
-  // Component dimensions — DESIGN.md §component-sizes
+  // Component sizes — see DESIGN.md §component-sizes
 
+  static const double dialogWidth = 400;
+  static const double tableSearchWidth = 240;
   static const double chartHeightLarge = 250;
   static const double chartHeightMedium = 200;
-  static const double tableSearchWidth = 240;
+  static const double chartBarAreaHeight = 120;
 ```
+(Note: `chartBarAreaHeight` = 120 also added here; Task 6 in flutter plan already covers the HookWidget conversion but the token must exist in shared first.)
 
 - [ ] **Step 2: Swap existing AppSizes** — each listed site:
   - `height: 250` → `height: AppSizes.chartHeightLarge`
   - `height: 200` → `AppSizes.chartHeightMedium`
-  - `width: 400` → `AppSizes.dialogWidth` (both dialogs)
-  - `width: 240` → `AppSizes.tableSearchWidth`
+  - `width: 400` → `ConstrainedBox(maxWidth: AppSizes.dialogWidth, child: ...)` (both dialogs)
+  - `width: 240` → `ConstrainedBox(maxWidth: AppSizes.tableSearchWidth, child: ...)`
   - Ensure `baktaz_shared` import present.
 
 - [ ] **Step 3: Shimmer skeletons** — `remote_config_screen.dart` lines 307-317, 433-439, 477-483. Replace:
@@ -150,24 +157,39 @@ If a running app is connected: hot restart via dart MCP `hot_restart`, open Remo
   - `height: 14` → file-local `static const double _shimmerBarHeight = 14;`
   (No close AppSizes tokens exist for 14/120/150; use file-local for these.)
 
-- [ ] **Step 4: Verify** — `cd baktaz_admin && fvm dart analyze && fvm flutter test` → green.
+- [ ] **Step 4: Component Sizes section in DESIGN.md** — append to `baktaz_shared/DESIGN.md` (create if absent):
+```markdown
+## Component Sizes
 
-- [ ] **Step 5: Commit** — `git commit -m "fix(admin): extract magic dimensions into named constants"`.
-and swap lines 307 (`width: _shimmerTitleWidth`), 433 & 477 (`width: _shimmerChipWidth`), plus their paired `height: 16`→`_shimmerBarHeight`.
+| Token | Value | Usage |
+|-------|-------|-------|
+| `dialogWidth` | 400 | Max-width for auth/localization dialogs; applied via `ConstrainedBox(maxWidth:)` |
+| `tableSearchWidth` | 240 | Max-width for table search field; applied via `ConstrainedBox(maxWidth:)` |
+| `chartHeightLarge` | 250 | Fixed height for large dashboard charts (activities_overview_chart) |
+| `chartHeightMedium` | 200 | Fixed height for medium dashboard charts (activities_reports_chart) |
+| `chartBarAreaHeight` | 120 | Fixed height for chart bar area (HomeWeeklyStepsChart in flutter plan) |
+```
+Also update the comment in `app_sizes.dart` Step 1 above to point at the newly added section (already set to `see DESIGN.md §component-sizes`).
 
-- [ ] **Step 3: Verify** — `cd baktaz_admin && fvm dart analyze && fvm flutter test` → green.
+- [ ] **Step 5: Verify** — `cd baktaz_admin && fvm dart analyze && dcm analyze 2>/dev/null || true` → green.
 
-- [ ] **Step 4: Commit** — `git commit -m "fix(admin): extract magic dimensions into named constants"`.
+- [ ] **Step 6: Commit** — `git commit -m "fix(admin): extract magic dimensions into named constants"`.
 
 ## Final Verification (all tasks done)
 
 1. Monorepo analyze: `melos exec -- fvm dart analyze` OR per-package loop.
 2. Suites: `make test_flutter`, `make test_admin`; `make test_server` only if Postgres up.
-3. DCM re-audit: confirm cyclomatic-complexity >20 and number-of-parameters >5 lists are empty.
-4. Grep gates:
-   - `rtk grep -rn "\"[A-Z][a-z].*\"" baktaz_flutter/lib/features baktaz_flutter/lib/core/presentation` → zero UI-literal hits.
-   - `rtk grep -rn "PopupMenuButton" baktaz_admin/lib` → zero.
-   - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero.
+3. DCM re-audit: confirm cyclomatic-complexity >20 and number-of-parameters >5 lists are empty (using bare `dcm analyze`).
+4. Three-tier grep gates:
+   - ✅ **BLOCKING** (must be zero before merge):
+     - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero
+     - `rtk grep -rn "LoginState\.failed\(|LoginStateFailed" baktaz_flutter/lib` → zero
+     - Failure fields inside state classes (reviewer check)
+     - `handleFailure` not called before any state emission on error paths (reviewer check)
+   - ⚠️ **FIX-BEFORE-CLOSE** (non-blocking but tracked):
+     - `rtk grep -rn "PopupMenuButton" baktaz_admin/lib` → zero
+   - ℹ️ **INFORMATIONAL**:
+     - `rtk grep -rn "lastFailure\|shouldReportToCrashlytics" .agents/` → zero
 5. Update `.coverage_exclude` if new test utils appear; bump nothing else.
 
 ## Accepted Deviations (documented non-fixes)

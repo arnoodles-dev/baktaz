@@ -9,13 +9,9 @@ class HomeWeeklyTotalFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-        child: BaktazText(
-          text: context.i18n.home.weekly_total(
-            total: StepFormatter.formatSteps(totalWeeklySteps, includeUnit: false),
-          ),
-          style: context.textTheme.bodyMedium?.copyWith(
-            color: context.colorScheme.onSurfaceVariant,
-          ),
-        ),
-      );
+    child: BaktazText(
+      text: context.i18n.home.weekly_total(total: StepFormatter.formatSteps(totalWeeklySteps, includeUnit: false)),
+      style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
+    ),
+  );
 }

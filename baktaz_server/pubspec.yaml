@@ -40,11 +40,11 @@ serverpod:
     # flutter_build:
     #   windows: >-
     #     (if exist web\app rmdir /S /Q web\app)
-    #     & cd /D ..\baktaz_flutter
+    #     & cd /D ..\baktaz_admin
     #     && flutter build web --base-href /app/
     #     && xcopy /E /I /Y build\web ..\baktaz_server\web\app
     #   posix: |
-    #     cd ../baktaz_flutter
+    #     cd ../baktaz_admin
     #     flutter build web --base-href /app/ --output ../baktaz_server/web/app
 
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed

@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - No code changes — documentation only
-- Verify with grep: `rtk grep -rn "lastFailure\|shouldReportToCrashlytics" .agents/` → zero matches
+- Verify with grep: `rtk grep -rn "lastFailure|shouldReportToCrashlytics" .agents/` → zero matches
 - Commit after each task
 - Cross-reference parent plan for context
 
@@ -31,6 +31,12 @@
 4. Remove `//. Other cases` comment
 5. Fix `safeRun` signature to match actual API
 6. Add removal note at top
+7. **STRICT PATTERN B REWRITE**: ALL parameterless-failed examples rewritten to side-effect-only pattern (NO failure state variant exists):
+   - Replace `emit(const AuthState.failed()); // generic flag only` with side-effect pattern: `emitPresentation(AuthStateOtpError(...))` where applicable
+   - Replace "Error states are generic flags" bullets with: "NO error state variant — failures surface via FailureHandler.handleFailure side-effects"
+8. **Crashlytics section rewrite**: KEEP reporting-policy decision tables (UnexpectedError always; ServerError http500/serverpod yes; others no). REPLACE mechanism text: `shouldReportToCrashlytics` does not exist; policy implemented via direct crashlytics-service calls in cubit/repo catch paths where needed (example: `_crashlyticsService.setUserId(...)` in AuthCubit).
+9. **ErrorActions location corrected**: docs claiming `baktaz_shared/lib/src/mixin/error_actions.dart` are WRONG. Actual: per-app mixins at `baktaz_flutter/lib/app/helpers/mixins/error_actions.dart` AND `baktaz_admin/lib/app/helpers/mixins/error_actions.dart` (shared lib/src/mixin contains ONLY bloc_signal_presentation_listener/mixin). Document known drift between copies as accepted debt (admin lacks onAuthenticationError/onRemoteConfigError; validation handler differs).
+10. **NEW section "Contextual Error UI"**: decision criteria global-toast (default, ErrorActions.onXxx) vs inline/contextual error (field-adjacent feedback like OTP pin error) → use `*StateSideEffect` union + `BlocSignalPresentationMixin.emitPresentation` + presentationStream listener; reference HomeCubit (existing consumer) and LoginCubit (second consumer landing with Task 1); include minimal wiring example using real shared APIs (`emitPresentation(event)`, stream subscription in widget).
 
 - [ ] **Step 1: Rewrite file with correct content**
 
@@ -46,7 +52,7 @@
 Sealed `Failure` class in `baktaz_shared` with 8 subtypes (all `Error` suffix):
 
 | Failure | Constructor | When Used |
-|---|---|---|
+|---------|-------------|-----------|
 | `UnexpectedError` | `Failure.unexpected(String? message)` | Unknown exceptions |
 | `ServerError` | `Failure.server(StatusCode code, String? message)` | HTTP/RPC errors |
 | `ServerpodError` | `Failure.serverpod(String? message)` | Serverpod RPC errors |
@@ -62,7 +68,7 @@ Sealed `Failure` class in `baktaz_shared` with 8 subtypes (all `Error` suffix):
 `handleFailure(failure, [ErrorActions?])` → routes to `ErrorActions.onXxx()`:
 
 | Failure | Handler |
-|---|---|
+|---------|---------|
 | `ServerError(http000)` | `onNetworkError` |
 | `ServerError(http408)` / `ServerError(http504)` | `onTimeoutError` |
 | `ServerError(http403)` | `onPermissionError` |
@@ -82,7 +88,9 @@ safeRun(
   action: () async => emit(await _repo.login()),
   onException: _failureHandler.handleException,
 );
-emit(const AuthState.failed()); // generic flag only
+
+// Contextual errors via side-effect union (NOT state variant):
+emitPresentation(LoginStateOtpError("Invalid OTP code")); // generic flag only
 
 // ❌ WRONG — Failure in state
 emit(AuthState.failed(failure)); // NEVER do this
@@ -99,7 +107,9 @@ safeRun({
 
 ## ErrorActions Mixin
 
-Located in `baktaz_flutter/lib/app/helpers/mixins/error_actions.dart`.
+Located in `baktaz_flutter/lib/app/helpers/mixins/error_actions.dart` AND `baktaz_admin/lib/app/helpers/mixins/error_actions.dart`.
+
+**Known drift**: `baktaz_admin` lacks `onAuthenticationError`/`onRemoteConfigError`; validation handler differs. Documented as accepted debt.
 
 ```dart
 mixin ErrorActions {
@@ -120,6 +130,15 @@ mixin ErrorActions {
 
 Crashlytics is called directly in cubits/repos, NOT through a Failure property.
 The `shouldReportToCrashlytics` property referenced in older docs does NOT exist.
+Policy implemented via direct crashlytics-service calls where needed.
+
+**Reporting policy (decision table):**
+
+| Failure | Report to Crashlytics? |
+|---------|----------------------|
+| `UnexpectedError` | YES — always |
+| `ServerError(http500)` / `ServerError(serverpod)` | YES |
+| All other Failures | NO |
 
 ```dart
 // Actual pattern in AuthCubit:
@@ -127,8 +146,45 @@ _crashlyticsService.setUserId(authInfo.authUserId.uuid);
 ```
 
 Future improvement: Add centralized crashlytics routing via Failure if needed.
+
+## Contextual Error UI
+
+**Decision criteria:**
+
+| Scenario | Pattern |
+|----------|---------|
+| Global toast (default) | `ErrorActions.onXxx()` via `FailureHandler.handleFailure` |
+| Field-adjacent feedback (OTP pin error, form field error) | `*StateSideEffect` union + `BlocSignalPresentationMixin.emitPresentation` + `presentationStream` listener in widget |
+
+**Existing consumers:**
+- `HomeCubit` — existing `*StateSideEffect` consumer (reference)
+- `LoginCubit` — second consumer landing with Task 1
+
+**Minimal wiring example:**
+
+```dart
+// In cubit:
+void _onAuthError(Failure failure) {
+  _failureHandler.handleFailure(failure); // global toast
+  if (failure is AuthenticationError && failure.blocked) {
+    safeEmit(const LoginState.blocked());
+    return;
+  }
+  emitPresentation(LoginStateOtpError(/* message */)); // contextual side-effect
+}
+
+// In widget:
+BlocSignalPresentationListener<LoginCubit, LoginStateSideEffect>(
+  listener: (context, event) {
+    if (event is LoginStateOtpError) {
+      otpError.value = event.message;
+    }
+  },
+  child: ...,
+)
 ```
-```
+
+---
 
 - [ ] **Step 2: Verify file syntax**
 
@@ -153,6 +209,9 @@ git commit -m "docs: clean error-handling-patterns.md to match actual codebase"
 2. Fix `Failure.validation(String? message)` → `Failure.validation(ValidationError error, String value)`
 3. Label `ApiException` as "FUTURE MIGRATION TARGET — NOT YET IMPLEMENTED"
 4. Fix StatusCode enum examples to match actual `status_code.dart`
+5. **STRICT PATTERN B REWRITE**: ALL parameterless-failed examples rewritten to side-effect-only pattern (NO failure state variant exists). Code examples must show side-effect via `*StateSideEffect` + `BlocSignalPresentationMixin`/`emitPresentation`/`presentationStream` listener, not `emit(const XxxState.failed())`.
+6. **Crashlytics section rewrite**: Lines ~230-257 must be rewritten — `shouldReportToCrashlytics` does not exist; replace with direct crashlytics-service calls example (e.g. `_crashlyticsService.setUserId(...)` in AuthCubit). KEEP reporting-policy decision tables.
+7. **ErrorActions location**: Fix line ~104 comment that references wrong shared path.
 
 - [ ] **Step 1: Rewrite file**
 
@@ -161,10 +220,12 @@ Replace entire content with cleaned version that:
 - Removes all `lastFailure` references
 - Labels `ApiException` clearly as future
 - Matches actual `StatusCode` enum values
+- Shows side-effect pattern (no `emit(const XxxState.failed())`)
+- Uses direct crashlytics-service calls (no `shouldReportToCrashlytics`)
 
 - [ ] **Step 2: Verify no dead references remain**
 
-Run: `rtk grep -rn "lastFailure\|clearLastFailure\|shouldReportToCrashlytics" .agents/reference/`
+Run: `rtk grep -rn "lastFailure|clearLastFailure|shouldReportToCrashlytics" .agents/reference/`
 Expected: zero matches.
 
 - [ ] **Step 3: Commit**
@@ -184,6 +245,8 @@ git commit -m "docs: fix error-handling-code-examples.md to match actual Failure
 1. Add clear banner: "ApiException migration is FUTURE WORK — not yet implemented"
 2. Remove any references to `lastFailure`
 3. Clarify that `ValidationFailure` was renamed to match actual code
+4. **STRICT PATTERN B REWRITE**: ALL parameterless-failed examples rewritten to side-effect-only pattern (NO failure state variant exists).
+5. **Crashlytics section rewrite**: Any `shouldReportToCrashlytics` references must be replaced with direct service-call pattern.
 
 - [ ] **Step 1: Add migration banners**
 
@@ -197,8 +260,10 @@ At top of file add:
 
 - [ ] **Step 2: Verify**
 
-Run: `rtk grep -rn "lastFailure\|shouldReportToCrashlytics" .agents/reference/error-handling-migration.md`
+Run: `rtk grep -rn "lastFailure|shouldReportToCrashlytics" .agents/reference/error-handling-migration.md`
 Expected: zero matches.
+
+**NOTE:** `lastFailure` grep is a verified NO-OP for this file (zero hits in migration.md). Gate kept for safety.
 
 - [ ] **Step 3: Commit**
 
@@ -217,6 +282,8 @@ git commit -m "docs: label ApiException migration as future work"
 1. Remove `lastFailure` checklist items
 2. Remove `shouldReportToCrashlytics` checklist items
 3. Add note about actual crashlytics pattern (direct in cubits)
+4. **STRICT PATTERN B REWRITE**: Line 30 ("Error states are generic flags") becomes "NO error state variant — failures surface via FailureHandler.handleFailure side-effects".
+5. **Crashlytics**: Lines 43+60 must reference direct crashlytics-service calls instead of `shouldReportToCrashlytics`.
 
 - [ ] **Step 1: Rewrite checklist**
 
@@ -224,7 +291,7 @@ Replace all references to non-existent features with actual patterns.
 
 - [ ] **Step 2: Verify**
 
-Run: `rtk grep -rn "lastFailure\|shouldReportToCrashlytics" .agents/reference/error-handling-checklist.md`
+Run: `rtk grep -rn "lastFailure|shouldReportToCrashlytics" .agents/reference/error-handling-checklist.md`
 Expected: zero matches.
 
 - [ ] **Step 3: Commit**
@@ -245,6 +312,10 @@ git commit -m "docs: fix error-handling-checklist.md to match actual codebase"
 2. Fix `ValidationError(String? message)` → `ValidationError(ValidationError error, String value)` (line 21)
 3. Remove line 82: `Use shouldReportToCrashlytics property on Failure.`
 4. Fix any other typos
+5. **STRICT PATTERN B REWRITE**: Line 66 — ALL parameterless-failed examples rewritten to side-effect-only pattern (NO failure state variant exists). Show `emitPresentation` + `*StateSideEffect` + `presentationStream` listener pattern.
+6. **Crashlytics section**: Delete line 82 property ref; replace with text describing direct crashlytics-service calls (e.g. `_crashlyticsService.setUserId(...)` in cubits). KEEP reporting-policy decision tables.
+7. **ErrorActions location**: Fix line referencing `baktaz_shared/lib/src/mixin/error_actions.dart` — actual is `baktaz_flutter/lib/app/helpers/mixins/error_actions.dart` AND `baktaz_admin/lib/app/helpers/mixins/error_actions.dart`. Document per-app drift as known debt.
+8. **NEW section "Contextual Error UI"**: Add decision criteria for global-toast vs inline/contextual error; show `emitPresentation(event)` + stream subscription wiring example.
 
 - [ ] **Step 1: Fix typos**
 
@@ -305,10 +376,16 @@ After ALL tasks complete:
 1. Monorepo analyze: `melos exec -- fvm dart analyze`
 2. Suites: `make test_flutter`, `make test_admin`; `make test_server` if Postgres up
 3. DCM re-audit: confirm cyclomatic-complexity >20 and number-of-parameters >5 lists are empty
-4. Grep gates:
-   - `rtk grep -rn "PopupMenuButton" baktaz_admin/lib` → zero
-   - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero
-   - `rtk grep -rn "lastFailure\|shouldReportToCrashlytics" .agents/` → zero
+4. Three-tier grep gates:
+   - ✅ **BLOCKING** (must be zero before merge):
+     - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero
+     - `rtk grep -rn "LoginState\.failed\(|LoginStateFailed" baktaz_flutter/lib` → zero
+     - Failure fields inside state classes (reviewer check)
+     - `handleFailure` not called before any state emission on error paths (reviewer check)
+   - ⚠️ **FIX-BEFORE-CLOSE** (non-blocking but tracked):
+     - `rtk grep -rn "PopupMenuButton" baktaz_admin/lib` → zero
+   - ℹ️ **INFORMATIONAL**:
+     - `rtk grep -rn "lastFailure|shouldReportToCrashlytics" .agents/` → zero
 5. Update `.coverage_exclude` if new test utils appear
 
 ## Accepted Deviations

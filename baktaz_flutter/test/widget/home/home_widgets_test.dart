@@ -132,13 +132,7 @@ void main() {
 
   group(HomeAppHeader, () {
     testWidgets('renders brand title and notifications icon', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const MockMaterialApp(
-          child: Scaffold(
-            body: HomeAppHeader(),
-          ),
-        ),
-      );
+      await tester.pumpWidget(const MockMaterialApp(child: Scaffold(body: HomeAppHeader())));
 
       await tester.pumpAndSettle();
 
@@ -282,11 +276,7 @@ void main() {
       await tester.pumpWidget(
         const MockMaterialApp(
           child: Scaffold(
-            body: HomeLeaderboardPreview(
-              topEntries: entries,
-              currentUserEntry: userEntry,
-              onViewFull: _noop,
-            ),
+            body: HomeLeaderboardPreview(topEntries: entries, currentUserEntry: userEntry, onViewFull: _noop),
           ),
         ),
       );

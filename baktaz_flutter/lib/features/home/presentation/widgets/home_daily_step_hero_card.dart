@@ -31,10 +31,7 @@ class HomeDailyStepHeroCard extends StatelessWidget {
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
           borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-          border: Border.all(
-            color: isGoalAchieved ? context.colorScheme.secondary : Colors.transparent,
-            width: 2,
-          ),
+          border: Border.all(color: isGoalAchieved ? context.colorScheme.secondary : Colors.transparent, width: 2),
         ),
         child: BaktazCard(
           body: Padding(
@@ -47,11 +44,7 @@ class HomeDailyStepHeroCard extends StatelessWidget {
                 Gap.small(),
                 HomeDailyStepLinearGauge(currentSteps: currentSteps, goalSteps: goalSteps),
                 Gap.medium(),
-                HomeDailyStepSyncFooter(
-                  syncSource: syncSource,
-                  lastSyncedText: lastSyncedText,
-                  onRefresh: onRefresh,
-                ),
+                HomeDailyStepSyncFooter(syncSource: syncSource, lastSyncedText: lastSyncedText, onRefresh: onRefresh),
               ],
             ),
           ),

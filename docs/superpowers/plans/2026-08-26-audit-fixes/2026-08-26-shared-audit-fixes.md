@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans.
 
-**Goal:** Fix Shared package violations: BaktazTextField complexity reduction, AppSizes token extraction for chart dimensions.
+**Goal:** Fix Shared package violations: BaktazTextField complexity reduction.
 
 **Tech Stack:** Flutter, flutter_hooks, Dart.
 
@@ -81,91 +81,21 @@ Complexity drops 21 → ~17 (one fewer case arm + ternary).
 - [ ] **Step 3: Commit** — `git commit -m "refactor(shared): collapse BaktazTextField duplicate TextField branches"`.
 
 
+## Final Verification
 
+1. Monorepo analyze: `melos exec -- fvm dart analyze`
+2. Suites: `make test_flutter`, `make test_admin`; text-field goldens included.
+3. DCM re-audit: confirm cyclomatic-complexity >20 and number-of-parameters >5 lists are empty (using bare `dcm analyze`). Complexity drops 21 → ~17 (below threshold `cyclomatic-complexity: 20` in `baktaz_shared/analysis_options.yaml` lines 62-65; same thresholds across all four packages).
+4. Three-tier grep gates:
+   - ✅ **BLOCKING** (must be zero before merge):
+     - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero (indirect)
+     - `rtk grep -rn "LoginState\.failed\(|LoginStateFailed" baktaz_flutter/lib` → zero (indirect)
+   - ⚠️ **FIX-BEFORE-CLOSE** (non-blocking but tracked): none
+   - ℹ️ **INFORMATIONAL**:
+     - `rtk grep -rn "lastFailure|shouldReportToCrashlytics" .agents/` → zero
+5. Update `.coverage_exclude` if new test utils appear; bump nothing else.
 
-### Task 6: HomeWeeklyStepsChart → HookWidget + named chart constant
+## Accepted Deviations
 
-**Files:**
-- Modify: `baktaz_shared/lib/src/theme/app_sizes.dart` (append token)
-- Modify: `baktaz_flutter/lib/features/home/presentation/widgets/home_weekly_steps_chart.dart`
-- Test: existing golden coverage for home widgets — run suite.
-
-**Interfaces:** Produces `AppSizes.chartBarAreaHeight` (=120). Widget public API unchanged.
-
-- [ ] **Step 1: Add token** to `app_sizes.dart` after `screenMarginH`:
-```dart
-  static const double chartBarAreaHeight = 120;
-```
-
-- [ ] **Step 2: Convert widget** — rewrite `home_weekly_steps_chart.dart`:
-```dart
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_weekly_bar_item.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_weekly_chart_header.dart';
-import 'package:baktaz_flutter/features/home/presentation/widgets/home_weekly_total_footer.dart';
-import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-
-class HomeWeeklyStepsChart extends HookWidget {
-  const HomeWeeklyStepsChart({
-    required this.weeklySteps,
-    required this.averageSteps,
-    required this.totalWeeklySteps,
-    required this.goalTarget,
-    super.key,
-  });
-
-  final List<int> weeklySteps;
-  final int averageSteps;
-  final int totalWeeklySteps;
-  final int goalTarget;
-
-  static const int _daysInWeek = 7;
-
-  @override
-  Widget build(BuildContext context) {
-    const List<String> days = <String>['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    final ValueNotifier<int?> selectedIndex = useState<int?>(null);
-    final List<int> safeSteps = weeklySteps.length == _daysInWeek ? weeklySteps : List<int>.filled(_daysInWeek, 0);
-
-    return BaktazCard(
-      body: Padding(
-        padding: Paddings.allLarge,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            HomeWeeklyChartHeader(averageSteps: averageSteps),
-            Gap.medium(),
-            SizedBox(
-              height: AppSizes.chartBarAreaHeight,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: List<Widget>.generate(
-                  _daysInWeek,
-                  (int index) => HomeWeeklyBarItem(
-                    steps: safeSteps[index],
-                    dayLabel: days[index],
-                    goalTarget: goalTarget,
-                    isSelected: selectedIndex.value == index,
-                    onTap: () => selectedIndex.value = index,
-                  ),
-                ),
-              ),
-            ),
-            Gap.medium(),
-            HomeWeeklyTotalFooter(totalWeeklySteps: totalWeeklySteps),
-          ],
-        ),
-      ),
-    );
-  }
-}
-```
-(Also removes magic numbers 120 and 7.)
-
-- [ ] **Step 3: Analyze + home goldens** — `cd baktaz_flutter && fvm dart analyze && fvm flutter test test/widget/features/home/ test/unit/` → green (goldens auto-refresh if pixel-shift).
-
-- [ ] **Step 4: Commit** — `git commit -m "refactor(flutter): HomeWeeklyStepsChart to HookWidget, extract chart height token"`.
-
+- **Full-fluid responsive chart heights** — deferred to separate plan requiring designer input + golden regen.
+- **ErrorActions promotion to shared** — deferred; requires dep-inversion seam (DialogUtils/localization). Per-app drift is known debt: `baktaz_admin` lacks `onAuthenticationError`/`onRemoteConfigError`; validation handler differs.

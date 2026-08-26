@@ -14,9 +14,16 @@
 - [Flutter Audit Fixes](2026-08-26-flutter-audit-fixes.md) — Tasks 1-3, 6, 9
 - [Admin Audit Fixes](2026-08-26-admin-audit-fixes.md) — Tasks 4, 10
 - [Server Audit Fixes](2026-08-26-server-audit-fixes.md) — Task 7
-- [Shared Audit Fixes](2026-08-26-shared-audit-fixes.md) — Tasks 6, 8
+- [Shared Audit Fixes](2026-08-26-shared-audit-fixes.md) — Task 8
 - [Error Handling Docs Cleanup](2026-08-26-error-handling-docs-fix.md) — Tasks 11-16
-- [Error Handling Docs Cleanup](2026-08-26-error-handling-docs-fix.md) — Tasks 11-16 only
+
+## Execution Order
+
+**Order:** `Task 16 → Task 7 → Task 1 → [Tasks 2-3, 4, 5, 8-10 parallel] → [Tasks 11-15 parallel]`
+
+Rationale:
+- **Task 16 first**: Removes orphaned `onSocketException` from `error_actions.dart` so Task 1 developer sees clean file.
+- **Task 7 before Task 1**: Task 7 fully completes (server codegen commit + client regen commit) BEFORE Task 1 starts, because Task 7 changes `completeRegistration(Session, RegistrationForm)` signature consumed by `login_cubit.dart`.
 
 ## Global Constraints
 
@@ -35,100 +42,81 @@
 
 ## Phase 1: Rule Audit Violations Fix (from 2026-08-26 plan)
 
-### Task 1: LoginState Pattern-B fix (no Failure in state)
+### Task 1: LoginState Strict Pattern-B fix (remove failed state entirely, add side-effect union)
 
 **Files:**
 - Modify: `baktaz_flutter/lib/features/auth/domain/cubit/login/login_state.dart`
-- Modify: `baktaz_flutter/lib/features/auth/domain/cubit/login/login_cubit.dart:114-122`
-- Modify: `baktaz_flutter/lib/features/auth/presentation/views/login_email_screen.dart:30-33`
-- Modify: `baktaz_flutter/lib/features/auth/presentation/views/otp_verification_screen.dart:45-47`
-- Modify: `baktaz_flutter/lib/features/auth/presentation/views/registration_screen.dart:40-43`
-- Test: `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_state_test.dart` (create)
-- Test: `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_failure_test.dart` (create)
+- Modify: `baktaz_flutter/lib/features/auth/domain/cubit/login/login_cubit.dart`
+- Modify: `baktaz_flutter/lib/features/auth/presentation/views/login_email_screen.dart`
+- Modify: `baktaz_flutter/lib/features/auth/presentation/views/otp_verification_screen.dart`
+- Modify: `baktaz_flutter/lib/features/auth/presentation/views/registration_screen.dart`
+- Modify: `baktaz_flutter/lib/features/auth/presentation/views/login_screen.dart`
+- Test: `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_failure_test.dart` (replace existing)
 
 **Interfaces:**
-- Consumes: `FailureHandler.handleFailure(Failure)` (existing lazySingleton), mockito mocks from `generated_mocks.dart`.
-- Produces: `LoginState.failed()` — parameterless variant. All downstream handlers change arity from `(Failure)` to `()`.
+- Consumes: `FailureHandler.handleFailure(Failure)` (existing lazySingleton), `BlocSignalPresentationMixin` from `baktaz_shared`, mockito mocks from `generated_mocks.dart`.
+- Produces: `LoginStateSideEffect` union with `onOtpError` variant; no `LoginState.failed()` variant remains. Screens subscribe to `presentationStream` for contextual OTP errors.
 
-- [ ] **Step 1: Write failing state-shape test**
+- [ ] **Step 1: Rewrite LoginState — delete failed, add side-effect union**
 
-Create `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_state_test.dart`:
+In `login_state.dart`:
+- DELETE `const factory LoginState.failed(Failure failure) = LoginStateFailed;` entirely.
+- ADD side-effect union:
 ```dart
-import 'package:baktaz_flutter/features/auth/domain/cubit/login/login_cubit.dart';
-import 'package:flutter_test/flutter_test.dart';
+@freezed
+sealed class LoginStateSideEffect with _$LoginStateSideEffect {
+  const factory LoginStateSideEffect.onOtpError(String message) = LoginStateOtpError;
+}
+```
+Remaining state union: `idle`, `codeSent`, `verifying`, `verified`, `registrationCompleted`, `success`, `blocked`. No `.failed()`.
 
-void main() {
-  group('LoginState', () {
-    test('failed variant carries no Failure payload (Pattern B)', () {
-      const LoginState state = LoginState.failed();
+- [ ] **Step 2: Regenerate freezed**
 
-      expect(state, isA<LoginState>());
-      expect(state.toString(), isNot(contains('Failure')));
-      expect(state.toString(), equals('LoginState.failed()'));
-    });
-  });
+Run: `cd baktaz_flutter && fvm dart run build_runner build --delete-conflicting-outputs`
+
+- [ ] **Step 3: Update cubit — add BlocSignalPresentationMixin**
+
+In `login_cubit.dart` add `with BlocSignalPresentationMixin<LoginStateSideEffect, LoginState>` (import from `baktaz_shared`).
+Replace `_onAuthError` with:
+```dart
+void _onAuthError(Failure failure) {
+  _failureHandler.handleFailure(failure); // global toast via ErrorActions
+  if (failure is AuthenticationError && failure.blocked) {
+    safeEmit(const LoginState.blocked());
+    return;
+  }
+  // Contextual inline error for OTP screen (side-effect, NOT state):
+  // Implementer decides: pass Failure subtype and let listener map to text,
+  // or build message string here. Document choice in PR.
+  emitPresentation(LoginStateOtpError(/* resolved message */));
 }
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [ ] **Step 4: Update screens — remove failed: arms**
 
-Run: `cd baktaz_flutter && fvm flutter test test/unit/features/auth/domain/cubit/login_cubit_state_test.dart`
-Expected: FAIL — compile error (current signature requires `Failure failure`).
+`login_email_screen.dart`: DELETE entire `failed:` arm; remove `ErrorMessageUtils` import; check `DialogUtils` still used elsewhere before removing.
+`otp_verification_screen.dart`: swap `BlocSignalListener` → `BlocSignalPresentationListener` wiring (subscribe cubit `presentationStream`); KEEP `otpError` ValueNotifier (screen-local UI state); feed it from `LoginStateOtpError` events; clear on resend/verify actions as today. Remove `ErrorMessageUtils` import.
+`registration_screen.dart`: DELETE `failed:` arm; remove `ErrorMessageUtils` import.
+`login_screen.dart`: DELETE `failed:` arm only (keep DialogUtils — exit dialog uses it).
+`baktaz_otp_screen.dart`: NO change (already accepts `otpError` param).
 
-- [ ] **Step 3: Change state factory**
+- [ ] **Step 5: Write behavior tests**
 
-In `login_state.dart` replace:
-```dart
-  const factory LoginState.failed(Failure failure) = LoginStateFailed;
-```
-with:
-```dart
-  const factory LoginState.failed() = LoginStateFailed;
-```
+Replace `login_cubit_failure_test.dart` with:
+1. `verify(failureHandler.handleFailure(any)).called(1)` on auth error
+2. Subscribe real `presentationStream` — expect one `LoginStateOtpError` event
+3. Emitted states remain initial `idle` — cubit emits NOTHING on failure
+4. Blocked path intact: `AuthenticationError(blocked: true)` → `LoginState.blocked()` emitted, handler called once
+NO `toString()` assertions anywhere (no suite precedent; variant deleted).
 
-- [ ] **Step 4: Regenerate freezed**
-
-Run: `cd baktaz_flutter && fvm dart run build_runner build --delete-conflicting-outputs`
-Expected: BUILD SUCCEEDED.
-
-- [ ] **Step 5: Update cubit emitter**
-
-In `login_cubit.dart` replace `_onAuthError`:
-```dart
-  void _onAuthError(Failure failure) {
-    _failureHandler.handleFailure(failure);
-    if (failure is AuthenticationError && failure.blocked) {
-      safeEmit(const LoginState.blocked());
-      return;
-    }
-    safeEmit(const LoginState.failed());
-  }
-```
-
-- [ ] **Step 6: Update screen listeners**
-
-`login_email_screen.dart`: replace `failed: (Failure failure) { ... }` with `failed: () => context.loaderOverlay.hide(),`
-`otp_verification_screen.dart`: same pattern
-`registration_screen.dart`: same pattern
-`login_screen.dart`: change `failed: (_) => ...` to `failed: () => ...`
-
-- [ ] **Step 7: Write behavior test**
-
-Create `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_failure_test.dart` with tests verifying:
-- `LoginState.failed()` emitted on auth error
-- `FailureHandler.handleFailure` called once
-- Blocked auth routes to `LoginState.blocked()`
-
-- [ ] **Step 8: Run tests + analyze**
+- [ ] **Step 6: Run tests + analyze**
 
 Run: `cd baktaz_flutter && fvm flutter test test/unit/features/auth/domain/cubit/ && fvm dart analyze`
 Expected: PASS.
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 7: Commit**
 
-```bash
-git commit -m "refactor(flutter): enforce Pattern B — LoginState.failed carries no Failure payload"
-```
+`git commit -m "refactor(flutter): enforce strict Pattern B — remove LoginState.failed, add OTP side-effect"`
 
 ---
 
@@ -592,15 +580,23 @@ After ALL tasks complete:
 1. Monorepo analyze: `melos exec -- fvm dart analyze`
 2. Suites: `make test_flutter`, `make test_admin`; `make test_server` if Postgres up
 3. DCM re-audit: confirm cyclomatic-complexity >20 and number-of-parameters >5 lists are empty
-4. Grep gates:
-   - `rtk grep -rn "PopupMenuButton" baktaz_admin/lib` → zero
-   - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero
-   - `rtk grep -rn "lastFailure\|shouldReportToCrashlytics" .agents/` → zero
+4. Three-tier grep gates:
+   - ✅ **BLOCKING** (must be zero before merge):
+     - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero
+     - `rtk grep -rn "LoginState\.failed\(|LoginStateFailed" baktaz_flutter/lib` → zero
+     - `rtk grep -rn "emit(const.*State\.failed())" baktaz_flutter/lib baktaz_admin/lib` → zero
+     - Failure fields inside state classes (reviewer check)
+     - `handleFailure` not called before any state emission on error paths (reviewer check)
+   - ⚠️ **FIX-BEFORE-CLOSE** (non-blocking but tracked):
+     - `rtk grep -rn "PopupMenuButton" baktaz_admin/lib` → zero
+   - ℹ️ **INFORMATIONAL**:
+     - `rtk grep -rn "lastFailure\|shouldReportToCrashlytics" .agents/` → zero
 5. Update `.coverage_exclude` if new test utils appear
 
 ## Accepted Deviations
 
 - `auth_endpoint.completeRegistration` signature changes to `(Session, RegistrationForm)` — requires `serverpod generate` for client. Documented as required deviation.
+- **Full-fluid responsive chart heights** — deferred to separate plan requiring designer input + golden regen.
+- **ErrorActions promotion to shared** — deferred; requires dep-inversion seam (DialogUtils/localization). Per-app drift is known debt: `baktaz_admin` lacks `onAuthenticationError`/`onRemoteConfigError`; validation handler differs.
 - Server `throw Exception()` in `session_ext.dart` and `admin_endpoint.dart` — future `ApiException` migration (separate plan).
-- `connectivity_checker` instance-constructor stays 4-param compliant.
 - Serverpod `return null` endpoints (NP1/NP2) — legitimate business absence per error-handling rules.

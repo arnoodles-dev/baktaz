@@ -4,12 +4,7 @@ import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
 
 class HomeLeaderboardPreview extends StatelessWidget {
-  const HomeLeaderboardPreview({
-    required this.topEntries,
-    required this.onViewFull,
-    this.currentUserEntry,
-    super.key,
-  });
+  const HomeLeaderboardPreview({required this.topEntries, required this.onViewFull, this.currentUserEntry, super.key});
 
   final List<LeaderboardEntry> topEntries;
   final LeaderboardEntry? currentUserEntry;

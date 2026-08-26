@@ -6,24 +6,24 @@ class HomeAppHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        color: context.colorScheme.surface,
-        padding: Paddings.allLarge,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    color: context.colorScheme.surface,
+    padding: Paddings.allLarge,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        BaktazText(text: 'Baktaz', style: context.textTheme.headlineSmall),
+        Row(
           children: <Widget>[
-            BaktazText(text: 'Baktaz', style: context.textTheme.headlineSmall),
-            Row(
-              children: <Widget>[
-                IconButton(
-                  constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
-                  icon: const Icon(Icons.notifications_outlined),
-                  onPressed: () {},
-                ),
-                Gap.small(),
-                const BaktazAvatar(size: BaktazAvatar.sizeSM),
-              ],
+            IconButton(
+              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+              icon: const Icon(Icons.notifications_outlined),
+              onPressed: () {},
             ),
+            Gap.small(),
+            const BaktazAvatar(size: BaktazAvatar.sizeSM),
           ],
         ),
-      );
+      ],
+    ),
+  );
 }

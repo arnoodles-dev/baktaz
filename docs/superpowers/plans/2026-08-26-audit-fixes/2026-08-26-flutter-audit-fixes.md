@@ -10,246 +10,89 @@
 
 ---
 
-### Task 1: LoginState Pattern-B fix (no Failure in state)
+### Task 1: LoginState Strict Pattern-B fix (remove failed state entirely, add side-effect union)
 
 **Files:**
 - Modify: `baktaz_flutter/lib/features/auth/domain/cubit/login/login_state.dart`
-- Modify: `baktaz_flutter/lib/features/auth/domain/cubit/login/login_cubit.dart:114-122`
-- Modify: `baktaz_flutter/lib/features/auth/presentation/views/login_email_screen.dart:30-33`
-- Modify: `baktaz_flutter/lib/features/auth/presentation/views/otp_verification_screen.dart:45-47`
-- Modify: `baktaz_flutter/lib/features/auth/presentation/views/registration_screen.dart:40-43`
-- Test: `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_state_test.dart` (create)
-- Test: `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_failure_test.dart` (create)
+- Modify: `baktaz_flutter/lib/features/auth/domain/cubit/login/login_cubit.dart`
+- Modify: `baktaz_flutter/lib/features/auth/presentation/views/login_email_screen.dart`
+- Modify: `baktaz_flutter/lib/features/auth/presentation/views/otp_verification_screen.dart`
+- Modify: `baktaz_flutter/lib/features/auth/presentation/views/registration_screen.dart`
+- Modify: `baktaz_flutter/lib/features/auth/presentation/views/login_screen.dart`
+- Test: `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_failure_test.dart` (replace)
 
 **Interfaces:**
-- Consumes: `FailureHandler.handleFailure(Failure)` (existing lazySingleton, shows toast per `error_actions.dart`), mockito mocks `MockIAuthRepository`, `MockIAnalyticsService`, `MockFailureHandler` from `package:baktaz_flutter/test/utils/generated_mocks.dart`.
-- Produces: `LoginState.failed()` — parameterless variant (was `LoginState.failed(Failure failure)`). All downstream `state.whenOrNull(failed: ...)` handlers change arity from `(Failure)` to `()`. No other public surface changes.
+- Consumes: `FailureHandler.handleFailure(Failure)` (existing lazySingleton, shows toast per `error_actions.dart`), `BlocSignalPresentationMixin` from `baktaz_shared`, mockito mocks `MockIAuthRepository`, `MockIAnalyticsService`, `MockFailureHandler` from `package:baktaz_flutter/test/utils/generated_mocks.dart`.
+- Produces: `LoginStateSideEffect` union with `onOtpError` variant; NO `LoginState.failed()` variant exists at all. `presentationStream` carries contextual OTP errors to screen listeners. All `failed:` arms removed from screens.
 
-- [ ] **Step 1: Write failing state-shape test**
+**Known bug fixed by this task:** Screens' old `failed:` arms called `DialogUtils.showError(ErrorMessageUtils.generate(...))` while FailureHandler ALSO showed toast → double display. Side-effect pattern eliminates duplication; handler owns global feedback exclusively.
 
-Create `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_state_test.dart`:
+- [ ] **Step 1: Rewrite LoginState — delete failed, add side-effect union**
+
+In `login_state.dart`:
+- DELETE `const factory LoginState.failed(Failure failure) = LoginStateFailed;` entirely.
+- ADD side-effect union:
 ```dart
-import 'package:baktaz_flutter/features/auth/domain/cubit/login/login_cubit.dart';
-import 'package:flutter_test/flutter_test.dart';
-
-void main() {
-  group('LoginState', () {
-    test('failed variant carries no Failure payload (Pattern B)', () {
-      const LoginState state = LoginState.failed();
-
-      expect(state, isA<LoginState>());
-      // Pattern B: state stores a generic error flag, never a Failure object.
-      expect(state.toString(), isNot(contains('Failure')));
-      expect(state.toString(), equals('LoginState.failed()'));
-    });
-  });
+@freezed
+sealed class LoginStateSideEffect with _$LoginStateSideEffect {
+  const factory LoginStateSideEffect.onOtpError(String message) = LoginStateOtpError;
 }
 ```
+Remaining state union: `idle`, `codeSent`, `verifying`, `verified`, `registrationCompleted`, `success`, `blocked`. No `.failed()`.
 
-- [ ] **Step 2: Run test to verify it fails**
-
-Run: `cd baktaz_flutter && fvm flutter test test/unit/features/auth/domain/cubit/login_cubit_state_test.dart`
-Expected: FAIL — compile error "Too many positional arguments: 0 expected, 1 found" or missing `const LoginState.failed()` constructor (current signature requires `Failure failure`).
-
-- [ ] **Step 3: Change state factory**
-
-In `login_state.dart` replace line 12:
-```dart
-  const factory LoginState.failed(Failure failure) = LoginStateFailed;
-```
-with:
-```dart
-  const factory LoginState.failed() = LoginStateFailed;
-```
-Leave all other factories untouched.
-
-- [ ] **Step 4: Regenerate freezed**
+- [ ] **Step 2: Regenerate freezed**
 
 Run: `cd baktaz_flutter && fvm dart run build_runner build --delete-conflicting-outputs`
-Expected: BUILD SUCCEEDED; `login_cubit.freezed.dart` regenerated with parameterless `LoginStateFailed`.
 
-- [ ] **Step 5: Update cubit emitter**
+- [ ] **Step 3: Update cubit — add BlocSignalPresentationMixin**
 
-In `login_cubit.dart` replace `_onAuthError` (lines ~114-122):
+In `login_cubit.dart` add `with BlocSignalPresentationMixin<LoginStateSideEffect, LoginState>` (import from `baktaz_shared`; shared mixin exists at `baktaz_shared/lib/src/mixin/bloc_signal_presentation_mixin.dart`, API: `emitPresentation(Event event)`, `presentationStream`).
+
+Replace `_onAuthError` with:
 ```dart
-  void _onAuthError(Failure failure) {
-    _failureHandler.handleFailure(failure);
-    if (failure is AuthenticationError && failure.blocked) {
-      safeEmit(const LoginState.blocked());
-      return;
-    }
-
-    safeEmit(const LoginState.failed());
+void _onAuthError(Failure failure) {
+  _failureHandler.handleFailure(failure); // global toast via ErrorActions
+  if (failure is AuthenticationError && failure.blocked) {
+    safeEmit(const LoginState.blocked());
+    return;
   }
-```
-(The `Failure` import from `baktaz_shared` remains — `fold` callbacks still type it.)
-
-- [ ] **Step 6: Update the four screen listeners**
-
-`login_email_screen.dart` lines 30-33 — replace:
-```dart
-      failed: (Failure failure) {
-        context.loaderOverlay.hide();
-        DialogUtils.showError(ErrorMessageUtils.generate(context, failure));
-      },
-```
-with:
-```dart
-      failed: () => context.loaderOverlay.hide(),
-```
-Then delete now-unused imports `app/utils/dialog_utils.dart` and `app/utils/error_message_utils.dart` from that file IF analyzer flags them unused (DialogUtils may still be referenced elsewhere in file — check first; ErrorMessageUtils definitely removable).
-
-`otp_verification_screen.dart` lines 45-47 — replace:
-```dart
-      failed: (Failure failure) {
-        context.loaderOverlay.hide();
-        otpError.value = ErrorMessageUtils.generate(context, failure);
-      },
-```
-with:
-```dart
-      failed: () => context.loaderOverlay.hide(),
-```
-Keep the `otpError` ValueNotifier (BaktazOtpScreen consumes it); it simply never gets set now. Delete the `ErrorMessageUtils` import.
-
-`registration_screen.dart` lines 40-43 — replace:
-```dart
-      failed: (Failure failure) {
-        context.loaderOverlay.hide();
-        DialogUtils.showError(ErrorMessageUtils.generate(context, failure));
-      },
-```
-with:
-```dart
-      failed: () => context.loaderOverlay.hide(),
-```
-Delete `ErrorMessageUtils` import (keep DialogUtils — exit dialog uses it).
-
-`login_screen.dart` line 36 already reads `failed: (_) => context.loaderOverlay.hide(),` — change to `failed: () => context.loaderOverlay.hide(),` for arity correctness.
-
-- [ ] **Step 7: Write failing cubit behavior test**
-
-Create `baktaz_flutter/test/unit/features/auth/domain/cubit/login_cubit_failure_test.dart`:
-```dart
-import 'package:baktaz_client/baktaz_client.dart';
-import 'package:baktaz_flutter/features/auth/domain/cubit/login/login_cubit.dart';
-import 'package:baktaz_flutter/features/auth/domain/entity/enum/login_provider.dart';
-import 'package:baktaz_flutter/features/auth/domain/interface/i_auth_repository.dart';
-import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
-import 'package:baktaz_flutter/test/utils/generated_mocks.dart';
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_service_core/features/analytics/i_analytics_service.dart';
-import 'package:mockito/mockito.dart';
-
-void main() {
-  late MockIAuthRepository repo;
-  late MockIAnalyticsService analytics;
-  late MockFailureHandler failureHandler;
-  late LoginCubit cubit;
-
-  setUp(() {
-    repo = MockIAuthRepository();
-    analytics = MockIAnalyticsService();
-    failureHandler = MockFailureHandler();
-    cubit = LoginCubit(repo, analytics, failureHandler);
-  });
-
-  group('completeRegistration failure path (Pattern B)', () {
-    test('emits failed flag state and routes Failure through handler', () async {
-      when(
-        () => repo.completeRegistration(
-          email: anyNamed('email'),
-          name: anyNamed('name'),
-          gender: anyNamed('gender'),
-          birthday: anyNamed('birthday'),
-          registrationToken: anyNamed('registrationToken'),
-        ),
-      ).thenAnswer(
-        (_) async => TaskResult<AuthSuccess>.left(
-          const Failure.authentication('Invalid or expired registration token'),
-        ),
-      );
-
-      final List<LoginState> emitted = <LoginState>[];
-      final Object subscription = cubit.state.listen(emitted.add);
-      addTearDown(() async {
-        await cubit.close();
-        // ignore: avoid_types_on_closure_parameters
-        await (subscription as dynamic).cancel();
-      });
-
-      await cubit.completeRegistration(
-        email: 'a@b.co',
-        name: 'Tester',
-        gender: 'male',
-        birthday: null,
-        registrationToken: 'tok',
-      );
-      await Future<void>.delayed(Duration.zero);
-
-      expect(emitted, isNotEmpty);
-      expect(emitted.last, isA<LoginState>());
-      expect(emitted.last.toString(), equals('LoginState.failed()'));
-      verify(failureHandler.handleFailure(any)).called(1);
-    });
-
-    test('blocked AuthenticationError routes to blocked state', () async {
-      when(
-        () => repo.completeRegistration(
-          email: anyNamed('email'),
-          name: anyNamed('name'),
-          gender: anyNamed('gender'),
-          birthday: anyNamed('birthday'),
-          registrationToken: anyNamed('registrationToken'),
-        ),
-      ).thenAnswer(
-        (_) async => TaskResult<AuthSuccess>.left(
-          const Failure.authentication('Account blocked', blocked: true),
-        ),
-      );
-
-      final List<LoginState> emitted = <LoginState>[];
-      final Object subscription = cubit.state.listen(emitted.add);
-      addTearDown(() async {
-        await cubit.close();
-        await (subscription as dynamic).cancel();
-      });
-
-      await cubit.completeRegistration(
-        email: 'a@b.co',
-        name: 'Tester',
-        gender: 'male',
-        birthday: null,
-        registrationToken: 'tok',
-      );
-      await Future<void>.delayed(Duration.zero);
-
-      expect(emitted.last.toString(), contains('blocked'));
-      verify(failureHandler.handleFailure(any)).called(1);
-    });
-  });
+  // Contextual inline error for OTP screen (side-effect, NOT state):
+  emitPresentation(LoginStateOtpError(/* resolved message */));
 }
 ```
-If `MockIAnalyticsService.logLogin` needs a stub for other paths it is Nice-mock — no-op by default.
+Note for implementer: resolve exact message mechanism — pass Failure-derived message string (consistent with prior `ErrorMessageUtils.generate(context, failure)` behavior); if context unavailable in cubit, emit the Failure subtype and let listener map to text. Implementer decides with reviewer; document choice in PR.
 
-- [ ] **Step 8: Run tests**
+(The `Failure` import from `baktaz_shared` remains — `fold` callbacks still type it.)
 
-Run: `cd baktaz_flutter && fvm flutter test test/unit/features/auth/domain/cubit/`
-Expected: PASS (both files).
+- [ ] **Step 4: Update screens — remove failed: arms**
 
-- [ ] **Step 9: Analyze + full suite**
+`login_email_screen.dart`: DELETE entire `failed:` arm; remove `ErrorMessageUtils` import; check `DialogUtils` still used elsewhere in file before removing.
 
-Run: `cd baktaz_flutter && fvm dart analyze && fvm flutter test`
-Expected: No issues. Full suite green (any golden drift from removed inline OTP error text: re-run once; goldens auto-update per test_config forceUpdateGoldenFiles=true, commit refreshed goldens).
+`otp_verification_screen.dart`: swap listener wiring to presentation stream (use `BlocSignalPresentationListener` from `baktaz_shared/lib/src/mixin/bloc_signal_presentation_listener.dart` or subscribe cubit `presentationStream`); KEEP `otpError` ValueNotifier (screen-local UI state, Pattern-B-safe); feed it from `LoginStateOtpError` events; clear on resend/verify actions as today. Remove `ErrorMessageUtils` import.
 
-- [ ] **Step 10: Commit**
+`registration_screen.dart`: DELETE `failed:` arm; remove `ErrorMessageUtils` import.
 
-```bash
-git add -A
-git commit -m "refactor(flutter): enforce Pattern B — LoginState.failed carries no Failure payload"
-```
+`login_screen.dart`: DELETE `failed:` arm only (keep DialogUtils — exit dialog uses it).
 
+`baktaz_otp_screen.dart`: NO change (already accepts `otpError` param).
+
+- [ ] **Step 5: Write behavior tests**
+
+Replace `login_cubit_failure_test.dart` with:
+1. `verify(failureHandler.handleFailure(any)).called(1)` on auth error
+2. Subscribe real `presentationStream` — expect one `LoginStateOtpError` event
+3. Emitted states remain initial `idle` — cubit emits NOTHING on failure
+4. Blocked path intact: `AuthenticationError(blocked: true)` → `LoginState.blocked()` emitted, handler called once
+NO `toString()` assertions anywhere (no suite precedent; variant deleted).
+
+- [ ] **Step 6: Run tests + analyze**
+
+Run: `cd baktaz_flutter && fvm flutter test test/unit/features/auth/domain/cubit/ && fvm dart analyze`
+Expected: PASS.
+
+- [ ] **Step 7: Commit**
+
+`git commit -m "refactor(flutter): enforce strict Pattern B — remove LoginState.failed, add OTP side-effect"`
 
 ### Task 2: Localize challenge/message/common strings (slang batch A)
 
@@ -553,90 +396,71 @@ Run build_runner. Fix any cascade errors until analyze clean.
 - `@lazySingleton` Cubits → `BlocSignalProvider.value(value: getIt<T>())`
 - `@injectable` Cubits → `BlocSignalProvider(create: (_) => getIt<T>())`
 
-**Violations found:**
-
-| File | Cubit | Annotation | Current | Fix |
-|------|-------|-----------|---------|-----|
-| `flutter/main_screen.dart:37` | `AccountCubit` | `@injectable` | `.value(value:)` | → `create:` |
-| `flutter/main_screen.dart:38` | `HomeCubit` | `@injectable` | `.value(value:)` | → `create:` |
-| `admin/login_screen.dart:30` | `LoginCubit` | `@injectable` | `create:` | → `.value(value:)` (but needs init) |
-
-**Note:** Admin `login_screen.dart` calls `cubit.initialize()` before returning — this initialization MUST happen. Use pattern:
-```dart
-BlocSignalProvider<LoginCubit>.value(
-  value: () {
-    final LoginCubit cubit = getIt<LoginCubit>();
-    unawaited(cubit.initialize());
-    return cubit;
-  }(),
-  child: ...
-)
-```
-Or keep `create:` but rename to clarify it's an init wrapper.
-
-For `main_screen.dart`, the `AccountCubit` and `HomeCubit` don't need init — just swap to `create:`:
-```dart
-BlocSignalProvider<AccountCubit>(
-  create: (BuildContext context) => getIt<AccountCubit>(),
-  lazy: false,
-  child: ...
-),
-BlocSignalProvider<HomeCubit>(
-  create: (BuildContext context) => getIt<HomeCubit>(),
-  lazy: false,
-  child: ...
-),
-```
-
-- [ ] **Step 1: Fix main_screen.dart**
-
-Replace lines 37-38 in `baktaz_flutter/lib/core/presentation/views/screens/main_screen.dart`:
-```dart
-        BlocSignalProvider<AccountCubit>(lazy: false, create: (BuildContext context) => getIt<AccountCubit>()),
-        BlocSignalProvider<HomeCubit>(lazy: false, create: (BuildContext context) => getIt<HomeCubit>()),
-```
-
-- [ ] **Step 2: Fix admin login_screen.dart**
-
-For admin `login_screen.dart`, since `LoginCubit` is `@injectable` but needs initialization, use `create:` (current form is correct per rule) — NO CHANGE NEEDED. The violation was misidentified; `@injectable` → `create:` is correct.
-
-Actually re-checking: the rule says `@injectable` → `create:`. Admin login_screen uses `create:`. This is CORRECT. No fix needed.
-
-- [ ] **Step 3: Verify BlocSignalProvider annotations**
+**Step 1: Enumerate all BlocSignalProvider sites (~25 across baktaz_flutter + baktaz_admin)**
 
 Run: `rtk grep -rn "BlocSignalProvider" baktaz_flutter/lib baktaz_admin/lib`
-For each match, verify the Cubit annotation matches the provider pattern:
-- `@lazySingleton` Cubit → must use `.value(value:)`
-- `@injectable` Cubit → must use `create:`
+Expected: ~32 matches (MultiBlocSignalProvider also counts as provider site).
 
-Run: `rtk grep -B2 "BlocSignalProvider" baktaz_flutter/lib/core/presentation/views/screens/main_screen.dart`
-Expected: `create:` for AccountCubit and HomeCubit (both @injectable).
+Build compliance table with columns: file:line | Cubit | DI annotation (@injectable/@lazySingleton) | required provider form (`.value(getIt<T>())` for @lazySingleton; `create: (_) => getIt<T>()` for @injectable) | compliant Y/N
 
-- [ ] **Step 3b: Verify state usage is correct**
+Known suspicious rows to investigate:
+| file:line | Cubit | annotation | current | required | compliant? |
+|---|---|---|---|---|---|
+| `flutter/main_screen.dart:37` | `AccountCubit` | `@injectable` (confirmed) | `create:` | `create:` | ✅ |
+| `flutter/main_screen.dart:38` | `HomeCubit` | `@injectable` (unverified — confirm with grep) | `create:` | `create:` | ? |
+| `flutter/app.dart:25-34` | `ThemeCubit` | `@lazySingleton` (verify) | `.value(getIt<ThemeCubit>())` | `.value` | ? |
+| `flutter/app.dart:27` | `AppLifeCycleCubit` | `@lazySingleton` (verify) | `.value` | `.value` | ? |
+| `flutter/app.dart:28` | `HidableCubit` | `@lazySingleton` (verify) | `.value` | `.value` | ? |
+| `flutter/app.dart:31` | `RemoteConfigCubit` | `@lazySingleton` (verify) | `.value` | `.value` | ? |
+| `flutter/app.dart:32` | `AuthCubit` | `@lazySingleton` (verify) | `.value` | `.value` | ? |
+| `flutter/app.dart:33` | `AppCoreCubit` | `@lazySingleton` (verify) | `.value` | `.value` | ? |
+| `flutter/app.dart:34` | `AppLocalizationCubit` | `@lazySingleton` (verify) | `.value` | `.value` | ? |
+| `flutter/otp_verification_screen.dart:56` | `LoginCubit` | `@injectable` (confirmed) | `create:` | `create:` | ✅ |
+| `flutter/login_email_screen.dart:43` | `LoginCubit` | `@injectable` | `create:` | `create:` | ✅ |
+| `flutter/registration_screen.dart:72` | `LoginCubit` | `@injectable` | `create:` | `create:` | ✅ |
+| `flutter/login_screen.dart:44` | `LoginCubit` | `@injectable` | `create:` | `create:` | ✅ |
+| `flutter/profile_screen.dart:54` | `ProfileCubit` | (verify) | (check) | (check) | ? |
+| `admin/app.dart:24-28` | `AppLocalizationCubit`, `AppCoreCubit`, `ThemeCubit`, `AuthCubit`, `HidableCubit` | (verify all @lazySingleton) | `.value` | `.value` | ? |
+| `admin/login_screen.dart:30` | `LoginCubit` | `@injectable` (confirmed) | `create:` | `create:` | ✅ |
+| `admin/content_screen.dart:26` | `ContentCubit` | (verify) | `.value` | ? | ? |
+| `admin/dashboard_screen.dart:17` | `DashboardCubit` | (verify) | `create:` | ? | ? |
+| `admin/remote_config_screen.dart:25` | `RemoteConfigCubit` | (verify) | `create:` | ? | ? |
+| `admin/localization_screen.dart:23` | `LocalizationCubit` | (verify) | `create:` | ? | ? |
 
-- `.state.subscribe()` in `route_refresh_listener.dart` — CORRECT (reactive side effect)
-- `.stateValue` in `context.select` callbacks — ACCEPTABLE (selector needs comparable value)
-- No violations found in state access patterns.
+Reviewer verifies each row during execution.
 
-Run:
-```bash
-rtk grep -rn "BlocSignalProvider" baktaz_flutter/lib baktaz_admin/lib | grep -v "BlocSignalProvider.value" | grep -v "BlocSignalProvider(" | grep -v "//" || true
-rtk grep -rn "BlocSignalProvider.*create" baktaz_flutter/lib baktaz_admin/lib | while read line; do
-  cubit=$(echo "$line" | grep -oP '<\K[^>]+')
-  grep -q "@injectable" baktaz_flutter/lib/features/auth/domain/cubit/login/login_cubit.dart 2>/dev/null || true
-done
-```
+**Step 2: Fix any non-compliant rows** — swap provider form to match annotation.
 
-Verify each `BlocSignalProvider` usage matches the annotation of its Cubit.
-
-- [ ] **Step 4: Analyze**
+**Step 3: Analyze**
 
 Run: `cd baktaz_flutter && fvm dart analyze` and `cd baktaz_admin && fvm dart analyze`
 Expected: clean.
 
-- [ ] **Step 5: Commit**
+**Step 4: Commit**
 
 `git commit -m "refactor: ensure BlocSignalProvider matches Cubit annotations"`.
 
 ---
 
+
+## Final Verification (all tasks done)
+
+1. Monorepo analyze: `melos exec -- fvm dart analyze` OR per-package loop.
+2. Suites: `make test_flutter`; `make test_server` only if Postgres up.
+3. DCM re-audit: confirm cyclomatic-complexity >20 and number-of-parameters >5 lists are empty (using bare `dcm analyze`).
+4. Three-tier grep gates:
+   - ✅ **BLOCKING** (must be zero before merge):
+     - `rtk grep -rn "CubitSignal<Map" baktaz_flutter/lib` → zero
+     - `rtk grep -rn "LoginState\.failed\(|LoginStateFailed" baktaz_flutter/lib` → zero
+     - Failure fields inside state classes (reviewer check)
+     - `handleFailure` not called before any state emission on error paths (reviewer check)
+   - ⚠️ **FIX-BEFORE-CLOSE** (non-blocking but tracked): none in baktaz_flutter
+   - ℹ️ **INFORMATIONAL**:
+     - `rtk grep -rn "lastFailure|shouldReportToCrashlytics" .agents/` → zero
+5. Update `.coverage_exclude` if new test utils appear; bump nothing else.
+
+## Accepted Deviations
+
+- `auth_endpoint.completeRegistration` signature changes to `(Session, RegistrationForm)` — requires `serverpod generate` for client. Documented as required deviation.
+- **Full-fluid responsive chart heights** — deferred to separate plan requiring designer input + golden regen.
+- **ErrorActions promotion to shared** — deferred; requires dep-inversion seam (DialogUtils/localization). Per-app drift is known debt: `baktaz_admin` lacks `onAuthenticationError`/`onRemoteConfigError`; validation handler differs.
