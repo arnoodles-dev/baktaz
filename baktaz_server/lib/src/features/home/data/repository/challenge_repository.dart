@@ -10,7 +10,7 @@ final class ChallengeRepository implements IChallengeRepository {
   Future<ActiveChallengeSummary?> getActiveChallengeSummary(Session session) async {
     final UuidValue? userId = session.authenticated?.authUserId;
     if (userId == null) {
-      throw StateError('User not authenticated.');
+      throw ApiException(message: 'User not authenticated', code: ApiExceptionCode.unauthenticated);
     }
 
     // TODO: Implement actual logic to fetch active challenge summary
@@ -22,7 +22,7 @@ final class ChallengeRepository implements IChallengeRepository {
   Future<List<HomeLeaderboardEntry>> getLeaderboardPreview(Session session) async {
     final UuidValue? userId = session.authenticated?.authUserId;
     if (userId == null) {
-      throw StateError('User not authenticated.');
+      throw ApiException(message: 'User not authenticated', code: ApiExceptionCode.unauthenticated);
     }
 
     // TODO: Implement actual logic to fetch leaderboard preview

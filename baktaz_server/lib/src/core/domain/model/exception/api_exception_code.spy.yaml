@@ -1,0 +1,7 @@
+enum: ApiExceptionCode
+serialized: byName
+values:
+    - unauthenticated
+    - notFound
+    - badRequest
+    - internal

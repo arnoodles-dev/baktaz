@@ -52,4 +52,11 @@ abstract final class AppSizes {
   static const double avatarXL = 88;
 
   static const double badgeMinSize = 20;
+
+  // Component sizes — see DESIGN.md §component-sizes
+  static const double dialogWidth = 400;
+  static const double tableSearchWidth = 240;
+  static const double chartHeightLarge = 250;
+  static const double chartHeightMedium = 200;
+  static const double chartBarAreaHeight = 120;
 }

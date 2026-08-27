@@ -16,8 +16,8 @@ class SupportWebviewScreen extends HookWidget {
   final SupportOption option;
 
   Url? _getUrl(BuildContext context, SupportOption option) {
-    final Map<String, dynamic> remoteConfig = context.read<RemoteConfigCubit>().stateValue;
-    final String? urlString = remoteConfig[option.configKey] as String?;
+    final RemoteConfigState remoteConfig = context.read<RemoteConfigCubit>().stateValue;
+    final String? urlString = remoteConfig.value(option.configKey);
     return urlString != null ? Url(urlString) : null;
   }
 

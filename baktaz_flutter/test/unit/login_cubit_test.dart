@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:baktaz_client/baktaz_client.dart';
 import 'package:baktaz_flutter/features/auth/domain/cubit/login/login_cubit.dart';
 import 'package:baktaz_flutter/features/auth/domain/entity/enum/login_provider.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:bloc_signals/bloc_signals.dart';
 import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -53,18 +56,14 @@ void main() {
       );
 
       blocSignalTest<LoginCubit, LoginState>(
-        'emits failed then idle when Google login returns failure',
+        'calls handleFailure and emits nothing on Google login failure',
         build: () {
           when(authRepository.loginWithGoogle())
               .thenReturn(TaskResult<AuthSuccess?>.left(const Failure.authentication('Google sign-in failed')));
           return loginCubit;
         },
         act: (LoginCubit cubit) => cubit.loginWithProvider(LoginProvider.google),
-        expect: () => <LoginState>[
-          const LoginState.idle(isLoading: true),
-          const LoginState.failed(Failure.authentication('Google sign-in failed')),
-          const LoginState.idle(),
-        ],
+        expect: () => <LoginState>[const LoginState.idle(isLoading: true), const LoginState.idle()],
         verify: (_) {
           verify(failureHandler.handleFailure(any)).called(1);
         },
@@ -153,7 +152,7 @@ void main() {
       );
 
       blocSignalTest<LoginCubit, LoginState>(
-        'emits failed when verifyOtp fails',
+        'emits verifying then nothing on verifyOtp failure',
         build: () {
           when(authRepository.verifyOtp(email: 'user@example.com', code: '000000'))
               .thenReturn(TaskResult<OtpVerificationResult>.left(const Failure.authentication('Invalid code')));
@@ -162,32 +161,25 @@ void main() {
         act: (LoginCubit cubit) => cubit.verifyOtp(email: 'user@example.com', code: '000000'),
         expect: () => <LoginState>[
           const LoginState.verifying(email: 'user@example.com'),
-          const LoginState.failed(Failure.authentication('Invalid code')),
-          const LoginState.idle(),
         ],
       );
     });
 
     group('completeRegistration', () {
+      final RegistrationForm form = RegistrationForm(
+        email: 'user@example.com',
+        name: 'John',
+        gender: 'male',
+        registrationToken: 'token',
+      );
       blocSignalTest<LoginCubit, LoginState>(
         'emits registrationCompleted and success on completeRegistration success',
         build: () {
-          when(
-            authRepository.completeRegistration(
-              email: 'user@example.com',
-              name: 'John',
-              gender: 'male',
-              registrationToken: 'token',
-            ),
-          ).thenReturn(TaskResult<AuthSuccess>.right(mockAuthSuccess));
+          when(authRepository.completeRegistration(form))
+              .thenReturn(TaskResult<AuthSuccess>.right(mockAuthSuccess));
           return loginCubit;
         },
-        act: (LoginCubit cubit) => cubit.completeRegistration(
-          email: 'user@example.com',
-          name: 'John',
-          gender: 'male',
-          registrationToken: 'token',
-        ),
+        act: (LoginCubit cubit) => cubit.completeRegistration(form),
         expect: () => <LoginState>[
           LoginState.registrationCompleted(mockAuthSuccess),
           LoginState.success(mockAuthSuccess),
@@ -196,6 +188,81 @@ void main() {
           verify(analyticsService.logLogin(LoginProvider.email.name)).called(1);
         },
       );
+    });
+
+    group('Pattern B — presentationStream failure events', () {
+      test('emits LoginStateOtpError via presentationStream on auth error', () async {
+        when(authRepository.loginWithGoogle()).thenReturn(
+          TaskResult<AuthSuccess?>.left(const Failure.authentication('sign-in failed')),
+        );
+
+        final List<LoginStateSideEffect> events = <LoginStateSideEffect>[];
+        final StreamSubscription<LoginStateSideEffect> sub =
+            loginCubit.presentationStream.listen(events.add);
+
+        await loginCubit.loginWithProvider(LoginProvider.google);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(events, hasLength(1));
+        expect(events.first, isA<LoginStateOtpError>());
+        expect((events.first as LoginStateOtpError).message, 'sign-in failed');
+
+        await sub.cancel();
+      });
+
+      test('emits LoginStateOtpError with fallback message when Failure has no message',
+          () async {
+        when(authRepository.loginWithGoogle()).thenReturn(
+          TaskResult<AuthSuccess?>.left(const Failure.authentication(null)),
+        );
+
+        final List<LoginStateSideEffect> events = <LoginStateSideEffect>[];
+        final StreamSubscription<LoginStateSideEffect> sub =
+            loginCubit.presentationStream.listen(events.add);
+
+        await loginCubit.loginWithProvider(LoginProvider.google);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(events, hasLength(1));
+        expect((events.first as LoginStateOtpError).message, 'Authentication failed');
+
+        await sub.cancel();
+      });
+
+      test('emitted states do not include LoginState.failed', () async {
+        when(authRepository.loginWithGoogle()).thenReturn(
+          TaskResult<AuthSuccess?>.left(const Failure.authentication('fail')),
+        );
+
+        final List<LoginState> states = <LoginState>[];
+        final StreamSubscription<LoginState> sub = loginCubit.stream.listen(states.add);
+
+        await loginCubit.loginWithProvider(LoginProvider.google);
+        await Future<void>.delayed(Duration.zero);
+
+        for (final LoginState s in states) {
+          expect(s, isA<LoginStateIdle>(), reason: 'only idle states allowed, got $s');
+        }
+
+        await sub.cancel();
+      });
+
+      test('blocked path does NOT emit presentation event', () async {
+        when(authRepository.loginWithGoogle()).thenReturn(
+          TaskResult<AuthSuccess?>.left(const Failure.authentication('blocked', blocked: true)),
+        );
+
+        final List<LoginStateSideEffect> events = <LoginStateSideEffect>[];
+        final StreamSubscription<LoginStateSideEffect> sub =
+            loginCubit.presentationStream.listen(events.add);
+
+        await loginCubit.loginWithProvider(LoginProvider.google);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(events, isEmpty);
+
+        await sub.cancel();
+      });
     });
   });
 }

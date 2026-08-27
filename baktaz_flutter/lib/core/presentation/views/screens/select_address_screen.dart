@@ -17,9 +17,9 @@ class SelectAddressScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          const BaktazText(text: 'Address Selection'),
+          BaktazText(text: context.i18n.select_address.address_selection),
           Gap.medium(),
-          BaktazButton(text: 'Confirm', onPressed: () => GoRouter.of(context).pop()),
+          BaktazButton(text: context.i18n.common.confirm, onPressed: () => GoRouter.of(context).pop()),
         ],
       ),
     ),

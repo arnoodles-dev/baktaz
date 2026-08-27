@@ -1,8 +1,6 @@
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
 import 'package:baktaz_flutter/app/routes/app_routes.dart';
-import 'package:baktaz_flutter/app/utils/dialog_utils.dart';
-import 'package:baktaz_flutter/app/utils/error_message_utils.dart';
 import 'package:baktaz_flutter/app/utils/validation_utils.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_bottom_sheet.dart';
@@ -26,10 +24,6 @@ class LoginEmailScreen extends HookWidget {
       codeSent: (String email) {
         context.loaderOverlay.hide();
         OtpRoute(email: email).push<void>(context);
-      },
-      failed: (Failure failure) {
-        context.loaderOverlay.hide();
-        DialogUtils.showError(ErrorMessageUtils.generate(context, failure));
       },
     );
   }

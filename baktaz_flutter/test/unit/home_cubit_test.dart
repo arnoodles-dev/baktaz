@@ -111,7 +111,7 @@ void main() {
       });
 
       test('handles failure when getDailyStepTelemetry fails', () async {
-        const Failure failure = Failure.serverpod('Telemetry error');
+        const Failure failure = Failure.server(StatusCode.serverpod, 'Telemetry error');
         when(stepsRepository.getDailyStepTelemetry()).thenReturn(TaskResult<DailyStepTelemetry>.left(failure));
 
         final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
@@ -125,7 +125,7 @@ void main() {
       });
 
       test('handles failure when getWeeklyStepAnalytics fails', () async {
-        const Failure failure = Failure.serverpod('Weekly error');
+        const Failure failure = Failure.server(StatusCode.serverpod, 'Weekly error');
         when(stepsRepository.getWeeklyStepAnalytics()).thenReturn(TaskResult<WeeklyStepAnalytics>.left(failure));
 
         final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);
@@ -139,7 +139,7 @@ void main() {
       });
 
       test('handles failure when getActiveChallengeSummary fails', () async {
-        const Failure failure = Failure.serverpod('Challenge error');
+        const Failure failure = Failure.server(StatusCode.serverpod, 'Challenge error');
         when(challengeRepository.getActiveChallengeSummary())
             .thenReturn(TaskResult<ActiveChallengeSummary?>.left(failure));
 
@@ -154,7 +154,7 @@ void main() {
       });
 
       test('handles failure when getLeaderboardPreview fails', () async {
-        const Failure failure = Failure.serverpod('Leaderboard error');
+        const Failure failure = Failure.server(StatusCode.serverpod, 'Leaderboard error');
         when(challengeRepository.getLeaderboardPreview())
             .thenReturn(TaskResult<List<HomeLeaderboardEntry>>.left(failure));
 
@@ -197,7 +197,7 @@ void main() {
       });
 
       test('handles failure when sync fails', () async {
-        const Failure failure = Failure.serverpod('Sync failed');
+        const Failure failure = Failure.server(StatusCode.serverpod, 'Sync failed');
         when(stepsRepository.syncSteps()).thenReturn(TaskResult<DailyStepTelemetry>.left(failure));
 
         final HomeCubit cubit = HomeCubit(stepsRepository, challengeRepository, failureHandler);

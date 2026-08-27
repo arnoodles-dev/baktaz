@@ -63,7 +63,7 @@ void main() {
       blocSignalTest<AccountCubit, AccountState>(
         'should handle failure when fetching account summary fails',
         build: () {
-          const Failure failure = Failure.serverpod('Failed to load summary');
+          const Failure failure = Failure.server(StatusCode.serverpod, 'Failed to load summary');
           when(accountRepository.getAccountSummary()).thenReturn(TaskResult<AccountSummary>.left(failure));
           return AccountCubit(accountRepository, failureHandler);
         },

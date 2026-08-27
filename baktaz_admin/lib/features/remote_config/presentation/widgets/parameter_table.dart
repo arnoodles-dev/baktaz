@@ -6,7 +6,7 @@ import 'package:baktaz_admin/features/remote_config/domain/entity/remote_config_
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:fpdart/fpdart.dart';
+import 'package:fpdart/fpdart.dart' hide State;
 
 class ParameterTable extends StatelessWidget {
   const ParameterTable({required this.onEdit, super.key});
@@ -105,7 +105,7 @@ class ParameterTable extends StatelessWidget {
   }
 }
 
-class _TableHeader extends StatelessWidget {
+class _TableHeader extends StatefulWidget {
   const _TableHeader({
     required this.totalCount,
     required this.availableTypes,
@@ -127,6 +127,13 @@ class _TableHeader extends StatelessWidget {
   final VoidCallback onToggleSort;
 
   @override
+  State<_TableHeader> createState() => _TableHeaderState();
+}
+
+class _TableHeaderState extends State<_TableHeader> {
+  final MenuController _menuController = MenuController();
+
+  @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(AppSizes.large, AppSizes.medium, AppSizes.large, AppSizes.small),
     child: Row(
@@ -142,18 +149,18 @@ class _TableHeader extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 _FilterChip(
-                  label: context.i18n.remote_config.table.all_count(count: totalCount),
-                  isSelected: selectedType == null,
-                  onTap: () => onTypeSelected(null),
+                  label: context.i18n.remote_config.table.all_count(count: widget.totalCount),
+                  isSelected: widget.selectedType == null,
+                  onTap: () => widget.onTypeSelected(null),
                 ),
                 Gap.xSmall(),
-                ...availableTypes.map(
+                ...widget.availableTypes.map(
                   (ConfigValueType type) => Padding(
                     padding: const EdgeInsets.only(right: AppSizes.xSmall),
                     child: _FilterChip(
                       label: type.label,
-                      isSelected: selectedType == type,
-                      onTap: () => onTypeSelected(type),
+                      isSelected: widget.selectedType == type,
+                      onTap: () => widget.onTypeSelected(type),
                     ),
                   ),
                 ),
@@ -162,72 +169,59 @@ class _TableHeader extends StatelessWidget {
           ),
         ),
         const Spacer(),
-        PopupMenuButton<SortCriteria>(
-          icon: BaktazIcon(
-            icon: Either<String, IconData>.right(Icons.filter_list),
-            size: AppSizes.iconSmall,
-            color: AppColors.colorTextSecondary,
-          ),
-          tooltip: context.i18n.remote_config.table.sort_options,
-          onSelected: onSortCriteriaSelected,
-          itemBuilder: (BuildContext context) => <PopupMenuEntry<SortCriteria>>[
-            PopupMenuItem<SortCriteria>(
-              value: SortCriteria.alphabetical,
-              child: Row(
-                children: <Widget>[
-                  BaktazIcon(
-                    icon: Either<String, IconData>.right(Icons.sort_by_alpha),
-                    size: AppSizes.iconSmall,
-                    color: sortCriteria == SortCriteria.alphabetical
-                        ? AppColors.colorPrimary
-                        : AppColors.colorTextSecondary,
-                  ),
-                  Gap.xSmall(),
-                  BaktazText(text: context.i18n.remote_config.table.sort_alpha),
-                ],
-              ),
+        MenuAnchor(
+          controller: _menuController,
+          style: const MenuStyle(padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(vertical: AppSizes.xSmall))),
+          menuChildren: <Widget>[
+            _SortMenuItem(
+              icon: Icons.sort_by_alpha,
+              label: context.i18n.remote_config.table.sort_alpha,
+              selected: widget.sortCriteria == SortCriteria.alphabetical,
+              onTap: () {
+                _menuController.close();
+                widget.onSortCriteriaSelected(SortCriteria.alphabetical);
+              },
             ),
-            PopupMenuItem<SortCriteria>(
-              value: SortCriteria.type,
-              child: Row(
-                children: <Widget>[
-                  BaktazIcon(
-                    icon: Either<String, IconData>.right(Icons.category_outlined),
-                    size: AppSizes.iconSmall,
-                    color: sortCriteria == SortCriteria.type ? AppColors.colorPrimary : AppColors.colorTextSecondary,
-                  ),
-                  Gap.xSmall(),
-                  BaktazText(text: context.i18n.remote_config.table.sort_type),
-                ],
-              ),
+            _SortMenuItem(
+              icon: Icons.category_outlined,
+              label: context.i18n.remote_config.table.sort_type,
+              selected: widget.sortCriteria == SortCriteria.type,
+              onTap: () {
+                _menuController.close();
+                widget.onSortCriteriaSelected(SortCriteria.type);
+              },
             ),
-            PopupMenuItem<SortCriteria>(
-              value: SortCriteria.dateModified,
-              child: Row(
-                children: <Widget>[
-                  BaktazIcon(
-                    icon: Either<String, IconData>.right(Icons.date_range_outlined),
-                    size: AppSizes.iconSmall,
-                    color: sortCriteria == SortCriteria.dateModified
-                        ? AppColors.colorPrimary
-                        : AppColors.colorTextSecondary,
-                  ),
-                  Gap.xSmall(),
-                  BaktazText(text: context.i18n.remote_config.table.sort_date),
-                ],
-              ),
+            _SortMenuItem(
+              icon: Icons.date_range_outlined,
+              label: context.i18n.remote_config.table.sort_date,
+              selected: widget.sortCriteria == SortCriteria.dateModified,
+              onTap: () {
+                _menuController.close();
+                widget.onSortCriteriaSelected(SortCriteria.dateModified);
+              },
             ),
           ],
+          builder: (BuildContext context, MenuController controller, Widget? child) => IconButton(
+            tooltip: context.i18n.remote_config.table.sort_options,
+            padding: Paddings.allX2Small,
+            constraints: const BoxConstraints(),
+            onPressed: () => controller.open(),
+            icon: BaktazIcon(
+              icon: Either<String, IconData>.right(Icons.filter_list),
+              size: AppSizes.iconSmall,
+              color: AppColors.colorTextSecondary,
+            ),
+          ),
         ),
         Gap.x2Small(),
         IconButton(
           icon: BaktazIcon(
-            icon: Either<String, IconData>.right(isAscending ? Icons.arrow_upward : Icons.arrow_downward),
+            icon: Either<String, IconData>.right(widget.isAscending ? Icons.arrow_upward : Icons.arrow_downward),
             size: AppSizes.iconSmall,
             color: AppColors.colorTextSecondary,
           ),
-          onPressed: onToggleSort,
-          tooltip: isAscending ? context.i18n.remote_config.table.sort_asc : context.i18n.remote_config.table.sort_desc,
+          onPressed: widget.onToggleSort,
+          tooltip: widget.isAscending ? context.i18n.remote_config.table.sort_asc : context.i18n.remote_config.table.sort_desc,
           padding: Paddings.allX2Small,
           constraints: const BoxConstraints(),
         ),
@@ -453,6 +447,31 @@ class _ParameterRow extends StatelessWidget {
     }
     return date.ago;
   }
+}
+
+class _SortMenuItem extends StatelessWidget {
+  const _SortMenuItem({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) => MenuItemButton(
+    leadingIcon: BaktazIcon(
+      icon: Either<String, IconData>.right(icon),
+      size: AppSizes.iconSmall,
+      color: selected ? AppColors.colorPrimary : AppColors.colorTextSecondary,
+    ),
+    onPressed: onTap,
+    child: BaktazText(text: label),
+  );
 }
 
 class _ValueDisplay extends StatelessWidget {

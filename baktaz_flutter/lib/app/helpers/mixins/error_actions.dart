@@ -2,7 +2,6 @@ import 'package:baktaz_flutter/app/generated/localization.g.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
 import 'package:baktaz_flutter/app/utils/dialog_utils.dart';
 import 'package:baktaz_flutter/core/domain/cubit/app_localization/app_localization_cubit.dart';
-import 'package:baktaz_flutter/features/auth/domain/cubit/auth/auth_cubit.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/foundation.dart';
 import 'package:toastification/toastification.dart';
@@ -16,14 +15,14 @@ mixin ErrorActions {
     _activeToast = DialogUtils.showError(message);
   }
 
-  void onServerError(ServerError error) {
+  void onServerError(ServerFailure error) {
     _showErrorOnce(error.message ?? _localization.common.error.generic);
   }
 
   void onDeviceRelatedError(Failure error) {
     final String? message = switch (error) {
-      DeviceStorageError(:final String? message) => message,
-      DeviceInfoError(:final String? message) => message,
+      DeviceStorageFailure(:final String? message) => message,
+      DeviceInfoFailure(:final String? message) => message,
       _ => null,
     };
     _showErrorOnce(message ?? _localization.common.error.generic);
@@ -33,22 +32,18 @@ mixin ErrorActions {
     _showErrorOnce(error.message ?? _localization.common.error.generic);
   }
 
-  void onAuthenticationError(AuthenticationError error) {
+  void onAuthenticationError(AuthenticationFailure error) {
     _showErrorOnce(error.message ?? _localization.common.error.generic);
   }
 
-  void onRemoteConfigError(RemoteConfigError error) {
+  void onRemoteConfigError(RemoteConfigFailure error) {
     _showErrorOnce(error.message ?? _localization.common.error.generic);
   }
 
   void onGenericError(Failure error) {
-    final String message = error is UnexpectedError && kDebugMode
+    final String message = error is UnexpectedFailure && kDebugMode
         ? error.message ?? _localization.common.error.generic
         : _localization.common.error.generic;
     _showErrorOnce(message);
-  }
-
-  void onSocketException() {
-    getIt<AuthCubit>().terminateSession(isLogout: false);
   }
 }

@@ -245,7 +245,7 @@ test('safeRun swallows CancelledError', () async {
 ### Testing FailureHandler
 
 ```dart
-test('FailureHandler routes ServerError(http404) to onNotFoundError', () {
+test('FailureHandler routes ServerFailure(http404) to onNotFoundError', () {
   final actions = MockErrorActions();
   final handler = FailureHandler(FakeTalker());
 
@@ -257,7 +257,7 @@ test('FailureHandler routes ServerError(http404) to onNotFoundError', () {
   verify(() => actions.onNotFoundError('Not found')).called(1);
 });
 
-test('FailureHandler routes UnexpectedError to onGenericError', () {
+test('FailureHandler routes UnexpectedFailure to onGenericError', () {
   final actions = MockErrorActions();
   final handler = FailureHandler(FakeTalker());
 

@@ -57,11 +57,11 @@ final class AccountEndpoint extends Endpoint {
   Future<void> deleteAccount(Session session) async {
     final UuidValue? authUserId = session.authenticated?.authUserId;
     if (authUserId == null) {
-      throw StateError('User not authenticated');
+      throw ApiException(message: 'User not authenticated', code: ApiExceptionCode.unauthenticated);
     }
 
     if (!AppConfig.accountDeletionEnabled) {
-      throw StateError('Account deletion is disabled');
+      throw ApiException(message: 'Account deletion is disabled', code: ApiExceptionCode.badRequest);
     }
 
     await session.db.transaction((Transaction transaction) async {

@@ -6,34 +6,29 @@ part 'failure.freezed.dart';
 
 @freezed
 sealed class Failure with _$Failure implements Exception {
-  const factory Failure.unexpected(String? message) = UnexpectedError;
+  const factory Failure.unexpected(String? message) = UnexpectedFailure;
 
-  const factory Failure.server(StatusCode code, String? message) = ServerError;
+  const factory Failure.server(StatusCode code, String? message) = ServerFailure;
 
-  const factory Failure.serverpod(String? message) = ServerpodError;
+  const factory Failure.deviceStorage(String? message) = DeviceStorageFailure;
 
-  const factory Failure.deviceStorage(String? message) = DeviceStorageError;
+  const factory Failure.deviceInfo(String? message) = DeviceInfoFailure;
 
-  const factory Failure.deviceInfo(String? message) = DeviceInfoError;
-
-  const factory Failure.authentication(String? message, {@Default(false) bool blocked}) = AuthenticationError;
-
-  const factory Failure.sessionUnavailable() = SessionUnavailableError;
+  const factory Failure.authentication(String? message, {@Default(false) bool blocked}) = AuthenticationFailure;
 
   const factory Failure.validation(ValidationError error, String value) = ValidationFailure;
 
-  const factory Failure.remoteConfig(String? message) = RemoteConfigError;
+  const factory Failure.remoteConfig(String? message) = RemoteConfigFailure;
 
   const Failure._();
 
   String? get message => mapOrNull(
-    unexpected: (UnexpectedError error) => error.message,
-    server: (ServerError error) => error.message,
-    serverpod: (ServerpodError error) => error.message,
-    deviceStorage: (DeviceStorageError error) => error.message,
-    deviceInfo: (DeviceInfoError error) => error.message,
-    authentication: (AuthenticationError error) => error.message,
+    unexpected: (UnexpectedFailure error) => error.message,
+    server: (ServerFailure error) => error.message,
+    deviceStorage: (DeviceStorageFailure error) => error.message,
+    deviceInfo: (DeviceInfoFailure error) => error.message,
+    authentication: (AuthenticationFailure error) => error.message,
     validation: (ValidationFailure failure) => '${failure.value}: ${failure.error.message}',
-    remoteConfig: (RemoteConfigError error) => error.message,
+    remoteConfig: (RemoteConfigFailure error) => error.message,
   );
 }

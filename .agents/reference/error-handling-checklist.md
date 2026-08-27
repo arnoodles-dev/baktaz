@@ -10,8 +10,7 @@ Before considering error handling complete, verify:
 
 ### Failure Design
 - [ ] New failure uses existing subtype (check StatusCode first for server-related)
-- [ ] Subtype name follows `XxxError` suffix rule
-- [ ] No `ServerpodError`, `SerializationError`, or `ValidationFailure` references remain
+- [ ] Subtype name follows `XxxFailure` suffix rule
 
 ### Client (Flutter)
 - [ ] Async repo calls wrapped in `safeRun(action:, onException:)`
@@ -23,7 +22,6 @@ Before considering error handling complete, verify:
 ### FailureHandler
 - [ ] `FailureHandler.handleFailure` used (not direct `ErrorActions` calls)
 - [ ] Single error path — no double-handling in callbacks
-- [ ] `lastFailure` cleared after consumption
 
 ### State Design
 - [ ] State classes contain NO `Failure` fields
@@ -40,8 +38,7 @@ Before considering error handling complete, verify:
 - [ ] Mock repository stubbed with `TaskEither.left(Failure.xxx)`
 
 ### Crashlytics
-- [ ] `shouldReportToCrashlytics` checked before reporting
-- [ ] Only `UnexpectedError`, `ServerError(http500)`, `ServerError(http504)`, `ServerError(serverpod)` reported
+- [ ] Only `UnexpectedFailure`, `ServerFailure(http500)`, `ServerFailure(http504/serverpod)` reported
 - [ ] Expected failures (validation, auth, device) NOT reported
 
 ---
@@ -55,9 +52,8 @@ Before considering error handling complete, verify:
 | 3 | `_emitError` helpers storing Failure in state | Replace with `safeRun` + `handleFailure` side effect |
 | 4 | Throwing exceptions from cubit methods | Wrap in `safeRun(onException:)` |
 | 5 | Catching `ServerpodException` in `FailureHandler`/cubits | Map at repo layer only |
-| 6 | Creating new `Failure` subtypes without `Error` suffix | Naming rule: sealed base `Failure`, subtypes `XxxError` |
+| 6 | Creating new `Failure` subtypes without `Failure` suffix | Naming rule: sealed base `Failure`, subtypes `XxxFailure` |
 | 7 | Direct `ErrorActions` calls from cubits | Route through `FailureHandler` |
-| 8 | Blanket Crashlytics reporting for all failures | Conditional via `shouldReportToCrashlytics` |
 | 9 | `kDebugMode` checks outside `onGenericError` | Debug-only logic stays in one place |
 | 10 | Using `safeEmit` | Replace with plain `emit` |
 
@@ -88,8 +84,7 @@ Before considering error handling complete, verify:
 ## Migration Checklist
 
 - [ ] `safeEmit` calls replaced with plain `emit`
-- [ ] Old `Failure.serverpod(...)` calls replaced with `Failure.server(StatusCode.serverpod, ...)`
-- [ ] Old `ValidationFailure` renamed to `ValidationError`
-- [ ] Old serialization catch-blocks now throw `ValidationError`
+- [x] Old `Failure.serverpod(...)` calls replaced with `Failure.server(StatusCode.serverpod, ...)`
+
 - [ ] Server violations migrated big-bang: single PR with ApiException model + migration + all fixes + client Tier-1 mapping
 - [ ] Old client compatibility verified: unknown serializable types degrade to generic exceptions (no regression vs opaque 500)

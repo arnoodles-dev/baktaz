@@ -38,7 +38,7 @@ Shared Flutter UI library providing reusable widgets, design tokens (DESIGN.md),
 
 ### Adding Error Types
 1. Add to `Failure` sealed class
-2. Follow `XxxError` naming convention
+2. Follow `XxxFailure` naming convention
 3. Update `.agents/rules/error-handling-architecture.md`
 4. Update reference: `.agents/reference/error-handling-patterns.md`
 

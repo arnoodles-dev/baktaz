@@ -16,8 +16,8 @@ class ChallengePage extends StatelessWidget {
           const ChallengeAppBar(),
           Expanded(
             child: EmptyPage(
-              title: "Nothing's happening now",
-              subtitle: "Discover what's new on the app",
+              title: context.i18n.challenge.nothing_happening_now,
+              subtitle: context.i18n.common.discover_new,
               iconPath: Assets.images.noActivity.path,
             ),
           ),

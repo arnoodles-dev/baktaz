@@ -1,28 +1,28 @@
 # Error Handling — Migration Guide
 
+> **Status as of 2026-08-26:**
+> - `ApiException` model: NOT YET IMPLEMENTED
+> - `lastFailure` property: REMOVED (never implemented)
+
 This file contains extracted migration content from the original `error-handling-architecture.md`.
 
 ---
 
 ## Name Changes
 
-| Old Name | New Name | Notes |
-|---|---|---|
-| `ValidationFailure` | `ValidationError` | Both represent "data didn't match expected format" |
-| `SerializationError` | `ValidationError` | Merged — serialization is a form of validation |
-| `ServerpodError` | `ServerError(StatusCode.serverpod, msg)` | Same conceptual failure, different transport |
+All `Failure` subtypes follow the `XxxFailure` naming convention. No `{T}Error` suffix aliases remain.
 
 ---
 
 ## Pattern Migration
 
-### Pattern A → Pattern B
+### Pattern A → Pattern B (Side-Effect Only)
 
-Pattern A stored `Failure` in state. Pattern B uses side effects only.
+Pattern A stored `Failure` in state. Pattern B uses side effects only — NO error state variant exists. Failures surface via `FailureHandler.handleFailure` (global toast) or `*StateSideEffect` + `emitPresentation` + `presentationStream` listener (contextual error UI).
 
 **Before (Pattern A — Forbidden):**
 ```dart
-// ❌ WRONG
+// ❌ WRONG — storing Failure in state
 class AuthCubit extends CubitSignal<AuthState> {
   Future<void> login() async {
     final result = await _repo.login();
@@ -38,29 +38,99 @@ sealed class AuthState {
 }
 ```
 
-**After (Pattern B — Required):**
+**After (Pattern B — Required) — Global toast via FailureHandler:**
 ```dart
-// ✅ CORRECT
-class AuthCubit extends CubitSignal<AuthState> {
+// ✅ CORRECT — FailureHandler routes to ErrorActions (global toast)
+@injectable
+interface class AuthCubit extends CubitSignal<AuthState> {
+  AuthCubit(this._repo, this._failureHandler);
+
+  final IAuthRepository _repo;
+  final FailureHandler _failureHandler;
+
   Future<void> login() async {
     await safeRun(
-      action: () async => emit(await _repo.login()),
+      action: () async {
+        final result = await _repo.login();
+        result.fold(
+          (failure) => _failureHandler.handleFailure(failure),
+          (_) => emit(const AuthState.loggedIn()),
+        );
+      },
       onException: _failureHandler.handleException,
     );
-    // Side effect fires immediately via handleException → handleFailure
-    // State stores generic flag only
-    emit(const AuthState.failed()); // no Failure parameter
   }
 }
 
-sealed class AuthState {
-  const factory AuthState.failed() = AuthStateFailed; // generic flag only
+// State — NO error variant, NO Failure parameter
+@freezed
+sealed class AuthState with _$AuthState {
+  const factory AuthState.loggedIn() = AuthStateLoggedIn;
+  // NO failed variant — errors are side effects only
 }
+```
+
+**After (Pattern B — Required) — Contextual error UI via `emitPresentation`:**
+
+For errors that need inline/contextual feedback (e.g., OTP pin error, field-adjacent error):
+
+```dart
+// State side-effect union (freezed sealed class)
+@freezed
+sealed class AuthStateSideEffect with _$AuthStateSideEffect {
+  const factory AuthStateSideEffect.otpError(String message) = AuthStateOtpError;
+  const factory AuthStateSideEffect.onException(Exception e) = AuthStateException;
+}
+
+// Cubit — emits contextual error as presentation event
+@injectable
+interface class AuthCubit extends CubitSignal<AuthState>
+    with BlocSignalPresentationMixin<AuthStateSideEffect, AuthState> {
+  AuthCubit(this._repo, this._failureHandler);
+
+  final IAuthRepository _repo;
+  final FailureHandler _failureHandler;
+
+  void verifyOtp(String code) {
+    safeRun(
+      action: () async {
+        final result = await _repo.verifyOtp(code);
+        result.fold(
+          (failure) => _failureHandler.handleFailure(failure),
+          (user) => emit(AuthState.authenticated(user)),
+        );
+      },
+      onException: _failureHandler.handleException,
+    );
+    // Contextual error: emit via presentation stream, not state
+    emitPresentation(const AuthStateSideEffect.otpError('Invalid OTP code'));
+  }
+}
+
+// Widget — listens to presentationStream for contextual errors
+useEffect(() {
+  final AuthCubit cubit = context.read<AuthCubit>();
+  final StreamSubscription<AuthStateSideEffect> sub =
+      cubit.presentationStream.listen((AuthStateSideEffect sideEffect) {
+    if (context.mounted) {
+      switch (sideEffect) {
+        case AuthStateOtpError(:final String message):
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(message)));
+        case AuthStateException(:final Exception e):
+          getIt<FailureHandler>().handleException(e, null);
+      }
+    }
+  });
+  return sub.cancel;
+}, <Object?>[]);
 ```
 
 ---
 
 ## Server Exception Migration
+
+> **⚠️ FUTURE MIGRATION TARGET — not yet implemented.** The `ApiException` model and `ApiExceptionCode` enum do not exist yet. Server endpoints currently throw raw `Exception` / `StateError`. This section describes the target state.
 
 ### Raw Throws → ApiException
 
@@ -138,6 +208,8 @@ Failure _mapException(ServerpodException e) {
 ---
 
 ## Big-Bang Server Migration
+
+> **⚠️ FUTURE — not yet implemented.** Describes the planned migration to `ApiException`.
 
 The server error migration should be done as a single big-bang PR:
 

@@ -13,9 +13,9 @@ class ReviewScreen extends StatelessWidget {
     appBar: BaktazAppBar(
       backgroundColor: context.colorScheme.surface,
       centerTitle: true,
-      title: 'Reviews',
+      title: context.i18n.account.reviews_title,
       leading: const BackButton(),
     ),
-    body: EmptyPage(title: 'No Reviews', iconPath: Assets.images.noReviews.path),
+    body: EmptyPage(title: context.i18n.account.no_reviews, iconPath: Assets.images.noReviews.path),
   );
 }

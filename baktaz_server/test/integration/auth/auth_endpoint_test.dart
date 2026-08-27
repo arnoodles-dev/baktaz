@@ -43,6 +43,13 @@ void main() {
         final Session session = sessionBuilder.build();
         const String testEmail = 'delegate@example.com';
         final DateTime birthday = DateTime(1995, 5, 20);
+        final RegistrationForm form = RegistrationForm(
+          email: testEmail,
+          name: 'Test Name',
+          gender: 'female',
+          registrationToken: 'token123',
+          birthday: birthday,
+        );
         final OtpVerificationResult expectedResult = OtpVerificationResult(
           isNewUser: false,
           authInfo: AuthSuccess(
@@ -53,37 +60,12 @@ void main() {
           ),
         );
 
-        when(
-          mockAuthRepository.completeRegistration(
-            session,
-            email: testEmail,
-            name: 'Test Name',
-            gender: 'female',
-            registrationToken: 'token123',
-            birthday: birthday,
-          ),
-        ).thenAnswer((_) async => expectedResult);
+        when(mockAuthRepository.completeRegistration(session, form)).thenAnswer((_) async => expectedResult);
 
-        final OtpVerificationResult result = await customEndpoint.completeRegistration(
-          session,
-          email: testEmail,
-          name: 'Test Name',
-          gender: 'female',
-          registrationToken: 'token123',
-          birthday: birthday,
-        );
+        final OtpVerificationResult result = await customEndpoint.completeRegistration(session, form);
 
         expect(result, equals(expectedResult));
-        verify(
-          mockAuthRepository.completeRegistration(
-            session,
-            email: testEmail,
-            name: 'Test Name',
-            gender: 'female',
-            registrationToken: 'token123',
-            birthday: birthday,
-          ),
-        ).called(1);
+        verify(mockAuthRepository.completeRegistration(session, form)).called(1);
       });
     });
 
@@ -124,10 +106,12 @@ void main() {
           await expectLater(
             customEndpoint.completeRegistration(
               mockSession,
-              email: testEmail,
-              name: 'John Doe',
-              gender: 'male',
-              registrationToken: 'invalid_token',
+              RegistrationForm(
+                email: testEmail,
+                name: 'John Doe',
+                gender: 'male',
+                registrationToken: 'invalid_token',
+              ),
             ),
             throwsA(
               isA<OtpException>().having(
@@ -148,10 +132,12 @@ void main() {
           await expectLater(
             endpoints.auth.completeRegistration(
               sessionBuilder,
-              email: testEmail,
-              name: 'Jane Doe',
-              gender: 'female',
-              registrationToken: 'wrong_token',
+              RegistrationForm(
+                email: testEmail,
+                name: 'Jane Doe',
+                gender: 'female',
+                registrationToken: 'wrong_token',
+              ),
             ),
             throwsA(
               isA<OtpException>().having(
@@ -173,11 +159,13 @@ void main() {
 
           final OtpVerificationResult result = await endpoints.auth.completeRegistration(
             sessionBuilder,
-            email: testEmail,
-            name: 'Alice Wonder',
-            gender: 'female',
-            registrationToken: token,
-            birthday: birthday,
+            RegistrationForm(
+              email: testEmail,
+              name: 'Alice Wonder',
+              gender: 'female',
+              registrationToken: token,
+              birthday: birthday,
+            ),
           );
 
           expect(result.isNewUser, isFalse);
@@ -225,20 +213,24 @@ void main() {
           // First call succeeds
           await endpoints.auth.completeRegistration(
             sessionBuilder,
-            email: testEmail,
-            name: 'Bob Builder',
-            gender: 'male',
-            registrationToken: token,
+            RegistrationForm(
+              email: testEmail,
+              name: 'Bob Builder',
+              gender: 'male',
+              registrationToken: token,
+            ),
           );
 
           // Second call fails because token is consumed
           await expectLater(
             endpoints.auth.completeRegistration(
               sessionBuilder,
-              email: testEmail,
-              name: 'Bob Builder',
-              gender: 'male',
-              registrationToken: token,
+              RegistrationForm(
+                email: testEmail,
+                name: 'Bob Builder',
+                gender: 'male',
+                registrationToken: token,
+              ),
             ),
             throwsA(
               isA<OtpException>().having(

@@ -38,13 +38,13 @@ void main() {
           expect(result.asRight(), expectedToken);
         });
 
-        test('getAccessToken should return DeviceStorageError when exception occurs', () async {
+        test('getAccessToken should return DeviceStorageFailure when exception occurs', () async {
           when(secureStorage.read(key: 'access_token')).thenThrow(Exception('Secure storage read error'));
 
           final Result<String?> result = await localStorageRepository.getAccessToken().run();
 
           expect(result, isA<Left<Failure, String?>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Secure storage read error');
         });
 
@@ -64,7 +64,7 @@ void main() {
           final Result<Unit> result = await localStorageRepository.setAccessToken('access_token').run();
 
           expect(result, isA<Left<Failure, Unit>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Unexpected error');
         });
 
@@ -77,13 +77,13 @@ void main() {
           verify(secureStorage.delete(key: 'access_token')).called(1);
         });
 
-        test('deleteAccessToken should return DeviceStorageError when exception occurs', () async {
+        test('deleteAccessToken should return DeviceStorageFailure when exception occurs', () async {
           when(secureStorage.delete(key: 'access_token')).thenThrow(Exception('Delete token error'));
 
           final Result<Unit> result = await localStorageRepository.deleteAccessToken().run();
 
           expect(result, isA<Left<Failure, Unit>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Delete token error');
         });
       });
@@ -99,13 +99,13 @@ void main() {
           expect(result.asRight(), expectedToken);
         });
 
-        test('getRefreshToken should return DeviceStorageError when exception occurs', () async {
+        test('getRefreshToken should return DeviceStorageFailure when exception occurs', () async {
           when(secureStorage.read(key: 'refresh_token')).thenThrow(Exception('Refresh token read error'));
 
           final Result<String?> result = await localStorageRepository.getRefreshToken().run();
 
           expect(result, isA<Left<Failure, String?>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Refresh token read error');
         });
 
@@ -125,7 +125,7 @@ void main() {
           final Result<Unit> result = await localStorageRepository.setRefreshToken('refresh_token').run();
 
           expect(result, isA<Left<Failure, Unit>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Unexpected error');
         });
 
@@ -138,13 +138,13 @@ void main() {
           verify(secureStorage.delete(key: 'refresh_token')).called(1);
         });
 
-        test('deleteRefreshToken should return DeviceStorageError when exception occurs', () async {
+        test('deleteRefreshToken should return DeviceStorageFailure when exception occurs', () async {
           when(secureStorage.delete(key: 'refresh_token')).thenThrow(Exception('Delete refresh token error'));
 
           final Result<Unit> result = await localStorageRepository.deleteRefreshToken().run();
 
           expect(result, isA<Left<Failure, Unit>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Delete refresh token error');
         });
       });
@@ -162,13 +162,13 @@ void main() {
           expect(result.asRight(), expectedEmail);
         });
 
-        test('getLastLoggedInUsername should return DeviceStorageError when exception occurs', () async {
+        test('getLastLoggedInUsername should return DeviceStorageFailure when exception occurs', () async {
           when(unsecuredStorage.getString('email_address')).thenThrow(Exception('Email read error'));
 
           final Result<String?> result = await localStorageRepository.getLastLoggedInUsername().run();
 
           expect(result, isA<Left<Failure, String?>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Email read error');
         });
 
@@ -187,7 +187,7 @@ void main() {
           final Result<Unit> result = await localStorageRepository.setLastLoggedInUsername('email@example.com').run();
 
           expect(result, isA<Left<Failure, Unit>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Unexpected error');
         });
       });
@@ -202,13 +202,13 @@ void main() {
           expect(result.asRight(), true);
         });
 
-        test('getIsDarkMode should return DeviceStorageError when exception occurs', () async {
+        test('getIsDarkMode should return DeviceStorageFailure when exception occurs', () async {
           when(unsecuredStorage.getBool('is_dark_mode')).thenThrow(Exception('Dark mode read error'));
 
           final Result<bool?> result = await localStorageRepository.getIsDarkMode().run();
 
           expect(result, isA<Left<Failure, bool?>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Dark mode read error');
         });
 
@@ -227,7 +227,7 @@ void main() {
           final Result<Unit> result = await localStorageRepository.setIsDarkMode(isDarkMode: true).run();
 
           expect(result, isA<Left<Failure, Unit>>());
-          expect(result.asLeft(), isA<DeviceStorageError>());
+          expect(result.asLeft(), isA<DeviceStorageFailure>());
           expect(result.asLeft().message, 'Exception: Unexpected error');
         });
       });

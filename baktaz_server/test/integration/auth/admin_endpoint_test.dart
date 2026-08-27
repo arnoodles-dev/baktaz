@@ -4,6 +4,7 @@ import 'package:baktaz_server/src/app/injection/service_locator.dart';
 import 'package:baktaz_server/src/app/utils/auth_utils.dart';
 import 'package:baktaz_server/src/features/auth/domain/interface/i_admin_repository.dart';
 import 'package:baktaz_server/src/features/auth/endpoint/admin_endpoint.dart';
+import 'package:baktaz_server/src/generated/protocol.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mockito/mockito.dart';
 import 'package:serverpod/serverpod.dart';
@@ -259,15 +260,13 @@ void main() {
         );
       });
 
-      test('then updateUserScope throws Exception when scopeNames is empty', () async {
+      test('then updateUserScope throws ApiException when scopeNames is empty', () async {
         await expectLater(
           endpoints.admin.updateUserScope(adminSession, ServerFixtures.testAuthUserId, <String>[]),
           throwsA(
-            isA<Exception>().having(
-              (Exception e) => e.toString(),
-              'message',
-              contains('Scope names list cannot be empty'),
-            ),
+            isA<ApiException>()
+                .having((ApiException e) => e.message, 'message', 'Scope names list cannot be empty')
+                .having((ApiException e) => e.code, 'code', ApiExceptionCode.badRequest),
           ),
         );
       });

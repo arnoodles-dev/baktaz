@@ -36,9 +36,9 @@ void main() {
     }
 
     group('initialize', () {
-      test('starts with empty map as initial state', () async {
+      test('starts with empty state', () async {
         final RemoteConfigCubit cubit = await createInitializedCubit();
-        expect(cubit.stateValue, equals(<String, dynamic>{}));
+        expect(cubit.stateValue, equals(const RemoteConfigState()));
         await cubit.close();
       });
 
@@ -56,7 +56,7 @@ void main() {
         final RemoteConfigCubit cubit = await createInitializedCubit();
         await cubit.remoteConfig;
 
-        expect(cubit.stateValue, equals(config));
+        expect(cubit.stateValue, equals(const RemoteConfigState(values: config)));
         await cubit.close();
       });
 
@@ -66,7 +66,7 @@ void main() {
         final RemoteConfigCubit cubit = await createInitializedCubit();
         await cubit.remoteConfig;
 
-        expect(cubit.stateValue, equals(RemoteAppConfigDTO.fallback().toJson()));
+        expect(cubit.stateValue, equals(RemoteConfigState(values: RemoteAppConfigDTO.fallback().toJson())));
         await cubit.close();
       });
     });

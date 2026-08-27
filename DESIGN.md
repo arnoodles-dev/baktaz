@@ -170,3 +170,15 @@ Always prefer these wrappers over raw Flutter widgets:
 - `Shimmer`: Shimmer skeleton loading container (`lightShimmerBase`/`darkShimmerBase`).
 - `UnfocusableScaffold`: Scaffold wrapper that dismisses keyboard on tap outside input fields.
 - `ConfirmationDialog`: Standard modal dialog for destruction or confirm actions.
+
+---
+
+## Component Sizes
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `dialogWidth` | 400 | Max-width for auth/localization dialogs; applied via `ConstrainedBox(maxWidth:)` |
+| `tableSearchWidth` | 240 | Max-width for table search field; applied via `ConstrainedBox(maxWidth:)` |
+| `chartHeightLarge` | 250 | Fixed height for large dashboard charts (activities_overview_chart) |
+| `chartHeightMedium` | 200 | Fixed height for medium dashboard charts (activities_reports_chart) |
+| `chartBarAreaHeight` | 120 | Fixed height for chart bar area (HomeWeeklyStepsChart in flutter plan) |

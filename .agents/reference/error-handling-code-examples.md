@@ -1,6 +1,8 @@
 # Error Handling — Code Examples
 
-This file contains extracted verbose code examples from the original `error-handling-architecture.md`.
+> **Note:** This file was cleaned on 2026-08-26 to match actual codebase.
+> References to `lastFailure`, `clearLastFailure()`, and `shouldReportToCrashlytics`
+> were aspirational features never implemented — references removed.
 
 ---
 
@@ -9,14 +11,14 @@ This file contains extracted verbose code examples from the original `error-hand
 ```dart
 @freezed
 sealed class Failure with _$Failure implements Exception {
-  const factory Failure.unexpected(String? message) = UnexpectedError;
-  const factory Failure.server(StatusCode code, String? message) = ServerError;
-  const factory Failure.deviceStorage(String? message) = DeviceStorageError;
-  const factory Failure.deviceInfo(String? message) = DeviceInfoError;
-  const factory Failure.authentication(String? message, {@Default(false) bool blocked}) = AuthenticationError;
-  const factory Failure.sessionUnavailable() = SessionUnavailableError;
-  const factory Failure.validation(String? message) = ValidationError;
-  const factory Failure.remoteConfig(String? message) = RemoteConfigError;
+  const factory Failure.unexpected(String? message) = UnexpectedFailure;
+  const factory Failure.server(StatusCode code, String? message) = ServerFailure;
+
+  const factory Failure.deviceStorage(String? message) = DeviceStorageFailure;
+  const factory Failure.deviceInfo(String? message) = DeviceInfoFailure;
+  const factory Failure.authentication(String? message, {@Default(false) bool blocked}) = AuthenticationFailure;
+  const factory Failure.validation(ValidationError error, String value) = ValidationFailure;
+  const factory Failure.remoteConfig(String? message) = RemoteConfigFailure;
   const Failure._();
 }
 ```
@@ -58,9 +60,8 @@ enum StatusCode {
 ```dart
 class FailureHandler with ErrorActions {
   FailureHandler(this._talker);
-  final Talker _talker;
 
-  late final Failure lastFailure;
+  final Talker _talker;
 
   void handleException(Exception error, StackTrace? stackTrace, [ErrorActions? errorActions]) {
     _talker.handle(error, stackTrace);
@@ -68,10 +69,10 @@ class FailureHandler with ErrorActions {
   }
 
   void handleFailure(Failure failure, [ErrorActions? errorActions]) {
-    lastFailure = failure;
     final ErrorActions actions = errorActions ?? this;
+
     switch (failure) {
-      case ServerError(:final StatusCode code, :final String? message):
+      case ServerFailure(:final StatusCode code, :final String? message):
         switch (code) {
           case StatusCode.http000:       actions.onNetworkError(message);
           case StatusCode.http408 || StatusCode.http504:  actions.onTimeoutError(message);
@@ -79,17 +80,16 @@ class FailureHandler with ErrorActions {
           case StatusCode.http404:       actions.onNotFoundError(message);
           default:                       actions.onServerError(failure);
         }
-      case final DeviceStorageError():
-      case final DeviceInfoError():
+      case final DeviceStorageFailure():
+      case final DeviceInfoFailure():
         actions.onDeviceRelatedError(failure);
-      case final ValidationError():
+      case final ValidationFailure():
         actions.onValidationError(failure);
-      case final RemoteConfigError():
+      case final RemoteConfigFailure():
         actions.onRemoteConfigError(failure);
-      case final AuthenticationError():
+      case final AuthenticationFailure():
         actions.onAuthenticationError(failure);
-      case final SessionUnavailableError():
-      case final UnexpectedError():
+      case final UnexpectedFailure():
         actions.onGenericError(failure);
     }
   }
@@ -100,23 +100,28 @@ class FailureHandler with ErrorActions {
 
 ## ErrorActions Mixin Implementation
 
-```dart
-// Location: baktaz_shared/lib/src/mixin/error_actions.dart
+> Located per-app:
+> - `baktaz_flutter/lib/app/helpers/mixins/error_actions.dart`
+> - `baktaz_admin/lib/app/helpers/mixins/error_actions.dart`
+>
+> **Known drift**: `baktaz_admin` lacks `onAuthenticationError`/`onRemoteConfigError`;
+> validation handler differs. Accepted debt.
 
+```dart
 mixin ErrorActions {
   void _showErrorOnce(String message) {
     _activeToast = DialogUtils.showError(message);
   }
 
-  void onServerError(ServerError error) { /* toast */ }
+  void onServerError(ServerFailure error) { /* toast */ }
   void onNetworkError(String? message) { /* offline banner */ }
   void onTimeoutError(String? message) { /* retry prompt */ }
   void onPermissionError(String? message) { /* access denied */ }
   void onNotFoundError(String? message) { /* not found */ }
   void onDeviceRelatedError(Failure failure) { /* toast */ }
   void onValidationError(ValidationError error) { /* inline field error */ }
-  void onAuthenticationError(AuthenticationError error) { /* re-login prompt */ }
-  void onRemoteConfigError(RemoteConfigError error) { /* fallback defaults */ }
+  void onAuthenticationError(AuthenticationFailure error) { /* re-login prompt */ }
+  void onRemoteConfigError(RemoteConfigFailure error) { /* fallback defaults */ }
   void onGenericError(Failure error) { /* generic toast */ }
 }
 ```
@@ -134,18 +139,30 @@ class AuthCubit extends CubitSignal<AuthState> {
   final IAuthRepository _repository;
   final FailureHandler _failureHandler;
 
-  Future<void> login(String email, String password) async {
-    final result = await safeRun(
-      action: () => _repository.login(email, password),
-      onException: _failureHandler.handleException,  // ← handleException wraps in Failure
-      onSuccess: () {
-        _failureHandler.handleFailure(_failureHandler.lastFailure);  // ← side effect fires here
-        emit(const AuthState.failed());
+  Future<void> login(String phone) async {
+    final result = await _repository.login(phone).run();
+    result.fold(
+      (failure) => _failureHandler.handleFailure(failure),
+      (_) => emit(AuthState.otpSent(phone)),
+    );
+  }
+
+  Future<void> verifyOtp(String otp) async {
+    final result = await TaskResult.tryCatch(
+      onException: _failureHandler.handleException,
+      () async => await _repository.verifyOtp(otp),
+    ).run();
+    result.fold(
+      (failure) => _failureHandler.handleFailure(failure),
+      (result) {
+        if (result) {
+          emit(const AuthState.authenticated());
+        } else {
+          // Blocked user — contextual side-effect, NOT a state variant
+          emitPresentation(AuthStateBlocked());
+        }
       },
     );
-    if (result && _failureHandler.lastFailure == null) {
-      emit(const AuthState.loggedIn());
-    }
   }
 }
 ```
@@ -160,12 +177,12 @@ class AuthCubit extends CubitSignal<AuthState> {
 class AuthCubit extends CubitSignal<AuthState> {
   AuthCubit(this._repository, this._failureHandler) : super(initialState: const AuthState.initial());
 
-  Future<void> login(String email, String password) async {
-    final result = await _repository.login(email, password);
+  Future<void> login(String phone) async {
+    final result = await _repository.login(phone).run();
     // ❌ WRONG: storing Failure object in state
     result.fold(
       (failure) => emit(AuthState.failed(failure)),  // FORBIDDEN
-      (_) => emit(const AuthState.loggedIn()),
+      (_) => emit(AuthState.otpSent(phone)),
     );
   }
 }
@@ -174,7 +191,8 @@ class AuthCubit extends CubitSignal<AuthState> {
 sealed class AuthState {
   const AuthState();
   const factory AuthState.initial() = AuthStateInitial;
-  const factory AuthState.loggedIn() = AuthStateLoggedIn;
+  const factory AuthState.otpSent(String phone) = AuthStateOtpSent;
+  const factory AuthState.authenticated() = AuthStateAuthenticated;
   const factory AuthState.failed(Failure failure) = AuthStateFailed; // FORBIDDEN
 }
 ```
@@ -204,6 +222,11 @@ Future<bool> safeRun({
 
 ## Server: ApiException
 
+> **FUTURE MIGRATION TARGET — NOT YET IMPLEMENTED.**
+> The codebase currently uses raw `Exception` throws in some server endpoints.
+> This model is the planned replacement for standardizing server error responses.
+> Implement separately when migrating server endpoints to typed error responses.
+
 ```dart
 @freezed
 class ApiException with _$ApiException {
@@ -227,30 +250,27 @@ enum ApiExceptionCode {
 
 ---
 
-## Crashlytics: shouldReportToCrashlytics
+## Crashlytics Reporting Policy
 
-```dart
-/// On the Failure sealed class:
-const factory Failure.unexpected(String? message) = UnexpectedError;
+> `shouldReportToCrashlytics` does **not** exist as a property on `Failure`.
+> Reporting policy is implemented via direct `crashlytics-service` calls in
+> cubits/repos where needed (e.g., `_crashlyticsService.setUserId(...)` in AuthCubit).
 
-// Add to each factory:
-bool get shouldReportToCrashlytics => switch (this) {
-  UnexpectedError() => true,    // Unexpected = bug worth investigating
-  ServerError(code: http500) => true,
-  ServerError(code: http504) => true,
-  ServerError(code: serverpod) => true,
-  _ => false,
-};
-```
+### Decision Table
+
+| Failure | Report to Crashlytics? |
+|---------|----------------------|
+| `UnexpectedFailure` | YES — always |
+| `ServerFailure(http500/serverpod)` | YES |
+| All other Failures | NO |
 
 ### Usage in onException Callback
 
 ```dart
 onException: (Exception error, StackTrace? stackTrace) {
   _failureHandler.handleException(error, stackTrace);
-  if (_failureHandler.lastFailure.shouldReportToCrashlytics) {
-    _crashlyticsService.reportException(error, stackTrace);
-  }
+  // Direct crashlytics call in catch path — no Failure property
+  _crashlyticsService.reportException(error, stackTrace);
 }
 ```
 
@@ -285,25 +305,33 @@ Failure _mapException(ServerpodException e) {
 
 ## Error Actions: One-Shot UI Reactions
 
-Use `useSignalEffect` for side effects in HookWidget:
+> NO error state variant exists — failures surface via `FailureHandler.handleFailure`
+> side-effects only. Use `BlocSignalPresentationMixin.emitPresentation` for contextual
+> errors (field-adjacent feedback), and `ErrorActions.onXxx()` for global toasts.
+
+### Contextual Error via Side-Effect
 
 ```dart
-useSignalEffect(() {
-  final failure = authCubit.lastFailure;
-  if (failure != null) {
-    _failureHandler.handleFailure(failure);
-    authCubit.clearLastFailure(); // Reset after handling
+// In cubit — emit contextual side-effect, NOT a state variant:
+void _onAuthError(Failure failure) {
+  _failureHandler.handleFailure(failure); // global toast via ErrorActions
+  if (failure is AuthenticationFailure && failure.blocked) {
+    emit(const AuthState.blocked());
+    return;
   }
-});
+  emitPresentation(LoginStateOtpError(/* message */)); // contextual side-effect
+}
 ```
 
-Or `BlocSignalListener` in standard widgets:
+### Widget Listener
 
 ```dart
-BlocSignalListener<AuthCubit, AuthState>(
-  listenWhen: (prev, curr) => curr is AuthStateFailed,
-  listener: (context, state) {
-    _failureHandler.handleFailure(_failureHandler.lastFailure);
+BlocSignalPresentationListener<LoginCubit, LoginStateSideEffect>(
+  listener: (context, event) {
+    if (event is LoginStateOtpError) {
+      // Show field-adjacent error, NOT global toast
+      otpError.value = event.message;
+    }
   },
   child: ...,
 );

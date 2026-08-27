@@ -14,13 +14,7 @@ abstract interface class IAuthRepository {
 
   TaskResult<OtpVerificationResult> verifyOtp({required String email, required String code});
 
-  TaskResult<AuthSuccess> completeRegistration({
-    required String email,
-    required String name,
-    required String gender,
-    required String registrationToken,
-    DateTime? birthday,
-  });
+  TaskResult<AuthSuccess> completeRegistration(RegistrationForm form);
 
   TaskResult<Unit> logout();
 }

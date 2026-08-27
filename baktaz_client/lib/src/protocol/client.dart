@@ -22,21 +22,23 @@ import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
     as _i6;
 import 'package:baktaz_client/src/protocol/features/auth/domain/models/otp_verification_result.dart'
     as _i7;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+import 'package:baktaz_client/src/protocol/features/auth/domain/models/registration_form.dart'
     as _i8;
-import 'package:baktaz_client/src/protocol/features/home/domain/model/daily_step_telemetry.dart'
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i9;
-import 'package:baktaz_client/src/protocol/features/home/domain/model/weekly_step_analytics.dart'
+import 'package:baktaz_client/src/protocol/features/home/domain/model/daily_step_telemetry.dart'
     as _i10;
-import 'package:baktaz_client/src/protocol/features/home/domain/model/active_challenge_summary.dart'
+import 'package:baktaz_client/src/protocol/features/home/domain/model/weekly_step_analytics.dart'
     as _i11;
-import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
+import 'package:baktaz_client/src/protocol/features/home/domain/model/active_challenge_summary.dart'
     as _i12;
-import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
     as _i13;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i14;
-import 'package:http/http.dart' as _i15;
-import 'protocol.dart' as _i16;
+import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+    as _i14;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i15;
+import 'package:http/http.dart' as _i16;
+import 'protocol.dart' as _i17;
 
 /// {@category Endpoint}
 abstract class EndpointAdminEndpointBase extends _i1.EndpointRef {
@@ -138,27 +140,17 @@ class EndpointAuth extends _i1.EndpointRef {
   @override
   String get name => 'auth';
 
-  _i2.Future<_i7.OtpVerificationResult> completeRegistration({
-    required String email,
-    required String name,
-    required String gender,
-    required String registrationToken,
-    DateTime? birthday,
-  }) => caller.callServerEndpoint<_i7.OtpVerificationResult>(
+  _i2.Future<_i7.OtpVerificationResult> completeRegistration(
+    _i8.RegistrationForm form,
+  ) => caller.callServerEndpoint<_i7.OtpVerificationResult>(
     'auth',
     'completeRegistration',
-    {
-      'email': email,
-      'name': name,
-      'gender': gender,
-      'registrationToken': registrationToken,
-      'birthday': birthday,
-    },
+    {'form': form},
   );
 }
 
 /// {@category Endpoint}
-class EndpointEmailIdp extends _i8.EndpointEmailIdpBase {
+class EndpointEmailIdp extends _i9.EndpointEmailIdpBase {
   EndpointEmailIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -338,7 +330,7 @@ class EndpointEmailIdp extends _i8.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointFacebookIdp extends _i8.EndpointFacebookIdpBase {
+class EndpointFacebookIdp extends _i9.EndpointFacebookIdpBase {
   EndpointFacebookIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -366,7 +358,7 @@ class EndpointFacebookIdp extends _i8.EndpointFacebookIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointGoogleIdp extends _i8.EndpointGoogleIdpBase {
+class EndpointGoogleIdp extends _i9.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -489,38 +481,38 @@ class EndpointHome extends _i1.EndpointRef {
   @override
   String get name => 'home';
 
-  _i2.Future<_i9.DailyStepTelemetry> getDailyStepTelemetry() =>
-      caller.callServerEndpoint<_i9.DailyStepTelemetry>(
+  _i2.Future<_i10.DailyStepTelemetry> getDailyStepTelemetry() =>
+      caller.callServerEndpoint<_i10.DailyStepTelemetry>(
         'home',
         'getDailyStepTelemetry',
         {},
       );
 
-  _i2.Future<_i10.WeeklyStepAnalytics> getWeeklyStepAnalytics() =>
-      caller.callServerEndpoint<_i10.WeeklyStepAnalytics>(
+  _i2.Future<_i11.WeeklyStepAnalytics> getWeeklyStepAnalytics() =>
+      caller.callServerEndpoint<_i11.WeeklyStepAnalytics>(
         'home',
         'getWeeklyStepAnalytics',
         {},
       );
 
-  _i2.Future<_i11.ActiveChallengeSummary?> getActiveChallengeSummary() =>
-      caller.callServerEndpoint<_i11.ActiveChallengeSummary?>(
+  _i2.Future<_i12.ActiveChallengeSummary?> getActiveChallengeSummary() =>
+      caller.callServerEndpoint<_i12.ActiveChallengeSummary?>(
         'home',
         'getActiveChallengeSummary',
         {},
       );
 
-  _i2.Future<List<_i12.HomeLeaderboardEntry>> getLeaderboardPreview() =>
-      caller.callServerEndpoint<List<_i12.HomeLeaderboardEntry>>(
+  _i2.Future<List<_i13.HomeLeaderboardEntry>> getLeaderboardPreview() =>
+      caller.callServerEndpoint<List<_i13.HomeLeaderboardEntry>>(
         'home',
         'getLeaderboardPreview',
         {},
       );
 
-  _i2.Future<_i9.DailyStepTelemetry> syncSteps(
+  _i2.Future<_i10.DailyStepTelemetry> syncSteps(
     int steps,
     String source,
-  ) => caller.callServerEndpoint<_i9.DailyStepTelemetry>(
+  ) => caller.callServerEndpoint<_i10.DailyStepTelemetry>(
     'home',
     'syncSteps',
     {
@@ -537,12 +529,12 @@ class EndpointSecurity extends EndpointAdminEndpointBase {
   @override
   String get name => 'security';
 
-  _i2.Future<List<_i13.SecurityEvent>> listSecurityEvents({
+  _i2.Future<List<_i14.SecurityEvent>> listSecurityEvents({
     required int limit,
     required int offset,
     String? eventType,
     _i1.UuidValue? authUserId,
-  }) => caller.callServerEndpoint<List<_i13.SecurityEvent>>(
+  }) => caller.callServerEndpoint<List<_i14.SecurityEvent>>(
     'security',
     'listSecurityEvents',
     {
@@ -557,15 +549,15 @@ class EndpointSecurity extends EndpointAdminEndpointBase {
 class Modules {
   Modules(Client client) {
     auth_core = _i6.Caller(client);
-    serverpod_auth_idp = _i8.Caller(client);
-    auth = _i14.Caller(client);
+    serverpod_auth_idp = _i9.Caller(client);
+    auth = _i15.Caller(client);
   }
 
   late final _i6.Caller auth_core;
 
-  late final _i8.Caller serverpod_auth_idp;
+  late final _i9.Caller serverpod_auth_idp;
 
-  late final _i14.Caller auth;
+  late final _i15.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -582,10 +574,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i15.Client? httpClientOverride,
+    _i16.Client? httpClientOverride,
   }) : super(
          host,
-         _i16.Protocol(),
+         _i17.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,

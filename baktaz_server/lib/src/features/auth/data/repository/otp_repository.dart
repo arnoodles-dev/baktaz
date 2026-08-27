@@ -104,7 +104,9 @@ final class OtpRepository implements IOtpRepository {
       );
       if (link != null) {
         final AuthUserModel authUser = await AuthServices.instance.authUsers.get(session, authUserId: link.authUserId);
-        if (authUser.blocked) throw AuthUserBlockedException();
+        if (authUser.blocked) {
+          throw ApiException(message: 'Account is blocked', code: ApiExceptionCode.unauthenticated);
+        }
         final AuthSuccess authInfo = await AuthServices.instance.tokenManager.issueToken(
           session,
           authUserId: link.authUserId,
@@ -130,7 +132,7 @@ final class OtpRepository implements IOtpRepository {
       return OtpVerificationResult(isNewUser: true, registrationToken: token);
     } on OtpException {
       rethrow;
-    } on AuthUserBlockedException {
+    } on ApiException {
       rethrow;
     } on Object catch (e, st) {
       session.log('Unexpected error during verifyOtp: $e', level: LogLevel.error, exception: e, stackTrace: st);

@@ -74,7 +74,7 @@ void main() {
         verify(endpointAccount.getAccountSummary()).called(1);
       });
 
-      test('should return Left(Failure.serverpod) when client returns null', () async {
+      test('should return Left(Failure.server) when client returns null', () async {
         // Arrange
         when(endpointAccount.getAccountSummary()).thenAnswer((_) async => null);
 
@@ -85,13 +85,13 @@ void main() {
         expect(result.isLeft(), isTrue);
         result.fold(
           (Failure failure) =>
-              expect(failure, equals(const Failure.serverpod('FormatException: Account summary is null'))),
+              expect(failure, equals(const Failure.server(StatusCode.serverpod, 'FormatException: Account summary is null'))),
           (_) => fail('Expected Left'),
         );
         verify(talker.handle(any, any)).called(1);
       });
 
-      test('should return Left(Failure.serverpod) when network connectivity error occurs', () async {
+      test('should return Left(Failure.server) when network connectivity error occurs', () async {
         // Arrange
         final Exception exception = Exception('Network connection failed');
         when(endpointAccount.getAccountSummary()).thenThrow(exception);
@@ -122,7 +122,7 @@ void main() {
         verify(endpointAccount.getProfile()).called(1);
       });
 
-      test('should return Left(Failure.serverpod) when client returns null profile', () async {
+      test('should return Left(Failure.server) when client returns null profile', () async {
         // Arrange
         when(endpointAccount.getProfile()).thenAnswer((_) async => null);
 
@@ -132,7 +132,7 @@ void main() {
         // Assert
         expect(result.isLeft(), isTrue);
         result.fold(
-          (Failure failure) => expect(failure, equals(const Failure.serverpod('FormatException: Profile is null'))),
+          (Failure failure) => expect(failure, equals(const Failure.server(StatusCode.serverpod, 'FormatException: Profile is null'))),
           (_) => fail('Expected Left'),
         );
         verify(talker.handle(any, any)).called(1);

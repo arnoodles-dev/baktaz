@@ -9,7 +9,10 @@ sealed class LoginState with _$LoginState {
   const factory LoginState.registrationCompleted(AuthSuccess authInfo) = LoginStateRegistrationCompleted;
   const factory LoginState.success(AuthSuccess authInfo) = LoginStateSuccess;
   const factory LoginState.blocked() = LoginStateBlocked;
-  const factory LoginState.failed(Failure failure) = LoginStateFailed;
-
   const LoginState._();
+}
+
+@freezed
+sealed class LoginStateSideEffect with _$LoginStateSideEffect {
+  const factory LoginStateSideEffect.onOtpError(String message) = LoginStateOtpError;
 }

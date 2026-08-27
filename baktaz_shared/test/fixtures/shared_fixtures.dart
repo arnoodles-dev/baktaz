@@ -11,7 +11,7 @@ abstract final class SharedFixtures {
 
   static const Failure unexpectedFailure = Failure.unexpected('Something went wrong');
   static const Failure serverFailure = Failure.server(StatusCode.http500, 'Server error');
-  static const Failure serverpodFailure = Failure.serverpod('Serverpod error');
+  static const Failure serverpodFailure = Failure.server(StatusCode.serverpod, 'Serverpod error');
 
   static final ResourceErrorDTO resourceError = ResourceErrorDTO('type', 'message');
 

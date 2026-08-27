@@ -1,8 +1,6 @@
 import 'package:baktaz_client/baktaz_client.dart';
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
-import 'package:baktaz_flutter/app/utils/dialog_utils.dart';
-import 'package:baktaz_flutter/app/utils/error_message_utils.dart';
 import 'package:baktaz_flutter/app/utils/validation_utils.dart';
 import 'package:baktaz_flutter/core/domain/cubit/remote_config/remote_config_cubit.dart';
 import 'package:baktaz_flutter/core/presentation/views/widgets/gender_selector.dart';
@@ -37,10 +35,6 @@ class RegistrationScreen extends HookWidget {
         context.loaderOverlay.hide();
         context.read<AuthCubit>().authenticate(authInfo);
       },
-      failed: (Failure failure) {
-        context.loaderOverlay.hide();
-        DialogUtils.showError(ErrorMessageUtils.generate(context, failure));
-      },
     );
   }
 
@@ -53,7 +47,7 @@ class RegistrationScreen extends HookWidget {
     final ValueNotifier<Gender?> selectedGender = useState<Gender?>(null);
     final ValueNotifier<DateTime?> selectedBirthday = useState<DateTime?>(null);
 
-    final Map<String, dynamic> remoteConfig = context.read<RemoteConfigCubit>().stateValue;
+    final RemoteConfigState remoteConfig = context.read<RemoteConfigCubit>().stateValue;
 
     Future<void> selectBirthday() async {
       final DateTime now = DateTime.now();
@@ -134,8 +128,8 @@ class RegistrationScreen extends HookWidget {
                         alignment: Alignment.bottomCenter,
                         child: BaktazText(
                           text: context.i18n.register.label.disclaimer(
-                            terms: remoteConfig['terms_condition_url'].toString(),
-                            privacy: remoteConfig['privacy_policy_url'].toString(),
+                            terms: remoteConfig.value('terms_condition_url') ?? '',
+                            privacy: remoteConfig.value('privacy_policy_url') ?? '',
                           ),
                           textType: TextType.styled,
                           style: context.textTheme.bodyMedium,
@@ -158,11 +152,13 @@ class RegistrationScreen extends HookWidget {
                     FocusManager.instance.primaryFocus?.unfocus();
                     if (formKey.currentState!.validate() && selectedGender.value != null) {
                       context.read<LoginCubit>().completeRegistration(
-                        email: email,
-                        name: nameController.text.trim(),
-                        gender: selectedGender.value!.name,
-                        birthday: selectedBirthday.value,
-                        registrationToken: registrationToken,
+                        RegistrationForm(
+                          email: email,
+                          name: nameController.text.trim(),
+                          gender: selectedGender.value!.name,
+                          birthday: selectedBirthday.value,
+                          registrationToken: registrationToken,
+                        ),
                       );
                     }
                   },

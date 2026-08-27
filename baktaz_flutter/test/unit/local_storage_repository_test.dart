@@ -52,7 +52,7 @@ void main() {
         final Either<Failure, String?> result = await localStorageRepository.getAccessToken().run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
         verify(talker.handle(any, any)).called(1);
       });
     });
@@ -80,7 +80,7 @@ void main() {
         final Either<Failure, Unit> result = await localStorageRepository.setAccessToken('token').run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
         verify(talker.handle(any, any)).called(1);
       });
     });
@@ -101,7 +101,7 @@ void main() {
         final Either<Failure, Unit> result = await localStorageRepository.deleteAccessToken().run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
         verify(talker.handle(any, any)).called(1);
       });
     });
@@ -135,7 +135,7 @@ void main() {
         final Either<Failure, String?> result = await localStorageRepository.getRefreshToken().run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
       });
     });
 
@@ -162,7 +162,7 @@ void main() {
         final Either<Failure, Unit> result = await localStorageRepository.setRefreshToken('refresh').run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
       });
     });
 
@@ -182,7 +182,7 @@ void main() {
         final Either<Failure, Unit> result = await localStorageRepository.deleteRefreshToken().run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
       });
     });
 
@@ -212,7 +212,7 @@ void main() {
         final Either<Failure, bool?> result = await localStorageRepository.getIsOnboardingDone().run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
       });
     });
 
@@ -232,7 +232,7 @@ void main() {
         final Either<Failure, Unit> result = await localStorageRepository.setIsOnboardingDone().run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
       });
     });
 
@@ -261,7 +261,7 @@ void main() {
         final Either<Failure, bool?> result = await localStorageRepository.getIsDarkMode().run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
       });
     });
 
@@ -281,7 +281,7 @@ void main() {
         final Either<Failure, Unit> result = await localStorageRepository.setIsDarkMode(isDarkMode: false).run();
 
         expect(result.isLeft(), isTrue);
-        result.fold((Failure failure) => expect(failure, isA<DeviceStorageError>()), (_) => fail('Expected Left'));
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
       });
     });
   });

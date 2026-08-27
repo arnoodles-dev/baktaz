@@ -40,7 +40,7 @@ Verify all core tools are operational:
 
 ## Phase 2: SDK Changelog Retrieval
 
-Fetch latest Dart and Flutter updates, breaking changes, and API changes:
+Fetch latest Dart, Flutter, and Serverpod updates, breaking changes, and API changes:
 
 ```bash
 # Load Dart SDK changelog
@@ -48,6 +48,9 @@ skill dart-sdk-changelog
 
 # Load Flutter SDK changelog  
 skill flutter-sdk-changelog
+
+# Load Serverpod SDK changelog
+skill serverpod-sdk-changelog
 ```
 
 **Purpose:** Avoid using deprecated APIs, know breaking changes, leverage new features.
@@ -78,6 +81,7 @@ skill flutter-sdk-changelog
 | Documentation | `documentation-lookup` |
 | Debugging | `dart-build-resolver` |
 | Testing | `flutter-add-widget-test`, `flutter-add-integration-test` |
+| Serverpod changes | `serverpod-sdk-changelog` |
 
 **Rule:** If a skill exists for the task, use it. Do not implement generic solution.
 
@@ -122,7 +126,7 @@ Confirm these files are readable:
 I, [agent name], acknowledge that:
 
 1. **Tools validated**: All required tools (AgentMemory, Codebase Memory, Graphify, MCP servers) are operational.
-2. **SDK changelogs loaded**: I will use latest Dart/Flutter knowledge and avoid deprecated APIs.
+2. **SDK changelogs loaded**: I will use latest Dart, Flutter, and Serverpod knowledge and avoid deprecated APIs.
 3. **Rule hierarchy confirmed**: I understand and will enforce: Global -> Project -> Child -> Domain -> Skills -> Session.
 4. **Skills prioritized**: I will use `.agents/skills/` before generic approaches.
 5. **Delegation active**: I will delegate to specialized sub-agents (`@architect`, `@developer`, etc.) before implementing directly.
@@ -170,6 +174,7 @@ After acknowledgment, the agent MUST:
 - [x] Project AGENTS.md
 - [x] Child contracts
 - [x] Domain rules
+- [x] SDK changelogs (Dart, Flutter, Serverpod)
 
 ### Status
 - ✅ Ready — proceed to task

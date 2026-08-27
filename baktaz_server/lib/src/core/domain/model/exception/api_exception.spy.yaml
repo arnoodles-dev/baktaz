@@ -1,0 +1,4 @@
+exception: ApiException
+fields:
+  message: String
+  code: ApiExceptionCode

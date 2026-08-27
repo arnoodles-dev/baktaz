@@ -122,7 +122,7 @@ class ActivitiesOverviewChart extends StatelessWidget {
           Gap.large(),
           RepaintBoundary(
             child: SizedBox(
-              height: 250,
+              height: AppSizes.chartHeightLarge,
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,

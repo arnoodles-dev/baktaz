@@ -19,19 +19,17 @@ class FailureHandler with ErrorActions {
     final ErrorActions actions = errorActions ?? this;
 
     switch (failure) {
-      case final ServerError error:
+      case final ServerFailure error:
         actions.onServerError(error);
-      case final DeviceStorageError error:
+      case final DeviceStorageFailure error:
         actions.onDeviceRelatedError(error);
-      case final DeviceInfoError error:
+      case final DeviceInfoFailure error:
         actions.onDeviceRelatedError(error);
       case final ValidationFailure error:
         actions.onValidationError(error);
-      case final AuthenticationError _:
-      case final ServerpodError _:
-      case final SessionUnavailableError _:
-      case final RemoteConfigError _:
-      case final UnexpectedError _:
+      case final AuthenticationFailure _:
+      case final RemoteConfigFailure _:
+      case final UnexpectedFailure _:
         actions.onGenericError(failure);
     }
   }

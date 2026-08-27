@@ -17,14 +17,14 @@ mixin ErrorActions {
     _activeToast = DialogUtils.showError(message);
   }
 
-  void onServerError(ServerError error) {
+  void onServerError(ServerFailure error) {
     _showErrorOnce(error.message ?? _localization.common.error.generic);
   }
 
   void onDeviceRelatedError(Failure error) {
     final String? message = switch (error) {
-      DeviceStorageError(:final String? message) => message,
-      DeviceInfoError(:final String? message) => message,
+      DeviceStorageFailure(:final String? message) => message,
+      DeviceInfoFailure(:final String? message) => message,
       _ => null,
     };
     _showErrorOnce(message ?? _localization.common.error.generic);
@@ -42,7 +42,7 @@ mixin ErrorActions {
   }
 
   void onGenericError(Failure error) {
-    final String message = error is UnexpectedError && kDebugMode
+    final String message = error is UnexpectedFailure && kDebugMode
         ? error.message ?? _localization.common.error.generic
         : _localization.common.error.generic;
     _showErrorOnce(message);

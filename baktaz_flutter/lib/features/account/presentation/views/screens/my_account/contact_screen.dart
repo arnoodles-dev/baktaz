@@ -1,4 +1,5 @@
 import 'package:baktaz_flutter/app/generated/assets.gen.dart';
+import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/core/presentation/views/pages/empty_page.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_bottom_sheet.dart';
@@ -14,15 +15,15 @@ class ContactScreen extends StatelessWidget {
     appBar: BaktazAppBar(
       backgroundColor: context.colorScheme.surface,
       centerTitle: true,
-      title: 'Contacts',
+      title: context.i18n.account.contacts_title,
       leading: const BackButton(),
     ),
-    body: EmptyPage(title: 'No Contacts', iconPath: Assets.images.emptyContacts.path),
+    body: EmptyPage(title: context.i18n.account.no_contacts, iconPath: Assets.images.emptyContacts.path),
     bottomSheet: BaktazBottomSheet(
       children: <Widget>[
         BaktazButton(
           isExpanded: true,
-          text: 'Add Contact',
+          text: context.i18n.account.add_contact,
           onPressed: () {
             //TODO: add contact
           },

@@ -40,7 +40,7 @@ final class StepsRepository implements IStepsRepository {
     },
     (Object error, StackTrace stackTrace) {
       _talker.handle(error, stackTrace);
-      return Failure.serverpod(error.toString());
+      return Failure.server(StatusCode.serverpod, error.toString());
     },
   );
 
@@ -65,7 +65,7 @@ final class StepsRepository implements IStepsRepository {
     },
     (Object error, StackTrace stackTrace) {
       _talker.handle(error, stackTrace);
-      return Failure.serverpod(error.toString());
+      return Failure.server(StatusCode.serverpod, error.toString());
     },
   );
 
@@ -82,7 +82,7 @@ final class StepsRepository implements IStepsRepository {
     },
     (Object error, StackTrace stackTrace) {
       _talker.handle(error, stackTrace);
-      return Failure.serverpod(error.toString());
+      return Failure.server(StatusCode.serverpod, error.toString());
     },
   );
 }

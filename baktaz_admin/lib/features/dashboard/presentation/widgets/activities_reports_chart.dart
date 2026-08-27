@@ -68,7 +68,7 @@ class ActivitiesReportsChart extends StatelessWidget {
           Gap.xLarge(),
           RepaintBoundary(
             child: SizedBox(
-              height: 200,
+              height: AppSizes.chartHeightMedium,
               child: Stack(
                 children: <Widget>[
                   PieChart(

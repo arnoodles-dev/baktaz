@@ -11,7 +11,7 @@ final class StepsRepository implements IStepsRepository {
   Future<DailyStepTelemetry> getDailyStepTelemetry(Session session) async {
     final UuidValue? userId = session.authenticated?.authUserId;
     if (userId == null) {
-      throw StateError('User not authenticated.');
+      throw ApiException(message: 'User not authenticated', code: ApiExceptionCode.unauthenticated);
     }
 
     final DailyStepTelemetry? result = await DailyStepTelemetry.db.findFirstRow(
@@ -38,7 +38,7 @@ final class StepsRepository implements IStepsRepository {
   Future<WeeklyStepAnalytics> getWeeklyStepAnalytics(Session session) async {
     final UuidValue? userId = session.authenticated?.authUserId;
     if (userId == null) {
-      throw StateError('User not authenticated.');
+      throw ApiException(message: 'User not authenticated', code: ApiExceptionCode.unauthenticated);
     }
 
     final List<DailyStepTelemetry> dailySteps = await DailyStepTelemetry.db.find(
@@ -73,11 +73,11 @@ final class StepsRepository implements IStepsRepository {
   Future<DailyStepTelemetry> syncSteps(Session session, {required int steps, required String source}) async {
     final UuidValue? userId = session.authenticated?.authUserId;
     if (userId == null) {
-      throw StateError('User not authenticated.');
+      throw ApiException(message: 'User not authenticated', code: ApiExceptionCode.unauthenticated);
     }
 
     if (steps < 0 || steps > AppConfig.maxDailyStepCeiling) {
-      throw ArgumentError('Steps out of valid range.');
+      throw ApiException(message: 'Steps out of valid range', code: ApiExceptionCode.badRequest);
     }
 
     final DailyStepTelemetry? existing = await DailyStepTelemetry.db.findFirstRow(

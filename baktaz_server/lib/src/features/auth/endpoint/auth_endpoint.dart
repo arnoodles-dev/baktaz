@@ -19,18 +19,7 @@ final class AuthEndpoint extends Endpoint {
   bool get requireLogin => false;
 
   Future<OtpVerificationResult> completeRegistration(
-    Session session, {
-    required String email,
-    required String name,
-    required String gender,
-    required String registrationToken,
-    DateTime? birthday,
-  }) async => _authRepository.completeRegistration(
-    session,
-    email: email,
-    name: name,
-    gender: gender,
-    registrationToken: registrationToken,
-    birthday: birthday,
-  );
+    Session session,
+    RegistrationForm form,
+  ) async => _authRepository.completeRegistration(session, form);
 }

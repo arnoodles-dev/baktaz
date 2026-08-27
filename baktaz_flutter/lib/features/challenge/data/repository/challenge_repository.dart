@@ -38,7 +38,7 @@ final class ChallengeRepository implements IChallengeRepository {
     },
     (Object error, StackTrace stackTrace) {
       _talker.handle(error, stackTrace);
-      return Failure.serverpod(error.toString());
+      return Failure.server(StatusCode.serverpod, error.toString());
     },
   );
 
@@ -54,7 +54,7 @@ final class ChallengeRepository implements IChallengeRepository {
     },
     (Object error, StackTrace stackTrace) {
       _talker.handle(error, stackTrace);
-      return Failure.serverpod(error.toString());
+      return Failure.server(StatusCode.serverpod, error.toString());
     },
   );
 }

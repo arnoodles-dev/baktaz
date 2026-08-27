@@ -16,7 +16,7 @@ part 'login_cubit.freezed.dart';
 part 'login_state.dart';
 
 @injectable
-class LoginCubit extends CubitSignal<LoginState> {
+class LoginCubit extends CubitSignal<LoginState> with BlocSignalPresentationMixin<LoginStateSideEffect, LoginState> {
   LoginCubit(this._authRepository, this._analyticsService, this._failureHandler)
     : super(initialState: const LoginState.idle());
 
@@ -77,24 +77,12 @@ class LoginCubit extends CubitSignal<LoginState> {
     );
   }
 
-  Future<void> completeRegistration({
-    required String email,
-    required String name,
-    required String gender,
-    required String registrationToken,
-    DateTime? birthday,
-  }) async {
+  Future<void> completeRegistration(RegistrationForm form) async {
     await safeRun(
       onException: _failureHandler.handleException,
       action: () async {
         final Either<Failure, AuthSuccess> result = await _authRepository
-            .completeRegistration(
-              email: email,
-              name: name,
-              gender: gender,
-              registrationToken: registrationToken,
-              birthday: birthday,
-            )
+            .completeRegistration(form)
             .run();
         result.fold(_onAuthError, (AuthSuccess authInfo) {
           safeEmit(LoginState.registrationCompleted(authInfo));
@@ -112,12 +100,13 @@ class LoginCubit extends CubitSignal<LoginState> {
   }
 
   void _onAuthError(Failure failure) {
-    _failureHandler.handleFailure(failure);
-    if (failure is AuthenticationError && failure.blocked) {
+    _failureHandler.handleFailure(failure); // global toast via ErrorActions
+    if (failure is AuthenticationFailure && failure.blocked) {
       safeEmit(const LoginState.blocked());
       return;
     }
-    safeEmit(LoginState.failed(failure));
-    safeEmit(const LoginState.idle());
+    // Contextual inline error for OTP screen (side-effect, NOT state):
+    final String message = failure.message ?? 'Authentication failed';
+    emitPresentation(LoginStateOtpError(message));
   }
 }

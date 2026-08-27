@@ -1,3 +1,4 @@
+import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/core/domain/cubit/theme/theme_cubit.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/enum/settings_option.dart';
@@ -19,8 +20,8 @@ class DarkModeScreen extends StatelessWidget {
     body: Padding(
       padding: Paddings.horizontalLarge,
       child: BaktazListRow(
-        label: 'Follow system settings',
-        subtitle: "Turn on Dark mode when your device's Dark mode setting is on",
+        label: context.i18n.settings.follow_system,
+        subtitle: context.i18n.settings.dark_mode_subtitle,
         trailing: Transform.scale(
           scale: 0.8,
           child: BaktazToggle(

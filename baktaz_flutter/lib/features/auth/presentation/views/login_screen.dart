@@ -33,7 +33,6 @@ class LoginScreen extends HookWidget {
         context.loaderOverlay.hide();
         context.read<AuthCubit>().authenticate(authInfo);
       },
-      failed: (_) => context.loaderOverlay.hide(),
     );
   }
 

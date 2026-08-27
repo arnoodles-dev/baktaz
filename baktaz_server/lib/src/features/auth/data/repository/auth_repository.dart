@@ -14,18 +14,14 @@ final class AuthRepository implements IAuthRepository {
 
   @override
   Future<OtpVerificationResult> completeRegistration(
-    Session session, {
-    required String email,
-    required String name,
-    required String gender,
-    required String registrationToken,
-    DateTime? birthday,
-  }) async {
+    Session session,
+    RegistrationForm form,
+  ) async {
     try {
-      final String normalizedEmail = email.trim().toLowerCase();
+      final String normalizedEmail = form.email.trim().toLowerCase();
 
       final String? expectedToken = await session.caches.local.get<String>('otp:token:$normalizedEmail');
-      if (expectedToken == null || expectedToken != registrationToken) {
+      if (expectedToken == null || expectedToken != form.registrationToken) {
         throw OtpException(message: 'Invalid or expired registration token');
       }
       await session.caches.local.invalidateKey('otp:token:$normalizedEmail');
@@ -52,7 +48,7 @@ final class AuthRepository implements IAuthRepository {
         await AuthServices.instance.userProfiles.createUserProfile(
           session,
           authUser.id,
-          UserProfileData(fullName: name, email: normalizedEmail),
+          UserProfileData(fullName: form.name, email: normalizedEmail),
           transaction: transaction,
         );
 
@@ -66,7 +62,7 @@ final class AuthRepository implements IAuthRepository {
         if (userInfo != null) {
           await UserInfo.db.updateRow(
             session,
-            userInfo.copyWith(gender: Gender.values.asNameMap()[gender] ?? Gender.unknown, birthday: birthday),
+            userInfo.copyWith(gender: Gender.values.asNameMap()[form.gender] ?? Gender.unknown, birthday: form.birthday),
             transaction: transaction,
           );
         }

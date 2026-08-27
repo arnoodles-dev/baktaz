@@ -22,8 +22,8 @@ class AddTranslationDialog extends HookWidget {
         text: context.i18n.localization.add_dialog.title,
         style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
       ),
-      content: SizedBox(
-        width: 400,
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: AppSizes.dialogWidth),
         child: Form(
           key: formKey,
           child: Column(

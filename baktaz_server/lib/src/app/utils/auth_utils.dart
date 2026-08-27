@@ -59,14 +59,9 @@ final class AuthUtils {
     }
 
     // 4. Tie everything together in Account
-    final Account insertedAccount = await _createAccount(
-      session,
-      authUser,
-      userProfileDb,
-      userInfoDb,
-      walletDb,
-      transaction,
-    );
+    final (AuthUserModel, UserProfile, UserInfo, Wallet) seed =
+        (authUser, userProfileDb, userInfoDb, walletDb);
+    final Account insertedAccount = await _createAccount(session, seed, transaction);
     session.log('Account created: ${insertedAccount.toJson()}', level: LogLevel.debug);
 
     if (!authUser.scopes.contains(Scope.admin)) {
@@ -113,12 +108,10 @@ final class AuthUtils {
 
   static Future<Account> _createAccount(
     Session session,
-    AuthUserModel authUser,
-    UserProfile userProfileDb,
-    UserInfo userInfoDb,
-    Wallet walletDb,
+    (AuthUserModel, UserProfile, UserInfo, Wallet) seed,
     Transaction transaction,
   ) async {
+    final (AuthUserModel authUser, UserProfile userProfileDb, UserInfo userInfoDb, Wallet walletDb) = seed;
     final Account account = Account(
       id: authUser.id,
       authUserId: authUser.id,

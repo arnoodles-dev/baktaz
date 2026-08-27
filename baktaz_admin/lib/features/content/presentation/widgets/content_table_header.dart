@@ -72,7 +72,7 @@ class _ContentTableHeaderState extends State<ContentTableHeader> {
       _PlacementDropdown(selected: widget.selectedPlacement, onChanged: widget.onPlacementFilterChanged),
       const Gap(AppSizes.small),
       SizedBox(
-        width: 240,
+        width: AppSizes.tableSearchWidth,
         child: BaktazTextField(
           controller: _searchController,
           hintText: context.i18n.content.table.search_placeholder,

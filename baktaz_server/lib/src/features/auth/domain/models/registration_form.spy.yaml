@@ -1,0 +1,7 @@
+class: RegistrationForm
+fields:
+  email: String
+  name: String
+  gender: String
+  registrationToken: String
+  birthday: DateTime?

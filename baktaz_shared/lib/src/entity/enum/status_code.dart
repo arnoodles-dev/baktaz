@@ -12,6 +12,7 @@ enum StatusCode {
   http422(422),
   http429(429),
   http500(500),
+  serverpod(500),
   http000(000);
 
   const StatusCode(this.value);

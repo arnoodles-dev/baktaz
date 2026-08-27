@@ -42,8 +42,8 @@ class EditTranslationDialog extends HookWidget {
         text: '${context.i18n.localization.edit_dialog.title(key: localizationKey.key)} (${locale.toUpperCase()})',
         style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
       ),
-      content: SizedBox(
-        width: 400,
+      content: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: AppSizes.dialogWidth),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

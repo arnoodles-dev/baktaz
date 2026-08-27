@@ -189,6 +189,11 @@ class _VersionBadge extends StatelessWidget {
 class _RemoteConfigShimmer extends StatelessWidget {
   const _RemoteConfigShimmer();
 
+  // ponytail: skeleton-only dimensions — not user-facing
+  static const double _shimmerTitleWidth = 150;
+  static const double _shimmerChipWidth = 120;
+  static const double _shimmerBarHeight = 14;
+
   @override
   Widget build(BuildContext context) => Shimmer(
     child: SingleChildScrollView(
@@ -304,8 +309,8 @@ class _RemoteConfigShimmer extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   Container(
-                                    width: 150,
-                                    height: 16,
+                                    width: _shimmerTitleWidth,
+                                    height: AppSizes.medium,
                                     decoration: const BoxDecoration(
                                       color: AppColors.white,
                                       borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -314,7 +319,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                                   const Gap(AppSizes.x2Small),
                                   Container(
                                     width: double.infinity,
-                                    height: 12,
+                                    height: AppSizes.small,
                                     decoration: const BoxDecoration(
                                       color: AppColors.white,
                                       borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -355,7 +360,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                               flex: 2,
                               child: Container(
                                 width: 80,
-                                height: 14,
+                                height: _shimmerBarHeight,
                                 decoration: const BoxDecoration(
                                   color: AppColors.white,
                                   borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -422,7 +427,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                       const Gap(AppSizes.medium),
                       Container(
                         width: double.infinity,
-                        height: 14,
+                        height: _shimmerBarHeight,
                         decoration: const BoxDecoration(
                           color: AppColors.colorTextSecondary,
                           borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -430,8 +435,8 @@ class _RemoteConfigShimmer extends StatelessWidget {
                       ),
                       const Gap(AppSizes.medium),
                       Container(
-                        width: 120,
-                        height: 14,
+                        width: _shimmerChipWidth,
+                        height: _shimmerBarHeight,
                         decoration: const BoxDecoration(
                           color: AppColors.colorTextSecondary,
                           borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -466,7 +471,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                       const Gap(AppSizes.medium),
                       Container(
                         width: double.infinity,
-                        height: 14,
+                        height: _shimmerBarHeight,
                         decoration: const BoxDecoration(
                           color: AppColors.colorTextSecondary,
                           borderRadius: BorderRadius.all(Radius.circular(4)),
@@ -474,8 +479,8 @@ class _RemoteConfigShimmer extends StatelessWidget {
                       ),
                       const Gap(AppSizes.medium),
                       Container(
-                        width: 120,
-                        height: 14,
+                        width: _shimmerChipWidth,
+                        height: _shimmerBarHeight,
                         decoration: const BoxDecoration(
                           color: AppColors.colorTextSecondary,
                           borderRadius: BorderRadius.all(Radius.circular(4)),

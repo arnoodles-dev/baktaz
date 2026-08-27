@@ -132,21 +132,9 @@ final class AuthRepository implements IAuthRepository {
       );
 
   @override
-  TaskResult<AuthSuccess> completeRegistration({
-    required String email,
-    required String name,
-    required String gender,
-    required String registrationToken,
-    DateTime? birthday,
-  }) => TaskResult<AuthSuccess>.tryCatch(
+  TaskResult<AuthSuccess> completeRegistration(RegistrationForm form) => TaskResult<AuthSuccess>.tryCatch(
     () async {
-      final OtpVerificationResult result = await _serverpod.client.auth.completeRegistration(
-        email: email,
-        name: name,
-        gender: gender,
-        registrationToken: registrationToken,
-        birthday: birthday,
-      );
+      final OtpVerificationResult result = await _serverpod.client.auth.completeRegistration(form);
       if (result.authInfo != null) {
         await _serverpod.sessionManager.updateSignedInUser(result.authInfo);
         return result.authInfo!;

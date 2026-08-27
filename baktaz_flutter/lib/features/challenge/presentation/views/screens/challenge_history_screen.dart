@@ -13,9 +13,9 @@ class ChallengeHistoryScreen extends StatelessWidget {
     appBar: BaktazAppBar(
       backgroundColor: context.colorScheme.surface,
       centerTitle: true,
-      title: 'Challenge History',
+      title: context.i18n.challenge.history,
       leading: const BackButton(),
     ),
-    body: EmptyPage(title: 'No Activity', iconPath: Assets.images.noData.path),
+    body: EmptyPage(title: context.i18n.challenge.no_activity, iconPath: Assets.images.noData.path),
   );
 }

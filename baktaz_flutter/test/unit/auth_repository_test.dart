@@ -131,8 +131,8 @@ void main() {
 
         expect(result.isLeft(), isTrue);
         result.fold((Failure failure) {
-          expect(failure, isA<AuthenticationError>());
-          expect((failure as AuthenticationError).blocked, isTrue);
+          expect(failure, isA<AuthenticationFailure>());
+          expect((failure as AuthenticationFailure).blocked, isTrue);
         }, (_) => fail('Expected Left'));
       });
 
@@ -146,8 +146,8 @@ void main() {
 
         expect(result.isLeft(), isTrue);
         result.fold((Failure failure) {
-          expect(failure, isA<AuthenticationError>());
-          expect((failure as AuthenticationError).blocked, isTrue);
+          expect(failure, isA<AuthenticationFailure>());
+          expect((failure as AuthenticationFailure).blocked, isTrue);
         }, (_) => fail('Expected Left'));
       });
     });
@@ -158,18 +158,15 @@ void main() {
           isNewUser: false,
           authInfo: mockAuthSuccess,
         );
-        when(
-          authEndpoint.completeRegistration(
-            email: 'user@example.com',
-            name: 'User',
-            gender: 'male',
-            registrationToken: 'token',
-          ),
-        ).thenAnswer((_) async => verificationResult);
+        final RegistrationForm form = RegistrationForm(
+          email: 'user@example.com',
+          name: 'User',
+          gender: 'male',
+          registrationToken: 'token',
+        );
+        when(authEndpoint.completeRegistration(form)).thenAnswer((_) async => verificationResult);
 
-        final Either<Failure, AuthSuccess> result = await authRepository
-            .completeRegistration(email: 'user@example.com', name: 'User', gender: 'male', registrationToken: 'token')
-            .run();
+        final Either<Failure, AuthSuccess> result = await authRepository.completeRegistration(form).run();
 
         expect(result.isRight(), isTrue);
         result.fold((_) => fail('Expected Right'), (AuthSuccess authInfo) => expect(authInfo, equals(mockAuthSuccess)));
@@ -177,18 +174,15 @@ void main() {
 
       test('should return Left(Failure) when authInfo is null', () async {
         final OtpVerificationResult verificationResult = OtpVerificationResult(isNewUser: true);
-        when(
-          authEndpoint.completeRegistration(
-            email: 'user@example.com',
-            name: 'User',
-            gender: 'male',
-            registrationToken: 'token',
-          ),
-        ).thenAnswer((_) async => verificationResult);
+        final RegistrationForm form = RegistrationForm(
+          email: 'user@example.com',
+          name: 'User',
+          gender: 'male',
+          registrationToken: 'token',
+        );
+        when(authEndpoint.completeRegistration(form)).thenAnswer((_) async => verificationResult);
 
-        final Either<Failure, AuthSuccess> result = await authRepository
-            .completeRegistration(email: 'user@example.com', name: 'User', gender: 'male', registrationToken: 'token')
-            .run();
+        final Either<Failure, AuthSuccess> result = await authRepository.completeRegistration(form).run();
 
         expect(result.isLeft(), isTrue);
       });

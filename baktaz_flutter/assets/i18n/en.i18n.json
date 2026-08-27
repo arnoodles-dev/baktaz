@@ -42,7 +42,9 @@
     "cancel": "cancel",
     "search": "search",
     "select_country": "Select a country",
-    "see_all": "See All"
+    "see_all": "See All",
+    "discover_new": "Discover what's new on the app",
+    "confirm": "Confirm"
   },
   "dialogs": {
     "exit_message": "Are you sure you want to close the application?"
@@ -78,18 +80,23 @@
     }
   },
   "account": {
+    "add_contact": "Add Contact",
     "button": {
       "logout": "Log Out",
       "delete_account": "Delete Account"
+    },
+    "contacts_title": "Contacts",
+    "delete_dialog": {
+      "title": "Delete Account",
+      "subtitle": "Are you sure you want to delete your account? This action cannot be undone."
     },
     "logout_dialog": {
       "title": "Just making sure...",
       "subtitle": "Are you sure you want to logout?"
     },
-    "delete_dialog": {
-      "title": "Delete Account",
-      "subtitle": "Are you sure you want to delete your account? This action cannot be undone."
-    }
+    "no_contacts": "No Contacts",
+    "no_reviews": "No Reviews",
+    "reviews_title": "Reviews"
   },
   "register": {
     "title": "Get Started",
@@ -109,11 +116,16 @@
       "birthday": "Select date of birth"
     }
   },
+  "settings": {
+    "dark_mode_subtitle": "Turn on Dark mode when your device's Dark mode setting is on",
+    "follow_system": "Follow system settings"
+  },
   "select_address": {
     "title": "Pin Your Address Location",
     "location": "Location",
     "search_hint": "Search address",
-    "continue_text": "Continue"
+    "continue_text": "Continue",
+    "address_selection": "Address Selection"
   },
   "otp": {
     "header": "We've sent you a code",
@@ -176,5 +188,15 @@
   },
   "post": {
     "create_post": "Create Post"
+  },
+  "challenge": {
+    "history": "Challenge History",
+    "nothing_happening_now": "Nothing's happening now",
+    "no_activity": "No Activity"
+  },
+  "messages": {
+    "find_chats": "Find your chats here!",
+    "notifications_placeholder": "Notifications will appear here",
+    "notifications_subtitle": "Watch this space for offers, updates, and more."
   }
 }
