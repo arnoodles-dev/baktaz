@@ -49,12 +49,25 @@ Always run in this order:
 ## Verification Checklist
 
 After code changes, run verification:
+
 1. `dart analyze` — lint analysis
 2. `dart format` — format modified files
 3. `create_migration` + `apply_migrations` — if `.spy.yaml` models changed
 4. `hot_restart` — if hot reload insufficient or Flutter reconnect needed
-5. Run tests — `dart test` / `flutter test` per package
-6. Verify logs — `tail_server_logs` / `tail_flutter_logs`
+5. **Implementation Complete Check** — **VERIFY all packages have implementation complete before any tests**
+
+   - [ ] All packages have implementation written and compiling
+   - [ ] All codegen completed (slang → build_runner → serverpod generate)
+   - [ ] All packages in building state
+   - [ ] All dependencies resolved
+   - [ ] Database migrations applied (if applicable)
+
+6. **Testing Phase** — Only begin testing after passing Implementation Complete Check:
+   ```bash
+   6. Run tests — `dart test` / `flutter test` per package (only after implementation verified)
+   ```
+
+7. Verify logs — `tail_server_logs` / `tail_flutter_logs`
 
 ## Package Setup
 

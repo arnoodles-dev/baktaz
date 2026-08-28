@@ -6,18 +6,144 @@ globs: **/test/**
 
 # Testing
 
+## Test Structure
+
+### Flutter Test Structure
+
+```
+baktaz_flutter/test/
+├── fixtures/              # Test data fixtures
+├── unit/                  # Unit tests (flat, organized by feature)
+│   ├── <feature>_cubit_test.dart
+│   ├── <feature>_repository_test.dart
+│   └── ...
+├── widget/                # Widget tests (organized by feature)
+│   ├── <feature>/
+│   │   ├── <widget_name>_test.dart      # Widget tests
+│   │   └── goldens/                     # Golden tests
+│   │       ├── <widget_name>_macos/
+│   │       ├── <widget_name>_ci/
+│   │       └── ...
+│   └── ...
+└── utils/                 # Test utilities, mocks
+    ├── generated_mocks.dart
+    └── ...
+```
+
+**Rules:**
+- Unit tests: Flat structure in `test/unit/`, named `<feature>_<type>_test.dart`
+- Widget tests: Organized by feature in `test/widget/<feature>/`
+- Golden tests: In `test/widget/<feature>/goldens/` with platform subfolders (macos, ci)
+- No screen tests — only test widgets, not screens
+- No interface tests — interfaces are contracts, not implementation
+- No nested `domain/`, `data/`, `presentation/` folders in test paths
+
+**Examples:**
+```
+test/unit/payment_cubit_test.dart
+test/unit/payment_repository_test.dart
+test/widget/payment/payment_method_tile_test.dart
+test/widget/payment/goldens/payment_method_tile_macos/
+test/widget/challenge/challenge_entry_ticket_test.dart
+```
+
+### Server Test Structure
+
+```
+baktaz_server/test/
+├── fixtures/              # Test data fixtures
+├── unit/                  # Unit tests (organized by feature)
+│   ├── <feature>/
+│   │   ├── <repository>_test.dart      # Repository unit tests
+│   │   └── ...
+│   └── ...
+├── integration/           # Integration tests (organized by feature)
+│   ├── <feature>/
+│   │   ├── <endpoint>_test.dart        # Endpoint integration tests
+│   │   └── <feature>_flow_test.dart    # End-to-end flow tests
+│   └── ...
+├── utils/                 # Test utilities, mocks
+│   ├── generated_mocks.dart
+│   └── ...
+└── ...
+```
+
+**Rules:**
+- Repository unit tests: In `test/unit/features/<feature>/`, test repository methods
+- Endpoint integration tests: In `test/integration/features/<feature>/`, test full endpoint flows
+- Named `<repository>_test.dart` or `<endpoint>_test.dart`
+- No interface tests — interfaces are contracts, not implementation
+
+**Examples:**
+```
+test/unit/features/payment/payment_repository_test.dart
+test/unit/features/payout/payout_repository_test.dart
+test/integration/features/payment/payment_endpoint_test.dart
+test/integration/features/payment/webhook_payment_test.dart
+test/integration/features/payout/payout_flow_test.dart
+test/integration/features/ledger/double_entry_test.dart
+```
+
 ## Implementation-First Workflow
+
+### CRITICAL: Implementation Before Testing Rule
+
+**CRITICAL:** Tests must NOT be written or executed until ALL implementation work is COMPLETE:
+- Complete code implementation across ALL packages involved
+- All codegen (localization, build_runner, serverpod generate) finished
+- All code compiles cleanly
+- All packages at the latest schema (migrations applied)
+- All cross-package dependencies resolved
+
+Testing is strictly prohibited until after these milestones. THIS IS A HARD REQUIREMENT — developers must wait until all implementation is complete before creating any tests.
+
+### Original Implementation-First Workflow
 
 1. Implement code, entities, repositories, UI components
 2. Run codegen — see operations.md for full codegen order
 3. Write tests after codegen complete
 4. Verify coverage ≥ 80%
 
-## Test Structure
+## Test Structure (Conventions)
 
 - **AAA pattern**: Arrange-Act-Assert
 - **Naming**: Descriptive names — `returns null when user does not exist`, `throws NotFoundException when id is empty`
 - **Async & Cubits**: `bloc_test` for Cubits, `fake_async` for async
+
+## Implementation Before Testing — Detailed Guidance
+
+### Why This Sequence Exists
+
+- **Complete coverage accuracy** — Test coverage is meaningless if code doesn't exist
+- **Dependency assurance** — Tests depend on code being in stable state
+- **Schema completeness** — Tests rely on database schema and generated client SDK
+- **Cross-package integration** — Server + client + shared package dependencies must be fully resolved
+- **Code generation safety** — Tests fail if codegen doesn't finish first
+
+### What Counts as "Implementation Complete"
+
+Implementation complete means:
+✅ ALL non-test code written across **ALL packages**
+✅ ALL codegen steps completed (slang → build_runner → serverpod generate)
+✅ ALL code compiles without errors
+✅ ALL database migrations applied
+✅ ALL cross-package dependencies resolved and building
+✅ Implementation reviewed and approved by architect if needed
+
+### What Triggers Testing
+
+Testing may only begin **after**:
+1. Implementation complete and stable
+2. Codegen finished for ALL packages
+3. All components building successfully
+4. All packages in sync (no partial/incomplete state)
+
+### Implementation Timeline
+
+- **Days 1-3:** Implementation phase (ALL packages)
+- **Days 4-5:** Codegen phase
+- **Days 6-7:** Compilation, migration, dependency resolution
+- **Day 8:** Testing begins only after manual verification of complete implementation
 
 ## Mocking
 
@@ -46,7 +172,9 @@ Exclusions in `.coverage_exclude`.
 
 ## Integration & Server Testing
 
-- Server integration tests in `test/integration/` — see serverpod-architecture.md
+- **Repository unit tests**: Test repository methods directly with mocked dependencies
+- **Endpoint integration tests**: Test full endpoint flows with real DB (via `withServerpod`)
+- Server tests in `test/unit/` (repositories) and `test/integration/` (endpoints)
 - Excluded from CI — require Docker/Postgres
 - Run: `fvm dart test --concurrency=1` in `*_server` or `make test_server`
 
@@ -55,6 +183,8 @@ Exclusions in `.coverage_exclude`.
 - Full-screen widget tests
 - UI component unit tests
 - `mocktail` (unless specified)
+- Interface tests
+- Screen tests (only widgets)
 
 ## Automated App Testing via DTD
 

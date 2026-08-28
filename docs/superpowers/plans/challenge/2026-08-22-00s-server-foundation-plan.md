@@ -15,107 +15,38 @@
 - All config constants centralized in `lib/src/app/config/app_config.dart`
 - **Money representation**: `double` (matches Wallet.cashBalance convention)
 - Server repos THROW on failure; endpoints translate to client exceptions
+- **TODO(chat)**: Event message dispatching deferred to Chat Module — add `// TODO(chat): dispatch event <eventKey>` markers at trigger sites
 
-## Implementation Order
-This plan executes AFTER the Flutter feature is complete with `TODO(server)` stubs.
+## Task 1: Data Models (.spy.yaml) & Serverpod Codegen
 
-## Task 1: Data Models (.spy.yaml)
+Create/migrate models:
+- `challenges.spy.yaml`: fields: `id`, `name`, `description`, `entryFee: double`, `currency`, `prizePercentage: double` (default 90.0), `platformFeePercentage: double` (default 10.0), `hostCutPercentage: double` (default 0.5), `dailyStepCeiling: int` (default 30,000 — anti-cheat threshold), `dailyStepGoal: int?`, `totalStepGoal: int?`, `status: ChallengeStatus`, `startsAt: DateTime?`, `endsAt: DateTime?`, `createdAt`, `updatedAt`
+- `challenge_participants.spy.yaml`: fields: `id`, `challengeId`, `authUserId`, `isHost: bool`, `status: ChallengeParticipantStatus`, `steps: int`, `rank: int?`, `entryFeePaid: bool`, `payoutAmount: double?`, `claimedAt: DateTime?`, `joinedAt: DateTime`
+- `challenge_config.spy.yaml`: fields: `minDurationDays: int`, `maxDurationDays: int`, `maxParticipants: int`, `minEntryFee: double`, `maxEntryFee: double`, `maxHostCutPercentage: double`, `minParticipantsForPublic: int`, `minParticipantsForPrivate: int`, `minDailyStepCeiling: int`, `maxDailyStepCeiling: int`, `defaultDailyStepCeiling: int`
 
-**Files:**
-- Create: `baktaz_server/lib/src/features/challenge/domain/model/challenge.spy.yaml`
-- Create: `baktaz_server/lib/src/features/challenge/domain/model/challenge_participant.spy.yaml`
-- Create: `baktaz_server/lib/src/features/challenge/domain/model/invite_code.spy.yaml`
-- Create: `baktaz_server/lib/src/features/challenge/domain/model/user_steps_info.spy.yaml`
-- Create: `baktaz_server/lib/src/features/challenge/domain/model/anti_cheat_vote.spy.yaml`
-- Create: `baktaz_server/lib/src/features/challenge/domain/model/dispute.spy.yaml`
-- Create enum files under `lib/src/core/domain/model/enum/`
+## Task 2: ChallengeEndpoint RPC Surface
 
-**Models:**
-- `Challenge`: id, title, description, entryFeeAmount, durationDays, startAt, endAt, suddenDeathEndsAt, maxParticipants, minParticipants, dailyStepGoal, totalStepGoal, rewardMode, tieBreaker, launchType, status, hostAuthUserId, createdAt, updatedAt
-- `ChallengeParticipant`: id, challengeId, authUserId, joinedAt, currentSteps, dailyGoalHitCount, lastSyncedAt, rankTrend, onHold, forfeited, suddenDeathEligible, payoutAmount, claimedAt
-- `InviteCode`: id, code, challengeId, expiresAt
-- `UserStepsInfo`: id, authUserId (unique), lastStepSyncAt
-- `AntiCheatVote`: id, challengeId, targetAuthUserId, voterAuthUserId, approve, createdAt (unique: challengeId, targetAuthUserId, voterAuthUserId)
-- `Dispute`: id, challengeId, filedByAuthUserId, reason, status, createdAt, resolvedAt
+Endpoints to implement:
+- `getChallengeConfig(Session)` → `ChallengeConfig`: returns server-driven creation bounds
+- `createChallenge(Session, Challenge)` → `Challenge`: validates `dailyStepCeiling` is within `[minDailyStepCeiling, maxDailyStepCeiling]`, creates challenge with status `draft`. `// TODO(chat): dispatch event 'challenge_created'`
+- `joinChallenge(Session, UuidValue challengeId)` → `ChallengeParticipant`: checks capacity, validates invite code if private, creates participant. `// TODO(chat): dispatch event 'participant_joined'`
+- `startPrivateChallenge(Session, UuidValue challengeId)` → `Challenge`: validates host, verifies min participants, transitions to `active`. `// TODO(chat): dispatch event 'private_started_early'` / `'challenge_started'`
+- `leaveChallenge(Session, UuidValue challengeId)` → `void`: removes participant if initial phase. `// TODO(chat): dispatch event 'participant_left'`
+- `syncSteps(Session, int steps, String source)` → `DailyStepTelemetry`: updates participant steps, runs anti-cheat check against challenge's `dailyStepCeiling` (flags `On Hold` if steps exceed ceiling). `// TODO(chat): dispatch event 'anti_cheat_flagged'`, `'user_synced_steps'`, `'rank_overtaken'`
 
-**Enums:**
-- `RewardMode`: winnerTakesAll, top3TieredSplit, goalThresholdEqualProfitShare, milestoneHybrid
-- `TieBreaker`: equalSplit, suddenDeath, consistencyMetric
-- `LaunchType`: public, private
-- `ChallengeStatus`: pendingLaunch, initialPhase, active, validationWindow, completed, archived, cancelled
-- `AntiCheatStatus`: none, onHold, cleared, disqualified
-- `DisputeStatus`: open, upheld, rejected
-- `PayoutStatus`: pending, claimed, autoDisbursed
+## Task 3: Scheduled Jobs & Lifecycle FutureCalls
 
-**Client exceptions:** `InvalidInviteCodeException`, `ChallengeFullException`, `ChallengeExpiredException`, `InsufficientWalletBalanceException`, `StepsNotSyncedException`, `EntryAlreadyExistsException`
+1. **Anti-cheat auto-detector**: runs on step sync. If participant's single-day step total > challenge `dailyStepCeiling` → sets status `onHold`, creates event alert. `// TODO(chat): dispatch event 'anti_cheat_vote_opened'`
+2. **Phase transition worker**:
+   - `initialPhase` end: if public → auto-start `active` (`// TODO(chat): dispatch event 'challenge_started'`); if private with < min participants → status `cancelled` (`// TODO(chat): dispatch event 'challenge_cancelled'`)
+3. **Validation window**:
+   - FutureCall #1 at `endAt`: compute winner(s), calculate payoutAmount. `// TODO(chat): dispatch event 'challenge_completed'`, `'validation_window_opened'`, `'sudden_death_started'`
+   - FutureCall #2 at `endAt + 24h`: check disputes, set status `completed`. `// TODO(chat): dispatch event 'payout_ready'`
+   - FutureCall #3 at `endAt + 24h + 30d`: auto-disburse if unclaimed. `// TODO(chat): dispatch event 'payout_disbursed'`
+   - FutureCall #4 at `endAt + 24h`: process host cut. `// TODO(chat): dispatch event 'host_cut_paid'` / `'host_cut_forfeited'`
 
-- [ ] **Step 1:** Write all model files
-- [ ] **Step 2:** Run `serverpod generate`
-- [ ] **Step 3:** Verify generated client models appear in `baktaz_client/lib/src/protocol/`
-- [ ] **Step 4:** Commit `feat(challenge): add server domain models and enums`
+## Task 4: Migrations & Wiring
 
-## Task 2: ChallengeEndpoint
-
-**Files:**
-- Create: `baktaz_server/lib/src/features/challenge/endpoint/challenge_endpoint.dart`
-- Create: `baktaz_server/lib/src/features/challenge/data/repository/challenge_lifecycle_repository.dart`
-- Create: `baktaz_server/lib/src/features/challenge/data/repository/challenge_discovery_repository.dart`
-- Create: `baktaz_server/lib/src/features/challenge/data/repository/challenge_leaderboard_repository.dart`
-- Modify: `baktaz_server/lib/src/app/injection/service_locator.dart`
-
-Endpoint methods:
-| Method | Signature | Rules |
-|--------|-----------|-------|
-| getActiveChallengeSummary | `(Session) → ActiveChallengeSummary?` | Authenticated; includes `hasArchived: bool` (Q121) |
-| getArchiveChallenges | `(Session) → List<ChallengeArchive>` | Completed challenges where user was participant |
-| getArchiveChallengeDetail | `(Session, UuidValue) → ChallengeCompletionResult` | Read-only |
-| getChallengeDashboard | `(Session, UuidValue) → ChallengeDashboard` | Deepening Mandate 1: single query, eager-load challenge + top5 + user + rival |
-| searchChallenges | `(Session, {query, feeRange, durations, modes, sortBy, offset, limit}) → List<ChallengeSummary>` | Offset pagination, filters status.inSet([pendingLaunch, initialPhase]) |
-| validateInviteCode | `(Session, String) → ChallengeDetail` | Throws InvalidInviteCodeException / ChallengeExpiredException |
-| getChallengeDetails | `(Session, UuidValue) → ChallengeDetail` | |
-| joinChallenge | `(Session, UuidValue) → ChallengeParticipant` | Idempotent (unique constraint), txn: wallet ≥ fee → debit escrow → insert participant |
-| leaveChallenge | `(Session, UuidValue)` | Pre-launch only; refund escrow |
-| getLeaderboard | `(Session, UuidValue, {afterId, limit}) → List<ChallengeLeaderboardEntry>` | Cursor-based |
-| getUserRank | `(Session, UuidValue) → UserRankSummary` | |
-| syncSteps | `(Session, int) → void` | Update totals, recompute ranks, anti-cheat spike check |
-| createChallenge | `(Session, ChallengeCreateRequest) → Challenge` | Requires Scope.premium |
-| startPrivateChallenge | `(Session, UuidValue) → Challenge` | Host-only; debit escrow; status→active |
-| claimPayout | `(Session, UuidValue) → WalletTransaction` | Q111 + Q139: debits escrow → credits wallet |
-| voteAntiCheat | `(Session, UuidValue, UuidValue, bool) → void` | Insert vote; tally; pass/fail resolution |
-| fileDispute | `(Session, UuidValue, String) → Dispute` | validationWindow only; triggers community vote |
-
-- [ ] **Step 1:** Write failing integration test skeleton
-- [ ] **Step 2:** Implement repository layer
-- [ ] **Step 3:** Implement endpoint methods
-- [ ] **Step 4:** Register DI
-- [ ] **Step 5:** Unskip + pass integration tests
-
-## Task 3: Scheduled Jobs & Lifecycle Triggers
-
-**Files:**
-- Create: `pending_challenge_cancellation_call.dart`
-- Create: `public_phase_expiry_call.dart`
-- Create: `validation_window_payout_call.dart`
-
-Jobs:
-1. **Pending auto-cancel**: private challenges past 30-day window → status cancelled
-2. **Public phase expiry**: initialPhase past startAt → if min participants met → active; else cancel + refund
-3. **Validation window** (Q101):
-   - FutureCall #1 at `endAt`: compute winner(s), calculate payoutAmount
-   - FutureCall #2 at `endAt + 24h`: check disputes, set status=completed
-   - FutureCall #3 at `endAt + 24h + 30d`: auto-disburse if unclaimed
-4. **Sudden death tie-breaker**: when tie detected, extend 24h for tied participants only
-
-- [ ] **Step 1:** Write FutureCall classes
-- [ ] **Step 2:** Register calls in server startup
-- [ ] **Step 3:** Integration test each trigger path
-- [ ] **Step 4:** Commit `feat(challenge): add lifecycle future calls`
-
-## Task 4: Migrations & Flutter Wiring
-
-- [ ] **Step 1:** Run `create_migration` (MCP tool) — review generated SQL
-- [ ] **Step 2:** Run `apply_migrations` (MCP tool)
-- [ ] **Step 3:** `tail_server_logs` sanity check
-- [ ] **Step 4:** Wire every Flutter `// TODO(server)` call site to real client calls
-- [ ] **Step 5:** Unskip previously-skipped Flutter data-layer tests
-- [ ] **Step 6:** Commit `feat(challenge): wire flutter repos to live endpoints`
+1. Run `create_migration` + `apply_migrations`
+2. Remove old home challenge stubs
+3. Wire Flutter `// TODO(server)` calls to endpoints

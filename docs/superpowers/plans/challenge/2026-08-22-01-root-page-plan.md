@@ -1,5 +1,7 @@
 # 2026-08-22-01 Root Page Plan
 
+> **PREREQUISITE:** This plan depends on `2026-08-22-00-foundation-plan.md` being complete. Do not start until `ChallengeCubit`, `ChallengeState`, `IChallengeLifecycleRepository`, `IChallengeDiscoveryRepository`, `IChallengeLeaderboardRepository`, and typed routes exist.
+
 **Goal:** Implement the root Challenge Page (`/challenge`) with dynamic `initial` (Trophy Case layout) and `registered` (Pro Challenge Hub) views, host management card, prize pool card, user rank banner, leaderboard preview list, gap meter, and leave dialog.
 
 **Spec:** `docs/superpowers/specs/challenge/2026-08-22-01-challenge-root.md`
@@ -44,10 +46,10 @@
   - Full-screen routes via `$parentNavigatorKey` + `SlideTransitionPage`
   - Deep link guards: auth check → login; enrollment check → `/challenge`
 
-- [ ] **Task 7: Side Effect Listener (Q145)**
-  - Root `ChallengePage` widget listens to `cubit.presentationStream`
-  - Handles `ChallengeStateException` → `FailureHandler.handleException()`
-  - No per-route side effect listeners
+- [ ] **Task 7: Side Effect Listener (Q2 — per-cubit pattern)**
+  - Root `ChallengePage` listens to `cubit.presentationStream` for enrollment-level errors only (e.g., challenge-not-found on init)
+  - Sub-route Cubits (`ChallengeExploreCubit`, `ChallengeDetailsCubit`, `ChallengeLeaderboardCubit`, `ChallengeCreateCubit`) each emit their own presentation streams. Their respective screens handle side effects independently via `BlocSignalPresentationMixin`.
+  - This matches the per-cubit pattern from foundation plan (Q2 RESOLVED).
 
 - [ ] **Task 8: Gap Meter Widget**
   - Create `gap_meter_widget.dart`

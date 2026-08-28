@@ -1,6 +1,7 @@
 # Challenge Page Specification — Shared Models and Cross-Cutting Concerns
 
 - **Date**: 2026-08-22
+- **Updated**: 2026-08-28 (Payment integration & Anti-cheat daily step ceiling)
 - **Parent Reference**: Part of the Challenge Page specification suite — see 00-overview.md
 
 ## 5.3 Presentation Layer Design & Theme Tokens
@@ -27,18 +28,25 @@
     - 🥉 **Bronze (3rd Place)**: `#CD7F32`
   - **Zero Layout Shift Shimmer Skeletons**: During the `loading` state, custom `Shimmer` skeleton placeholders (imported from `*_shared`) mirror the exact card dimensions and flex layouts of `ChallengeRegisteredView` and `ChallengeDefaultView` to eliminate layout shift upon data resolve.
 
+## Challenge Entity Fields (Server & Client)
+- `id`, `name`, `description`, `entryFee`, `currency`
+- `prizePercentage` (default 90.0), `platformFeePercentage` (default 10.0), `hostCutPercentage` (default 0.5)
+- `dailyStepCeiling: int` — Anti-cheat threshold set by host at creation (range 10,000–50,000, default 30,000). Participants logging steps above this daily threshold are auto-flagged for anti-cheat community review.
+- `dailyStepGoal: int?`, `totalStepGoal: int?`
+- `status` (ChallengeStatus), `startsAt`, `endsAt`
+
 ## 4.2 Host Controls, Creation & Forfeiture Lifecycle
 
 - If `activeChallenge.isHost == true`:
   - Renders **Host Management Card** on `ChallengeRegisteredView` with `Invite Friends / Share Code` button.
 - **Private Challenges**:
-  - Host pays entry fee to launch.
+  - Host pays entry fee to launch via HitPay (payment intent flow).
   - Can archive/cancel challenge before launch if minimum participants are not met.
   - Automatic cancellation occurs after a 30-day pending window if minimum participants are not reached.
   - Host can tap `Start Challenge Now` CTA once minimum participants join.
 - **Public Challenges**:
-  - Host pays entry fee upfront during creation.
-  - If public challenge fails to meet minimum participants by start date, host entry fee is forfeited, while participant entry fees are 100% refunded to wallet.
+  - Host pays entry fee upfront during creation via HitPay.
+  - If public challenge fails to meet minimum participants by start date, host entry fee is forfeited, while participant entry fees are 100% refunded via HitPay API.
   - Displays "Initial Phase" countdown timer (`Starts in X days/hours`).
 
 ### Private Challenge Start/End Recalculation Rule
@@ -74,19 +82,19 @@ Upon challenge end countdown reaching 0:
    - **Rejected**: dispute dismissed; payout proceeds.
    - Multiple disputes may coexist; payout FutureCall waits until ALL disputes are resolved.
 
-**Q113 — FutureCall #2 Purpose**: Computes winner(s), calculates payoutAmount, sets status=completed. Does NOT distribute funds. Distribution happens via user claim or FutureCall #3 (auto-disbursement after 30 days).
+**Q113 — FutureCall #2 Purpose**: Computes winner(s), calculates payoutAmount (gross prize - tax - fee), sets status=completed. Does NOT distribute funds. Distribution happens via user claim or FutureCall #3 (auto-disbursement after 30 days).
    - All active participants vote on the disputed result (same simple-majority mechanism as anti-cheat voting).
    - **Upheld**: payout blocked; affected results are recalculated.
    - **Rejected**: dispute dismissed; payout proceeds.
    - Multiple disputes may coexist; payout FutureCall waits until ALL disputes are resolved.
-3. **Automatic Ledger Payout**: If NO participant files a dispute within the 24-hour window (or all disputes resolved as rejected), prize pool payouts automatically distribute to winner wallets via ledger.
+3. **Automatic Ledger Payout**: If NO participant files a dispute within the 24-hour window (or all disputes resolved as rejected), prize pool payouts automatically distribute to winners via HitPay (GCash/Maya).
 3. **Post-Distribution Standings (Q139)**:
-    - **Winners**:
-      - See **"Claim Payout"** CTA button → calls `claimPayout` endpoint → debits escrow → credits wallet → cubit resets to `.initial(isPremium:)` (Q139) — user returns to Trophy Case to join another challenge
-      - Auto-disbursed after 30d: FutureCall #3 credits wallet → same `.initial` reset
-    - **Non-Winning Participants (Q140)**:
-      - See **"Thanks for Participating"** banner + final podium standings and archive button → cubit resets to `.initial(isPremium:)` (Q140) — user free to join another challenge
-      - Archive button opens archive view from Trophy Case
+     - **Winners**:
+       - See **"Claim Payout"** CTA button → **TODO(payment)**: calls `claimPayout` endpoint → creates HitPay payout to winner's saved payout account → cubit resets to `.initial(isPremium:)` (Q139) — user returns to Trophy Case to join another challenge
+       - Auto-disbursed after 30d: FutureCall #3 creates HitPay payout → same `.initial` reset
+     - **Non-Winning Participants (Q140)**:
+       - See **"Thanks for Participating"** banner + final podium standings and archive button → cubit resets to `.initial(isPremium:)` (Q140) — user free to join another challenge
+       - Archive button opens archive view from Trophy Case
 
 ## 4.5 Configurable Tie-Breaker Rules
 
@@ -97,6 +105,7 @@ Host selects tie-breaker rule during challenge creation:
   - Runs INSIDE the 24-hour Validation & Dispute Window (not a separate phase).
   - Only TIED participants' steps count during the extension; all other participants are frozen.
   - Winner = higher step count recorded during the extension window.
+  - *Note: The `Sudden Death` extension runs concurrently with the 24-hour Validation & Dispute Window (not a separate phase). When challenge timer reaches 0 and tie is detected, the 24-hour sudden death extension begins immediately. During this window, only TIED participants' steps count. After extension ends, if ties persist, fall back to `equalSplit` of combined positions.*
   - Still tied after extension → falls back to Equal Split of the combined positions.
 - **`Consistency Metric`**: Resolves ties based on the highest number of days meeting the daily step goal.
 
@@ -116,7 +125,7 @@ Two optional goal fields on `Challenge`:
 
 ## 4.6 Anti-Cheat Flagging & Community Majority Voting
 
-1. **Auto-Detect (Q126 Option A)**: Server detects step anomalies (spike > 5000/1h, duplicate timestamps, impossible rate > 10000/hour, zero-step pattern > 3 days) → auto-places suspect on `On Hold` status. No manual flagging needed.
+1. **Auto-Detect (Q126 Option A)**: Server detects step anomalies — specifically when a participant's single-day step total exceeds the challenge's configured **`dailyStepCeiling`** (set by host, 10,000–50,000, default 30,000), duplicate timestamps, or zero-step pattern > 3 days → auto-places suspect on `On Hold` status. No manual flagging needed.
 2. **Notification & Explanation**: Alert and explanation request are delivered to the `Events` tab.
 3. **Community Voting (Q127 Option A)**: Same vote mechanism for both auto-detect and manual dispute. Participants vote via simple majority (50% + 1 threshold):
    - **Pass (Innocent)**: `On Hold` status is revoked, and normal ranking resumes.
@@ -138,19 +147,19 @@ The challenge engine dispatches real-time push notifications and in-app event re
 ## 6. Security & Access Rules
 
 - Premium user check (`Scope.premium`) gates the "Create Challenge" button/route.
-- Entering 6-digit code validates format inline; wallet check and non-refundable entry fee disclaimer (`ConfirmationDialog`) occur on `ChallengeDetailsScreen` prior to final enrollment. Entry Fees are strictly non-refundable once paid.
+- Entering 6-digit code validates format inline; **TODO(payment)**: non-refundable entry fee disclaimer (`ConfirmationDialog`) occurs on `ChallengeDetailsScreen` prior to payment flow initiation. Entry Fees are strictly non-refundable once paid.
 - Challenge end countdown reaching 0: `endAt` reached → status transitions `active` → `validationWindow` (24h dispute window). Steps FROZEN at endAt — no last-second inflation during dispute window.
-- **Q102 Payout Distribution**: Prize pool = sum(entryFees). App fee = entryFee × `appFeePercentage` (host-configurable, capped by AppConfig.maxAppFeePercentage, default 10%). Host cut = entryFee × `hostCutPercentage` (host-configurable, capped by AppConfig.maxHostCutPercentage, default 5%). Percentages SET BY HOST at challenge creation, stored on Challenge entity (immutable after joins begin). Net to winner(s) = pool - appFee - hostCut. Distribution per reward mode (WTA=100% to 1st, Tiered=host-configured split, Goal=equal among qualifiers, Hybrid=tiered+bonus). Ties resolved per tie-breaker. Each winner gets WalletTransaction credit. If no dispute filed → auto payout via ledger. If dispute filed → community vote determines outcome.
+- **Q102 Payout Distribution**: **TODO(payment)**: Prize pool = sum(entryFees). App fee = entryFee × `appFeePercentage` (host-configurable, capped by AppConfig.maxAppFeePercentage, default 10%). Host cut = entryFee × `hostCutPercentage` (host-configurable, capped by AppConfig.maxHostCutPercentage, default 0.5%). Percentages SET BY HOST at challenge creation, stored on Challenge entity (immutable after joins begin). Net to winner(s) = pool - appFee - hostCut - tax - payout fee. Distribution per reward mode (WTA=100% to 1st, Tiered=host-configured split, Goal=equal among qualifiers, Hybrid=tiered+bonus). Ties resolved per tie-breaker. Each winner gets HitPay payout. If no dispute filed → auto payout via FutureCall #3. If dispute filed → community vote determines outcome.
 
 ## 7. Testing Strategy
 
-- **Unit Tests**: Test `ChallengeCubit` state transitions (`loading` → `initial`/`registered`/`done`, post-challenge reset to `.initial` (Q139/Q140), background init check, invite code validation, wallet checks, non-refundable entry fee disclaimer, refresh flow, FailureHandler error mapping). No offline caching — serverpod client always fresh.
+- **Unit Tests**: Test `ChallengeCubit` state transitions (`loading` → `initial`/`registered`/`done`, post-challenge reset to `.initial` (Q139/Q140), background init check, invite code validation, **TODO(payment)**: payment intent flow, non-refundable entry fee disclaimer, refresh flow, FailureHandler error mapping). No offline caching — serverpod client always fresh.
 - **Golden Tests**: Alchemist golden tests for `ChallengeDefaultView`, `ChallengeRegisteredView` (including host card, 24-hour dispute window banner & completion banners), `RulesBottomSheet`, `AntiCheatVoteBottomSheet`.
 
 
 ### Dialog Anatomy (shared standard)
 All four challenge dialogs share one anatomy: title (headlineSmall), body (bodyMedium), risk/data rows in mono where numeric, actions right-aligned. Destructive actions use `BaktazButton.destructive`.
-1. **NonRefundableDisclaimerDialog** (`non_refundable_disclaimer_dialog.dart`): Title "Confirm Entry". Body states entry fees strictly non-refundable once paid + acceptance of rules and dispute policy. Mono data rows: Entry Fee / Your Balance. Actions: [Cancel] [Pay & Join].
+1. **NonRefundableDisclaimerDialog** (`non_refundable_disclaimer_dialog.dart`): Title "Confirm Entry". Body states entry fees strictly non-refundable once paid + acceptance of rules and dispute policy. Mono data rows: Entry Fee. Actions: [Cancel] [Continue to Payment].
 2. **AntiCheatVoteBottomSheet** (`anti_cheat_vote_bottom_sheet.dart`): Modal bottom sheet (Q138). Step-log timeline + accused card (name, anomaly summary) + Innocent/Cheater buttons (Q130 B) + live result bar (majority so far). Dismissable. Button disabled after voted or window closed.
 3. **LeaveChallengeDialog** (`leave_challenge_dialog.dart`): Title "Leave Challenge?" Body warns entry fee forfeited, irreversible. Actions: [Stay] [Leave] (destructive).
 4. **StartChallengeConfirmationDialog** (`start_challenge_confirmation_dialog.dart`): Title "Start Challenge Now?" Body explains step counting begins immediately and end date updates to match duration. Mono rows: Starts = Now / Ends = computed (start time + duration). Actions: [Cancel] [Start].
@@ -158,9 +167,9 @@ All four challenge dialogs share one anatomy: title (headlineSmall), body (bodyM
 ### Rules Bottom Sheet — "The Rulebook" (`rules_bottom_sheet.dart`)
 Bottom sheet (radiusXLarge top corners). Header: "Rules & Guidelines" title + close icon. Sections separated by BaktazDivider, each with eyebrow header (labelLarge letterspaced):
 1. HOW WINNERS ARE DECIDED — ranking by total verified steps start to end
-2. STEP VALIDATION — health source sync; suspicious spikes go to participant vote
+2. STEP VALIDATION — health source sync; daily step ceiling configured by host (e.g. 30,000 steps/day); suspicious spikes above ceiling go to participant vote
 3. DISPUTES — 24-hour window after timer zero; no dispute = auto payout
-4. ENTRY FEES — non-refundable once paid; public challenge underfill refunds participants 100%, host fee forfeited
+4. ENTRY FEES — non-refundable once paid; public challenge underfill refunds participants 100% via HitPay, host fee forfeited
 
 Content adapts per challenge reward mode where relevant.
 

@@ -1,15 +1,18 @@
 # 2026-08-22-04 Leaderboard Plan
 
+> **PREREQUISITE:** This plan depends on `2026-08-22-00-foundation-plan.md` being complete. Do not start until `IChallengeLeaderboardRepository`, `ChallengeCubit`, and typed routes exist.
+
 **Goal:** Implement the Full Leaderboard Page (`/challenge/leaderboard/:id`) — "The Arena Dashboard" with sticky header, participant search, column sorting, infinite scroll, responsive layout, medals, daily pulse icons, and Gap Meter.
 
 **Spec:** `docs/superpowers/specs/challenge/2026-08-22-04-leaderboard.md`
 
 ## Tasks
 
-- [ ] **Task 1: LeaderboardCubit**
+- [ ] **Task 1: ChallengeLeaderboardCubit** (`challenge_leaderboard_cubit.dart`)
   - Connect to `ChallengeLeaderboardRepository`
   - State: `loading`, `loaded`, `error` (via FailureHandler)
   - Methods: `init()`, `refresh()`, `changeSort()`, `changeSearch()`, `loadMore()`
+   - Cubit mixes in `BlocSignalPresentationMixin` and uses `safeRun(onException: _failureHandler.handleException)`. The `ChallengeLeaderboardPage` listens to its own presentation stream for error toasts (Q2 — per-cubit side-effect architecture, aligned with foundation plan).
 
 - [ ] **Task 2: ChallengeLeaderboardPage**
   - Header: challenge title, ID, stats chips (players, prize pool, days left)

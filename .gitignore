@@ -154,3 +154,5 @@ package-lock.json
 baktas_shared/build/ios/SourcePackages
 data/stream_store
 data/iii-config.yaml
+# Widget Preview related
+.widget_preview/

@@ -1,6 +1,6 @@
 ---
 trigger: glob
-description: Flutter directory structure, feature organization, Cubit/Repo layers, and routing
+description: Flutter directory structure, feature organization, Cubit/Repo layers, Service/Repository separation, and routing
 globs: *_flutter/lib/**, *_admin/lib/**, *_shared/lib/**, lib/**
 ---
 
@@ -12,6 +12,22 @@ globs: *_flutter/lib/**, *_admin/lib/**, *_shared/lib/**, lib/**
 - Feature: `data/`, `domain/`, `presentation/`
 - `presentation/views/` (screens/pages) + `widgets/`
 - Dialogs: `presentation/widgets/dialogs/` with `_dialog` suffix
+
+## Screen vs Page
+
+- **Screen** — full view that does **not** live inside a nav bar or tab bar. Navigated to via route (e.g., detail, create, success).
+- **Page** — view that **lives inside** a nav bar or tab bar (e.g., one tab of a `BottomNavigationBar` or `TabBar`).
+
+**Naming:**
+- Screen files end in `_screen.dart` (e.g., `challenge_create_screen.dart`)
+- Page files end in `_page.dart` (e.g., `challenge_page.dart`)
+
+**Example:**
+```
+ChallengePage          ← Page (lives in BottomNavigationBar tab)
+  └── ChallengeDetailScreen  ← Screen (navigated to from page)
+  └── ChallengeLeaderboardPage  ← Page (nested tab bar)
+```
 
 ## Layers
 
@@ -40,9 +56,6 @@ globs: *_flutter/lib/**, *_admin/lib/**, *_shared/lib/**, lib/**
 
 ## Feature Structure
 
-
-## Feature Structure
-
 See `.agents/reference/flutter-feature-structure.md` for complete directory tree and naming conventions.
 
 ## Routing
@@ -62,7 +75,39 @@ See `.agents/reference/flutter-feature-structure.md` for complete directory tree
 5. Repo Interface
 6. Repo Implementation
 7. DTOs
-8. i18n keys
+8. I18n keys
 9. Codegen — see operations.md for full codegen order
 
 See `.agents/reference/flutter-feature-workflow.md` for step-by-step guide.
+
+---
+
+## Service vs Repository
+
+### Service
+- Talks directly to external integration (HTTP, packages, platform APIs)
+- Owns **how** — no business logic
+- Examples: HitPay HTTP client, Chopper client, platform-specific SDK wrapper
+- Located in: `data/service/`
+
+### Repository
+- Orchestrates one or more services (injected via getIt/injectable)
+- Owns **what** — exposes clean domain API to BLoCs/Cubits
+- Examples: PaymentRepository, PayoutRepository, ChallengeRepository
+- Located in: `data/repository/`
+
+### Rule of Thumb
+- If it's talking to something outside the app, it's a **Service**
+- If it's deciding what to do with that data, it's a **Repository**
+- BLoCs/Cubits should only depend on **Repositories**, never Services
+
+### Dependency Chain
+
+```
+Cubit → Repository → Service → External (HTTP, SDK, Platform)
+```
+
+### Naming Convention
+- Services: `<Name>Service` (e.g., `HitPayService`, `ChopperService`)
+- Repositories: `<Name>Repository` (e.g., `PaymentRepository`, `PayoutRepository`)
+- Repository interfaces: `I<Name>Repository` (e.g., `IPaymentRepository`)

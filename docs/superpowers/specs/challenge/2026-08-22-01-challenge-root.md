@@ -1,6 +1,7 @@
 # Challenge Page Specification — Root Tab Page
 
 - **Date**: 2026-08-22
+- **Updated**: 2026-08-28 (Payment integration resolved)
 - **Parent Reference**: Part of the Challenge Page specification suite — see 00-overview.md
 
 ## Route
@@ -19,11 +20,12 @@
 1. User enters valid 6-digit invite code in `ChallengeInitialView`.
 2. Code errors (invalid code format, expired challenge) show inline feedback on input card.
 3. Valid code redirects to `ChallengeDetailsScreen` (`/challenge/detail/:id`).
-4. Payment / entry fee confirmation & wallet check occur on `ChallengeDetailsScreen` before final enrollment:
+4. **TODO(payment)**: Entry fee payment occurs via HitPay payment intent flow on `ChallengeDetailsScreen`:
+   - User taps "Join Challenge" → shows `NonRefundableDisclaimerDialog`
+   - Creates payment intent via `PaymentEndpoint.createPaymentIntent()`
+   - Opens HitPay WebView for payment
+   - Entry confirmed via webhook after payment success
    - Entry Fees are strictly non-refundable once paid.
-   - Before user confirms entry fee payment on `ChallengeDetailsScreen`, display explicit `ConfirmationDialog` with legal disclaimer confirming non-refundable terms.
-   - Insufficient wallet balance triggers `ConfirmationDialog` with cash-in CTA redirecting to `/account`.
-   - Sufficient balance processes entry fee and completes enrollment.
 
 ## 5.2 Registered View (`ChallengeRegisteredView`) — "Pro Challenge Hub"
 
@@ -55,7 +57,7 @@
     - Supports pull-to-refresh to trigger leaderboard sync.
     - "See All" button -> Redirects to `/challenge/leaderboard/:id`.
     - **Action Footer** (Q81): Secondary "Leave Challenge" button (`BaktazButton.secondary`). Disabled for Hosts. For participants, tapping opens `LeaveChallengeDialog` for confirmation before unenrolling.
-  - **Pre-launch** (`challenge.status == initialPhase`): `leaveChallenge()` refunds wallet (undoes entry fee debit via `WalletTransactions` credit), removes participant row, emits `.initial(isPremium:)` → user can re-join any challenge
+  - **Pre-launch** (`challenge.status == initialPhase`): `leaveChallenge()` — **TODO(payment)**: Initiate refund via HitPay API for participant, forfeit host fee. Removes participant row, emits `.initial(isPremium:)` → user can re-join any challenge
   - **Post-launch** (`challenge.status != initialPhase`): Leave button hidden/disabled — competition integrity. User stays enrolled until challenge ends.
     - **Sudden Death Banner & Leaderboard (Q87 + Q136 Option A)**:
   - During active sudden death extension: red accent banner "⚡ SUDDEN DEATH" at top of dashboard
@@ -69,10 +71,10 @@
       - **disputePending**: "Dispute Pending" banner + explanation, no actions until resolved
       - **disputeUpheld**: "Dispute Upheld - Recalculating" banner, new winner computation triggered
       - **disputeRejected**: "Dispute Rejected" banner + Claim Payout activates
-      - **completed + Winner**: **"Claim Payout"** button → REAL ACTION: calls `claimPayout` endpoint, debits escrow → credits wallet, shows confirmation
+      - **completed + Winner**: **"Claim Payout"** button → **TODO(payment)**: calls `claimPayout` endpoint → creates HitPay payout to winner's saved GCash/Maya account → shows confirmation
       - **completed + Non-Winner (Q140)**: **"Thanks for Participating"** button → read-only final rank + archive → cubit resets to `.initial(isPremium:)` (Q140)
       - **post-claim (Q139)**: After winning user claims payout → cubit resets to `.initial(isPremium:)` — user returns to Trophy Case, free to join/explore another challenge. No active enrollment.
-      - **auto-disbursed**: If winner doesn't claim within 30 days → FutureCall #3 auto-credits wallet → same `.initial` reset as claim
+      - **auto-disbursed**: If winner doesn't claim within 30 days → FutureCall #3 auto-creates HitPay payout → same `.initial` reset as claim
       - **Note**: If winner does NOT claim within 30 days of button appearing, funds auto-disbursed (FutureCall #3).
       - **disputed**: "Dispute Pending" banner, no actions until resolved
 
@@ -86,7 +88,7 @@
 
 ### ChallengeDonePage — Final Outcome Screen (Q115 Option A)
 When challenge completes (FutureCall #2 sets status=completed), root cubit emits `.done({result})` → renders `ChallengeDonePage` (replaces registered dashboard).
-- **Winner**: Payout Seal (breaks open, reveals amount) + "Claim Payout" button (REAL ACTION) + receipt breakdown + Archive
+- **Winner**: Payout Seal (breaks open, reveals amount) + "Claim Payout" button (REAL ACTION) + receipt breakdown (gross prize, tax withheld, payout fee, net payout) + Archive
 - **Non-Winner (Q140)**: Subdued seal + "Thanks for Participating" button (outlined) + final rank + Archive → cubit resets to `.initial(isPremium:)`
 - **Payout Claimed**: Green checkmark seal + "Payout Claimed" confirmation + transaction record link
 - **Payout Auto-Disbursed**: Seal with ⏰ icon + "Payout Auto-Disbursed" + transaction record link
@@ -97,7 +99,7 @@ When challenge completes (FutureCall #2 sets status=completed), root cubit emits
 - **Auto-cancel**: If minimum participants not met by end of initial phase → status `cancelled`
 - **Manual cancel**: Host can cancel during initial phase → status `cancelled`
 - **Post-launch**: Challenge CANNOT be cancelled. Users can leave (non-refundable).
-- **Refund**: All participants get entry fee refunded to wallet
+- **Refund**: **TODO(payment)**: Participant entry fees refunded via HitPay API. Host entry fee forfeited (not refunded).
 - **Archive**: Cancelled challenges show in archive with "Cancelled" badge
 - **No active view**: Cancelled challenges hidden from dashboard
 

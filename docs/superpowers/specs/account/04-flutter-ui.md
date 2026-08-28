@@ -1,0 +1,1312 @@
+# Account Feature Architecture Spec — Flutter UI & Components
+
+> **Document Version:** 1.0  
+> **Date:** 2026-08-28  
+> **Parent Spec:** `docs/superpowers/specs/account/00-overview.md`  
+> **Package:** `baktaz_flutter` (`lib/features/account/presentation/`)  
+
+---
+
+## 1. Overview & Styling Principles
+
+The `/account` presentation tier follows Baktaz design system guidelines (`DESIGN.md` & `baktaz_shared` UI library).
+- **Design Tokens**: Standardized `AppSizes.*` spacing, `AppTextStyle` typography, and dynamic `Theme.of(context).colorScheme` color palette.
+- **Shared UI Components**: `BaktazAvatar`, `BaktazCard`, `BaktazButton`, `BaktazListRow`, `BaktazStatusBadge`, `BaktazTextField`, `BaktazSectionHeader`, `BaktazDivider`, `ConfirmationDialog`.
+- **Localization**: All visible text strings are localized via `context.l10n.*` getters.
+- **Form Factor & Dark Mode**: Supports mobile form factor (with tab bar alignment) and dark mode surface lightening.
+
+---
+
+## 2. Screen & Widget Specifications
+
+### 2.1 `AccountPage` (`/account`) — Main Account Overview
+
+`AccountPage` is a **Page** living inside a `BottomNavigationBar` tab. It acts as the hub for user metadata, lifetime statistics, and sub-screen navigation links.
+
+```text
++-------------------------------------------------------+
+|  Account                                              |
++-------------------------------------------------------+
+|  [Avatar]  Juan Dela Cruz             [ Edit Profile ]|
+|            @juandelacruz                              |
+|            Member since Aug 2026                      |
++-------------------------------------------------------+
+|  [ Regular User (Free) ]              [ Upgrade Host ]|
++-------------------------------------------------------+
+|  LIFETIME CHALLENGE STATS                             |
+|  +-------------------+ +------------------+ +--------+|
+|  | 142,500           | | 12               | | 4      ||
+|  | Challenge Steps   | | Joined           | | Won    ||
+|  +-------------------+ +------------------+ +--------+|
++-------------------------------------------------------+
+|  ACCOUNT & MONETIZATION                               |
+|  [Icon] Manage Payment & Payouts                  (>) |
+|  [Icon] Health Sync & Step Source (Active Badge)   (>) |
++-------------------------------------------------------+
+|  PREFERENCES & SETTINGS                               |
+|  [Icon] Push Notifications                         (>) |
+|  [Icon] Language (English)                         (>) |
+|  [Icon] Dark Mode (System)                         (>) |
++-------------------------------------------------------+
+|  SUPPORT & LEGAL                                      |
+|  [Icon] Help Center & FAQs                         (>) |
+|  [Icon] Share Feedback                             (>) |
+|  [Icon] Terms & Privacy Policy                     (>) |
+|  [Icon] About Baktaz (v1.0.0)                      (>) |
++-------------------------------------------------------+
+```
+
+#### Key Components:
+- **`AccountHeaderCard`**: Custom widget displaying `BaktazAvatar` (64px), full name (`AppTextStyle.headlineMedium`), username (`AppTextStyle.bodyMedium`), and member since date. Includes "Edit Profile" button routing to `/account/profile`.
+- **Host Subscription Banner**: Card showing host badge (`Regular User` vs `Premium Host`). Displays "Upgrade to Host" button if free tier, or "Manage Subscription" if subscribed. Routes to `/account/host-subscription`.
+- **`LifetimeStatsGrid`**: 3-column stats card using `BaktazCard`. Displays `challengeStepsTotal` (formatted with commas), `challengesJoined`, and `challengesWon`.
+- **Navigation Groups**: Grouped using `BaktazSectionHeader` and `BaktazListRow` with leading icons and trailing chevron indicators.
+
+---
+
+### 2.2 `ProfileScreen` (`/account/profile`) — User Profile & Identity
+
+A standalone **Screen** pushed onto the navigator stack for managing user identity, account settings, and session actions.
+**This screen owns BOTH profile editing (Avatar, Name, Username) AND the Logout destructive action.**
+
+```text
++-------------------------------------------------------+
+| (<) Profile                                   [Save]  |
++-------------------------------------------------------+
+|                   [ Avatar (80px) ]                   |
+|                  ( Change Photo Icon )                |
+|                                                       |
+|  Full Name                                            |
+|  [ Juan Dela Cruz                                   ] |
+|                                                       |
+|  Username                                             |
+|  [ @juandelacruz                                    ] |
+|  * Usernames must be unique and alphanumeric          |
+|                                                       |
+| ----------------------------------------------------- |
+|  ACCOUNT SETTINGS                                     |
+|  [ Request for Account Deletion (Red Text/Tile)     ] |
+|                                                       |
+|  [ Log Out                 (Red Destructive Button) ] |
++-------------------------------------------------------+
+```
+
+#### Layout & Logic:
+- **Form Controls**: Uses `BaktazTextField` with prefix icons for Full Name and Username.
+- **Avatar Selection**: Tapping avatar triggers bottom sheet options: "Take Photo", "Choose from Gallery", or "Remove Photo".
+- **Validation**: Username input checked against standard regex (`^[a-zA-Z0-9_]{3,20}$`).
+- **Save Action**: Calls `AccountCubit.updateProfile(...)`. Displays full-screen loading overlay while updating. Upon success, pops back to `/account`.
+- **Logout**: Red destructive `BaktazButton` at the bottom of the form, separated by a `Divider`. Triggers `LogoutConfirmationDialog`. On confirm, invalidates Serverpod session and routes to `/login`.
+- **Account Deletion**: Red text tile above logout. Triggers `DeleteAccountConfirmationDialog`.
+
+---
+
+### 2.3 `HostSubscriptionScreen` (`/account/host-subscription`) — Host Tier Upgrade
+
+Dedicated checkout and voucher management screen for host monetization privileges.
+
+```text
++-------------------------------------------------------+
+| (<) Premium Host Subscription                         |
++-------------------------------------------------------+
+| Unlock Challenge Hosting & Earn Host Cuts             |
+| Create public/private challenges and earn 0.5% cut.   |
+|                                                       |
+| SELECT PLAN                                           |
+| (•) Monthly Host                               ₱299/mo |
+| ( ) 3-Month Host (SAVE 11%)                   ₱799/3mo|
+| ( ) Annual Host (SAVE 25%)                    ₱2699/yr |
+|                                                       |
+| [ SUBSCRIBE NOW ]                                      |
+|                                                       |
+| HAVE A VOUCHER?                                       |
+| [ Voucher Code            ]  [ APPLY ]                |
++-------------------------------------------------------+
+```
+
+---
+
+### 2.4 `PaymentPayoutScreen` (`/account/payment-payout`) — Payment & Payout Management
+
+Manages saved payment methods and payout destinations for host monetization.
+
+```text
++-------------------------------------------------------+
+| (<) Payment & Payout                                  |
++-------------------------------------------------------+
+| SAVED PAYMENT METHODS                                 |
+| [Visa] ****4242  Default              [ Delete ]      |
+| [GCash] +63917xxxxx                  [ Delete ]      |
+|                                                       |
+| [ + Add Payment Method ]                               |
+|                                                       |
+| ----------------------------------------------------- |
+| PAYOUT DESTINATION                                    |
+| [GCash] Juan D. Cruz  ● Verified     [ Edit ]        |
+|                                                       |
+| [ + Add Payout Destination ]                           |
++-------------------------------------------------------+
+```
+
+#### Layout & Logic:
+- **Saved Payment Methods Section**:
+  - Displays list of tokenized `SavedPaymentMethod` records.
+  - "Default" badge rendered using `BaktazStatusBadge(color: green)`.
+  - Tapping "Add Payment Method" opens webview for HitPay tokenization.
+  - Tapping trash icon prompts confirmation dialog before deleting payment token.
+- **Payout Destination Section**:
+  - Highlights single active destination card with verification status badge (`Verified` / `Unverified`).
+  - Tapping "Edit Payout Destination" presents `EditPayoutDestinationDialog`.
+  - Dialog supports choosing channel (`GCash`, `Maya`, `Bank Account`) and inputs for account name and number.
+
+---
+
+### 2.5 `HealthSyncScreen` (`/account/health-sync`) — Telemetry Setup & Diagnostics
+
+Configures device step source (Apple HealthKit on iOS, Health Connect on Android).
+
+```text
++-------------------------------------------------------+
+| (<) Health Sync & Diagnostics                         |
++-------------------------------------------------------+
+| ACTIVE PROVIDER                                       |
+| [Icon] Apple HealthKit               [ Connected ]    |
+|                                                       |
+| DIAGNOSTIC STATUS                                     |
+| Diagnostic Check:              All permissions valid  |
+| Today's Synced Steps:          8,420 steps            |
+| Last Sync Time:                Today, 2:15 PM         |
+|                                                       |
+| [ SYNC NOW ]                                          |
+|                                                       |
+| TROUBLESHOOTING & PERMISSIONS                         |
+| [Icon] Re-check Permissions                       (>) |
+| [Icon] Health Sync FAQ                            (>) |
++-------------------------------------------------------+
+```
+
+#### Diagnostics Matrix Implementation:
+Widget dynamically renders UI components based on diagnostic state:
+
+| State Key | Badge Styling | CTA Button Label & Action |
+|---|---|---|
+| `unsupported` | Grey (`Unsupported`) | Button disabled ("Device Not Supported") |
+| `serviceNotInstalled` | Orange (`Service Missing`) | "Install Health Connect" (Opens Play Store) |
+| `permissionRequired` | Yellow (`Action Needed`) | "Grant Permissions" (Triggers system prompt) |
+| `permissionDenied` | Red (`Access Denied`) | "Open System Settings" (Navigates to app settings) |
+| `connectedNoData` | Blue (`Connected (0 Steps)`) | "Sync Now" |
+| `connectedStaleData` | Orange (`Sync Delayed`) | "Sync Now (Delayed)" |
+| `connected` | Green (`Connected & Active`) | "Sync Now" (Debounce 30s) |
+
+---
+
+### 2.6 Preferences & Settings Screens
+
+- **`NotificationSettingsScreen` (`/account/settings/notifications`)**:
+  - Card with `Switch` toggles for:
+    - Chat & Mentions
+    - Leaderboard Rank Changes
+    - Health Sync Warnings
+    - Daily Step Reminders
+- **`LanguageSettingsScreen` (`/account/settings/language`)**:
+  - List of radio tiles (`English (Default)` active).
+- **`DarkModeSettingsScreen` (`/account/settings/dark-mode`)**:
+  - Radio options: `System Default`, `Light Mode`, `Dark Mode`. Updates app `ThemeMode` immediately via app state controller.
+
+---
+
+### 2.7 Support & Legal Screens
+
+- **`HelpCenterScreen` (`/account/support/help`)**: Searchable FAQ list view answering step sync, payout, and host questions.
+- **`FeedbackScreen` (`/account/support/feedback`)**: Text area form (`BaktazTextField(maxLines: 5)`) with "Submit Feedback" button.
+- **`TermsScreen` (`/account/support/terms`)**: Scrollable markdown reader displaying Terms & Conditions.
+- **`PrivacyScreen` (`/account/support/privacy`)**: Scrollable markdown reader displaying Privacy Policy.
+- **`AboutScreen` (`/account/support/about`)**: Displays Baktaz app logo, version number (`v1.0.0+1`), open-source licenses, and team credits.
+
+---
+
+### 2.8 `LogoutConfirmationDialog`
+
+Triggered from `ProfileScreen` (`/account/profile`) as a destructive action at the bottom of the form. Dialog with warning text ("Are you sure you want to log out?"), "Cancel" button, and red "Log Out" button. Invalidates Serverpod session and routes to `/login`.
+
+---
+
+### 2.9 `AccountHeader` Options Enum
+
+`AccountPage` groups navigation rows by `AccountHeader`. Logout is **not** a list-row option on `AccountPage`; it lives on `ProfileScreen`.
+
+```dart
+enum AccountHeader {
+  myAccount(
+    displayName: 'My Account',
+    options: <String>['profile', 'preferences', 'contacts', 'reviews', 'addresses'],
+  ),
+  support(
+    displayName: 'Support',
+    options: <String>['helpCenter', 'aboutUs', 'privacyPolicy', 'shareFeedback'],
+  ),
+  settings(
+    displayName: 'Settings',
+    options: <String>['language', 'darkMode'],
+  );
+}
+```
+
+| Header | Option keys | Notes |
+|---|---|---|
+| `myAccount` | `profile`, `preferences`, `contacts`, `reviews`, `addresses` | `profile` routes to `ProfileScreen`, which owns logout |
+| `support` | `helpCenter`, `aboutUs`, `privacyPolicy`, `shareFeedback` | No `logout` key |
+| `settings` | `language`, `darkMode` | Theme / locale only |
+
+---
+
+## Addendum: Hybrid Design (Selected Approach)
+
+> **Design Decision:** The hybrid approach combines the **body structure** of Variation 1
+> (Host Tier Banner, 3-column Stats Grid, Card-Wrapped Navigation) with the
+> **SliverAppBar behavior** of Variation 2 (collapsed compact header, expandable profile area).
+> This produces a dashboard-dense page with a polished, iOS-like collapsible header.
+
+### Data Model Prerequisites
+
+The hybrid design assumes `AccountState.accountSummary` gains new fields (see `03-flutter-architecture.md` §Account model extensions):
+
+```dart
+/// Proposed additions to AccountSummary — NOT yet in codebase.
+const factory AccountSummary({
+  // ... existing fields ...
+  required int challengeStepsTotal,
+  required int challengesJoined,
+  required int challengesWon,
+  required bool isHostTier,
+  required bool isHealthSyncActive,
+}) = _AccountSummary;
+```
+
+Until the server and client models are extended, the pseudocode below uses nullable types with `?? 0` / `?? false` fallbacks to preserve compilation.
+
+---
+
+### SliverAppBar Behavior (Hybrid)
+
+The `SliverAppBar` uses Variation 2's collapsible pattern:
+
+| State | Avatar | Content Shown |
+|---|---|---|
+| **Expanded** (top of scroll) | 80px `BaktazAvatar` | Large avatar + Full Name + Username + Member Since |
+| **Collapsed** (scrolled up) | 48px `BaktazAvatar` pinned in AppBar | Compact avatar + Name + Username only |
+
+- The "Edit Profile" chevron/action button is **REMOVED** from the header entirely.
+- Profile editing lives on `ProfileScreen` (`/account/profile`) as a navigation row.
+- The host tier badge is **NOT** shown in the collapsed header — it lives in the Host Tier Banner below.
+
+---
+
+### 2.1 Layout Wireframe (Hybrid)
+
+```text
++-------------------------------------------------------+
+|  Account (SliverAppBar, pinned)                       |
+|  [48px] Juan Dela Cruz                                |
+|          @juandelacruz                                 |
++-------------------------------------------------------+
+|  (when expanded, shows large avatar layout below:)     |
+|                   [ Avatar 80px ]                      |
+|                   Juan Dela Cruz                       |
+|                   @juandelacruz                        |
+|                   Member since Aug 2026                |
++-------------------------------------------------------+
+|  HOST TIER BANNER                                      |
+|  ┌──────────────────────────────────────────────────┐  |
+|  │  ⭐ Regular User (Free)       [Upgrade Host (>) ]│  |
+|  └──────────────────────────────────────────────────┘  |
++-------------------------------------------------------+
+|  LIFETIME CHALLENGE STATS                              |
+|  ┌──────────────┬──────────────┬──────────────┐        |
+|  │ 142,500      │ 12           │ 4            │        |
+|  │ Steps        │ Joined       │ Won          │        |
+|  └──────────────┴──────────────┴──────────────┘        |
++-------------------------------------------------------+
+|  MY ACCOUNT                                            |
+|  ┌────────────────────────────────────────────────┐    |
+|  │ [icon] Profile                            (>) │    |
+|  │ [icon] Preferences                        (>) │    |
+|  │ [icon] Contacts                           (>) │    |
+|  │ [icon] Reviews                            (>) │    |
+|  │ [icon] Addresses                          (>) │    |
+|  └────────────────────────────────────────────────┘    |
++-------------------------------------------------------+
+|  SETTINGS                                              |
+|  ┌────────────────────────────────────────────────┐    |
+|  │ [icon] Health Sync              [● Active] (>)│    |
+|  │ [icon] Push Notifications                 (>) │    |
+|  │ [icon] Language (English)                 (>) │    |
+|  │ [icon] Dark Mode (System)                 (>) │    |
+|  └────────────────────────────────────────────────┘    |
++-------------------------------------------------------+
+|  SUPPORT & LEGAL                                       |
+|  ┌────────────────────────────────────────────────┐    |
+|  │ [icon] Help Center & FAQs                 (>) │    |
+|  │ [icon] About Baktaz                       (>) │    |
+|  │ [icon] Terms & Privacy Policy             (>) │    |
+|  │ [icon] Share Feedback                     (>) │    |
+|  └────────────────────────────────────────────────┘    |
++-------------------------------------------------------+
+```
+
+**Key Differences from Variation 1:**
+- ❌ No "Edit Profile" button in header — profile is a nav row
+- ✅ Collapsible 48px compact header with Name + Username always pinned
+- ✅ Expanded state shows 80px avatar with full profile info
+- ✅ Same card-dense body below the header
+
+**Key Differences from Variation 2:**
+- ✅ Host Tier Banner as separate card (not inline pill badge)
+- ✅ 3-column Stats Grid with cards (not inline row)
+- ✅ Card-wrapped navigation sections (not flat list)
+
+---
+
+### 2.2 Widget Structure (Hybrid Pseudocode)
+
+```dart
+// ── AccountPage (Hybrid shell) ─────────────────────────
+// Uses Variation 2's collapsible SliverAppBar (48px collapsed, 80px expanded)
+// combined with Variation 1's card-dense body structure.
+// "Edit Profile" is NOT in the header — profile is a nav row.
+
+class AccountPage extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    final ScrollController scrollController = useScrollController();
+    final ValueNotifier<TextStyle?> titleStyle =
+        useState(context.textTheme.titleLarge);
+
+    useEffect(() {
+      scrollController.addListener(() {
+        if (AppUtils.isSliverAppBarExpanded(scrollController)) {
+          titleStyle.value = context.textTheme.headlineMedium;
+        } else {
+          titleStyle.value = context.textTheme.titleLarge;
+        }
+      });
+      return null;
+    }, <Object?>[]);
+
+    return Scaffold(
+      backgroundColor: context.colorScheme.surface,
+      body: RefreshIndicator(
+        onRefresh: () => context.read<AccountCubit>().initialize(),
+        child: BlocSignalBuilder<AccountCubit, AccountState>(
+          builder: (context, state) => CustomScrollView(
+            controller: scrollController,
+            physics: const ClampingScrollPhysics(),
+            slivers: [
+              // ── SliverAppBar (Variation 2 behavior) ──────
+              // Collapsed: 48px avatar + Name + Username (always pinned)
+              // Expanded: 80px avatar + Name + Username + Member Since
+              SliverAppBar(
+                backgroundColor: context.colorScheme.surface,
+                pinned: true,
+                expandedHeight: AppTheme.defaultAppBarHeight * 2,
+                flexibleSpace: FlexibleSpaceBar(
+                  titlePadding: Paddings.verticalSmall,
+                  expandedTitleScale: 1,
+                  title: _HybridCollapsedHeader(
+                    isLoading: _isLoading(state),
+                    name: state.accountSummary?.name.getValue() ?? '',
+                    username: state.accountSummary?.username?.getValue() ?? '',
+                    imageUrl: state.accountSummary?.imageUrl,
+                    titleStyle: titleStyle.value,
+                  ),
+                  expanded: _HybridExpandedHeader(
+                    isLoading: _isLoading(state),
+                    name: state.accountSummary?.name.getValue() ?? '',
+                    username: state.accountSummary?.username?.getValue() ?? '',
+                    imageUrl: state.accountSummary?.imageUrl,
+                    memberSince: state.accountSummary?.createdAt,
+                  ),
+                ),
+              ),
+
+              // ── Body (Variation 1 card structure) ────────
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 1. Host Tier Banner
+                    _HostTierBanner(
+                      isHostTier: state.accountSummary?.isHostTier ?? false,
+                    ),
+
+                    Gap.medium(),
+
+                    // 2. Lifetime Challenge Stats Grid
+                    _LifetimeChallengeStatsGrid(
+                      isLoading: _isLoading(state),
+                      steps: state.accountSummary?.challengeStepsTotal ?? 0,
+                      joined: state.accountSummary?.challengesJoined ?? 0,
+                      won: state.accountSummary?.challengesWon ?? 0,
+                    ),
+
+                    Gap.medium(),
+
+                    // 3. Grouped Navigation (card-wrapped sections)
+                    BlocSignalSelector<AccountCubit, AccountState,
+                        Map<AccountHeader, List<String>>>(
+                      selector: (s) => s.groupedOptions,
+                      builder: (context, groupedOptions) =>
+                          _HybridGroupedNavigation(
+                        groupedOptions: groupedOptions,
+                        isHealthSyncActive:
+                            state.accountSummary?.isHealthSyncActive ?? false,
+                        onOptionTap: (title) =>
+                            GoRouter.of(context).goNamed(title),
+                      ),
+                    ),
+
+                    Gap.x2Large(),
+                    Gap.custom(AppTheme.defaultNavBarHeight),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Collapsed Header (Hybrid — always visible) ─────────
+// 48px avatar + Name + Username. No "Edit Profile" button.
+// Profile editing lives in ProfileScreen as a nav row.
+class _HybridCollapsedHeader extends StatelessWidget {
+  const _HybridCollapsedHeader({
+    required this.isLoading,
+    required this.name,
+    required this.username,
+    required this.imageUrl,
+    required this.titleStyle,
+  });
+
+  final bool isLoading;
+  final String name;
+  final String username;
+  final Url? imageUrl;
+  final TextStyle? titleStyle;
+
+  @override
+  Widget build(BuildContext context) => Skeletonizer(
+    enabled: isLoading,
+    child: Row(
+      children: [
+        Gap.medium(),
+        BaktazAvatar(
+          size: AppSizes.avatarMD, // 48px — compact collapsed size
+          imageUrl: imageUrl?.getValue(),
+          isCachedSize: false,
+          maxSize: AppSizes.avatarMD.toInt(),
+          isLoading: isLoading,
+        ),
+        Gap.small(),
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              BaktazText(
+                text: name,
+                style: titleStyle,
+              ),
+              Gap.x2Small(),
+              BaktazText(
+                text: '@$username',
+                style: context.textTheme.bodySmall?.copyWith(
+                  color: context.colorScheme.outline,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Gap.medium(),
+      ],
+    ),
+  );
+}
+
+// ── Expanded Header (Hybrid — top of scroll) ───────────
+// 80px avatar + Name + Username + Member Since.
+class _HybridExpandedHeader extends StatelessWidget {
+  const _HybridExpandedHeader({
+    required this.isLoading,
+    required this.name,
+    required this.username,
+    required this.imageUrl,
+    this.memberSince,
+  });
+
+  final bool isLoading;
+  final String name;
+  final String username;
+  final Url? imageUrl;
+  final DateTime? memberSince;
+
+  @override
+  Widget build(BuildContext context) => Skeletonizer(
+    enabled: isLoading,
+    child: Padding(
+      padding: Paddings.horizontalMedium,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          BaktazAvatar(
+            size: AppSizes.size80, // 80px — large expanded size
+            imageUrl: imageUrl?.getValue(),
+            isCachedSize: false,
+            maxSize: AppSizes.size80.toInt(),
+            isLoading: isLoading,
+          ),
+          Gap.small(),
+          BaktazText(
+            text: name,
+            style: context.textTheme.headlineMedium,
+          ),
+          Gap.x2Small(),
+          BaktazText(
+            text: '@$username',
+            style: context.textTheme.bodyMedium?.copyWith(
+              color: context.colorScheme.outline,
+            ),
+          ),
+          if (memberSince != null) ...[
+            Gap.x2Small(),
+            BaktazText(
+              text: 'Member since ${DateFormat.yMMM().format(memberSince!)}',
+              style: context.textTheme.bodySmall?.copyWith(
+                color: context.colorScheme.outline,
+              ),
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
+}
+
+// ── Grouped Navigation (Hybrid — Variation 1 cards) ────
+class _HybridGroupedNavigation extends StatelessWidget {
+  const _HybridGroupedNavigation({
+    required this.groupedOptions,
+    required this.isHealthSyncActive,
+    required this.onOptionTap,
+  });
+
+  final Map<AccountHeader, List<String>> groupedOptions;
+  final bool isHealthSyncActive;
+  final void Function(String) onOptionTap;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: Paddings.horizontalMedium,
+    child: CustomScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      slivers: groupedOptions.entries.toList().asMap().entries.map((entry) {
+        final index = entry.key;
+        final options = entry.value;
+
+        return SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (index > 0) Gap.medium(),
+              BaktazSectionHeader(title: options.key.displayName),
+              _ContentContainer(
+                options: options,
+                isHealthSyncActive: isHealthSyncActive,
+                onOptionTap: onOptionTap,
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    ),
+  );
+}
+
+// ── Host Tier Banner (Variation 1) ─────────────────────
+// Rendered inside _LifetimeChallengeStatsGrid or as separate card.
+// Shown when `isHostTier == false` (free tier — prompt upgrade).
+// When true, shows "Premium Host" badge instead.
+
+class _HostTierBanner extends StatelessWidget {
+  const _HostTierBanner({required this.isHostTier});
+
+  final bool isHostTier;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: Paddings.horizontalMedium,
+    child: BaktazCard(
+      child: Padding(
+        padding: Paddings.allMedium,
+        child: Row(
+          children: [
+            BaktazIcon(
+              icon: right(Icons.workspace_premium),
+              color: context.colorScheme.primary,
+            ),
+            Gap.medium(),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  BaktazText(
+                    text: isHostTier
+                        ? context.l10n.host_premiumHost
+                        : context.l10n.host_regularUser,
+                    style: context.textTheme.titleMedium
+                        ?.copyWith(fontWeight: AppFontWeight.semiBold),
+                  ),
+                ],
+              ),
+            ),
+            BaktazButton(
+              label: isHostTier
+                  ? context.l10n.host_manage
+                  : context.l10n.host_upgrade,
+              variant: BaktazButtonVariant.outlined,
+              onPressed: () =>
+                  GoRouter.of(context).goNamed('hostSubscription'),
+            ),
+          ],
+        ),
+      ),
+    ),
+  );
+}
+
+// ── Lifetime Challenge Stats Grid (Variation 1) ────────
+class _LifetimeChallengeStatsGrid extends StatelessWidget {
+  const _LifetimeChallengeStatsGrid({
+    required this.isLoading,
+    required this.steps,
+    required this.joined,
+    required this.won,
+  });
+
+  final bool isLoading;
+  final int steps;
+  final int joined;
+  final int won;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: Paddings.horizontalMedium,
+    child: Skeletonizer(
+      enabled: isLoading,
+      child: Row(
+        children: [
+          Expanded(
+            child: _StatCard(
+              value: MoneyFormatter.formatWithoutSymbol(steps.toDouble()),
+              label: context.l10n.account_challengeSteps,
+              icon: right(Icons.directions_walk),
+            ),
+          ),
+          Gap.medium(),
+          Expanded(
+            child: _StatCard(
+              value: '$joined',
+              label: context.l10n.account_challengesJoined,
+              icon: right(Icons.groups),
+            ),
+          ),
+          Gap.medium(),
+          Expanded(
+            child: _StatCard(
+              value: '$won',
+              label: context.l10n.account_challengesWon,
+              icon: right(Icons.emoji_events),
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _StatCard extends StatelessWidget {
+  const _StatCard({
+    required this.value,
+    required this.label,
+    required this.icon,
+  });
+
+  final String value;
+  final String label;
+  final Either<String, IconData> icon;
+
+  @override
+  Widget build(BuildContext context) => BaktazCard(
+    child: Padding(
+      padding: Paddings.allMedium,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BaktazText(
+            text: value,
+            style: context.textTheme.titleLarge
+                ?.copyWith(fontWeight: AppFontWeight.bold),
+          ),
+          Gap.x2Small(),
+          BaktazText(
+            text: label,
+            style: context.textTheme.bodySmall,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+// ── Grouped Navigation (Variation 1) ───────────────────
+// Reuses existing _ContentContainer pattern from account_content_widget.dart.
+// Adds BaktazSectionHeader per group + health sync chip.
+
+class _Variation1GroupedNavigation extends StatelessWidget {
+  const _Variation1GroupedNavigation({
+    required this.groupedOptions,
+    required this.isHealthSyncActive,
+    required this.onOptionTap,
+  });
+
+  final Map<AccountHeader, List<String>> groupedOptions;
+  final bool isHealthSyncActive;
+  final void Function(String) onOptionTap;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: Paddings.horizontalMedium,
+    child: CustomScrollView(
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      slivers: groupedOptions.entries.toList().asMap().entries.map((entry) {
+        final index = entry.key;
+        final options = entry.value;
+
+        return SliverToBoxAdapter(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (index > 0) Gap.medium(),
+
+              // Section header
+              BaktazSectionHeader(title: options.key.displayName),
+
+              // Card-wrapped grid
+              _ContentContainer(
+                options: options,
+                isHealthSyncActive: isHealthSyncActive,
+                onOptionTap: onOptionTap,
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+    ),
+  );
+}
+
+// ── _ContentContainer (Variation 1 — extended) ─────────
+class _ContentContainer extends StatelessWidget {
+  const _ContentContainer({
+    required this.options,
+    required this.isHealthSyncActive,
+    required this.onOptionTap,
+  });
+
+  final MapEntry<AccountHeader, List<String>> options;
+  final bool isHealthSyncActive;
+  final void Function(String) onOptionTap;
+
+  @override
+  Widget build(BuildContext context) => BaktazCard(
+    child: Padding(
+      padding: Paddings.allMedium,
+      child: GridView.builder(
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: options.value.length > 2 ? 2 : 1,
+          childAspectRatio: options.value.length > 2 ? 4 : 8,
+          mainAxisSpacing: AppSizes.xSmall,
+          crossAxisSpacing: AppSizes.xSmall,
+        ),
+        itemCount: options.value.length,
+        itemBuilder: (context, index) {
+          final optionKey = options.value[index];
+          return AccountContentTile(
+            title: optionKey,
+            // Health sync gets an active chip badge
+            trailing: optionKey == 'healthSync' && isHealthSyncActive
+                ? BaktazStatusBadge(
+                    label: context.l10n.healthSync_active,
+                    variant: StatusBadgeVariant.active,
+                  )
+                : null,
+            onTap: () => onOptionTap(optionKey),
+            optionKey: options.key,
+          );
+        },
+      ),
+    ),
+  );
+}
+```
+
+#### 1.3 State Changes Required
+
+```dart
+// AccountState — add to existing freezed class:
+const factory AccountState({
+  required QueryStatus queryStatus,
+  required Map<AccountHeader, List<String>> groupedOptions,
+  AccountSummary? accountSummary,
+  // ▼ NEW
+  bool isHealthSyncActive = false, // health sync diagnostic status
+}) = _AccountState;
+```
+
+#### 1.4 Pros / Cons
+
+| Pros | Cons |
+|------|------|
+| Dashboard density — all info at a glance | Cards consume vertical space; 5+ cards before nav |
+| Card surfaces create strong visual hierarchy | More widgets to maintain |
+| Easy to add new stat columns (extend `_StatCard` row) | Heavier feel — "admin panel" tone |
+| `BaktazStatusBadge` health sync chip is scannable | Host tier banner + stats grid = two extra cards |
+
+---
+
+### Variation 2: Minimalist List Profile
+
+> **Philosophy:** Apple Settings–style. Collapsible header with always-visible 48px avatar.
+> Stats are an inline bold row (no cards). Navigation uses flat `BaktazListRow` separated by
+> light dividers — no card containers. Host tier is a pill badge on the avatar area, not a
+> separate section.
+
+#### 2.1 Layout Wireframe
+
+```text
++-------------------------------------------------------+
+|  Account (SliverAppBar, collapsed)                    |
+|  ┌────────────────────────────────────────────────┐   |
+|  │ [48px] Juan Dela Cruz  ⭐ Premium Host   (>)  │   |
+|  │         @juandelacruz                           │   |
+|  └────────────────────────────────────────────────┘   |
++-------------------------------------------------------+
+|  142,500 Steps  ·  12 Joined  ·  4 Won               |
+|  ───────────────────────────────────────────────────── |
+|  MY ACCOUNT                                            |
+|  [icon] Profile                                  (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Preferences                              (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Contacts                                 (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Reviews                                  (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Addresses                                (>) |
+|  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ |
+|  SETTINGS                                              |
+|  [icon] Health Sync              [● Active]       (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Push Notifications                         (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Language (English)                         (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Dark Mode (System)                         (>) |
+|  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ |
+|  SUPPORT & LEGAL                                       |
+|  [icon] Help Center & FAQs                         (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] About Baktaz                               (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Terms & Privacy Policy                     (>) |
+|  ───────────────────────────────────────────────────── |
+|  [icon] Share Feedback                             (>) |
++-------------------------------------------------------+
+```
+
+#### 2.2 Widget Structure (Pseudocode)
+
+```dart
+// ── AccountPage (Variation 2 shell) ────────────────────
+class AccountPage extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Same scrollController setup, but expandedHeight = AppTheme.defaultAppBarHeight
+    // (smaller collapsed header — always shows 48px avatar).
+    // avatarSize toggles between AppSizes.avatarMD (44px) and AppSizes.avatarMD (44px)
+    // — i.e., avatar size is FIXED. Only the title text changes.
+
+    final ScrollController scrollController = useScrollController();
+    final ValueNotifier<TextStyle?> titleStyle =
+        useState(context.textTheme.headlineMedium);
+
+    useEffect(() {
+      scrollController.addListener(() {
+        if (AppUtils.isSliverAppBarExpanded(scrollController)) {
+          titleStyle.value = context.textTheme.headlineMedium;
+        } else {
+          titleStyle.value = context.textTheme.titleLarge;
+        }
+      });
+      return null;
+    }, <Object?>[]);
+
+    return Scaffold(
+      backgroundColor: context.colorScheme.surface,
+      body: RefreshIndicator(
+        onRefresh: () => context.read<AccountCubit>().initialize(),
+        child: BlocSignalBuilder<AccountCubit, AccountState>(
+          builder: (context, state) => CustomScrollView(
+            controller: scrollController,
+            physics: const ClampingScrollPhysics(),
+            slivers: [
+              SliverAppBar(
+                backgroundColor: context.colorScheme.surface,
+                pinned: true,
+                expandedHeight: AppTheme.defaultAppBarHeight * 1.5,
+                // Smaller than Variation 1 (2x)
+                flexibleSpace: FlexibleSpaceBar(
+                  titlePadding: Paddings.verticalSmall,
+                  expandedTitleScale: 1,
+                  title: _Variation2CollapsedHeader(
+                    isLoading: _isLoading(state),
+                    name: state.accountSummary?.name.getValue() ?? '',
+                    imageUrl: state.accountSummary?.imageUrl,
+                    isHostTier: state.accountSummary?.isHostTier ?? false,
+                    titleStyle: titleStyle.value,
+                  ),
+                ),
+              ),
+
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // 1. Inline Stats Row (no card)
+                    _InlineStatsRow(
+                      isLoading: _isLoading(state),
+                      steps: state.accountSummary?.challengeStepsTotal ?? 0,
+                      joined: state.accountSummary?.challengesJoined ?? 0,
+                      won: state.accountSummary?.challengesWon ?? 0,
+                    ),
+
+                    const Divider(height: 1),
+
+                    // 2. Flat grouped list
+                    BlocSignalSelector<AccountCubit, AccountState,
+                        Map<AccountHeader, List<String>>>(
+                      selector: (s) => s.groupedOptions,
+                      builder: (context, groupedOptions) =>
+                          _Variation2GroupedList(
+                        groupedOptions: groupedOptions,
+                        isHealthSyncActive:
+                            state.accountSummary?.isHealthSyncActive ?? false,
+                        onOptionTap: (title) =>
+                            GoRouter.of(context).goNamed(title),
+                      ),
+                    ),
+
+                    Gap.x2Large(),
+                    Gap.custom(AppTheme.defaultNavBarHeight),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ── Collapsed Header (Variation 2) ─────────────────────
+// Always-visible 48px avatar + name + host tier pill badge.
+// No "Edit Profile" button in header — profile is a nav row.
+
+class _Variation2CollapsedHeader extends StatelessWidget {
+  const _Variation2CollapsedHeader({
+    required this.isLoading,
+    required this.name,
+    required this.imageUrl,
+    required this.isHostTier,
+    required this.titleStyle,
+  });
+
+  final bool isLoading;
+  final String name;
+  final Url? imageUrl;
+  final bool isHostTier;
+  final TextStyle? titleStyle;
+
+  @override
+  Widget build(BuildContext context) => Skeletonizer(
+    enabled: isLoading,
+    child: Row(
+      children: [
+        Gap.medium(),
+        BaktazAvatar(
+          size: AppSizes.avatarMD, // 44px — always compact
+          imageUrl: imageUrl?.getValue(),
+          isCachedSize: false,
+          maxSize: AppSizes.avatarMD.toInt(),
+          isLoading: isLoading,
+        ),
+        Gap.small(),
+        Expanded(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Flexible(
+                    child: BaktazText(text: name, style: titleStyle),
+                  ),
+                  Gap.xSmall(),
+                  // Host tier pill badge — inline with name
+                  if (isHostTier)
+                    BaktazStatusBadge(
+                      label: context.l10n.host_premiumHost,
+                      variant: StatusBadgeVariant.confirmed,
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+        Gap.medium(),
+      ],
+    ),
+  );
+}
+
+// ── Inline Stats Row (Variation 2) ─────────────────────
+// Single horizontal row, no cards, no background.
+// Uses bold numerals + muted label text separated by centered dot.
+
+class _InlineStatsRow extends StatelessWidget {
+  const _InlineStatsRow({
+    required this.isLoading,
+    required this.steps,
+    required this.joined,
+    required this.won,
+  });
+
+  final bool isLoading;
+  final int steps;
+  final int joined;
+  final int won;
+
+  @override
+  Widget build(BuildContext context) => Skeletonizer(
+    enabled: isLoading,
+    child: Padding(
+      padding: Paddings.horizontalMedium + Paddings.verticalMedium,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          _InlineStat(
+            value: MoneyFormatter.formatWithoutSymbol(steps.toDouble()),
+            label: context.l10n.account_challengeSteps,
+          ),
+          Text('·',
+            style: context.textTheme.titleLarge?.copyWith(
+              color: context.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          _InlineStat(
+            value: '$joined',
+            label: context.l10n.account_challengesJoined,
+          ),
+          Text('·',
+            style: context.textTheme.titleLarge?.copyWith(
+              color: context.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          _InlineStat(
+            value: '$won',
+            label: context.l10n.account_challengesWon,
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+class _InlineStat extends StatelessWidget {
+  const _InlineStat({required this.value, required this.label});
+
+  final String value;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      BaktazText(
+        text: value,
+        style: context.textTheme.titleMedium?.copyWith(
+          fontWeight: AppFontWeight.bold,
+        ),
+      ),
+      Gap.x2Small(),
+      BaktazText(
+        text: label,
+        style: context.textTheme.bodySmall?.copyWith(
+          color: context.colorScheme.onSurfaceVariant,
+        ),
+      ),
+    ],
+  );
+}
+
+// ── Flat Grouped List (Variation 2) ────────────────────
+// No card containers. Each section gets a BaktazSectionHeader,
+// followed by BaktazListRow items separated by light dividers.
+// The existing BaktazListRow already renders its own bottom border.
+
+class _Variation2GroupedList extends StatelessWidget {
+  const _Variation2GroupedList({
+    required this.groupedOptions,
+    required this.isHealthSyncActive,
+    required this.onOptionTap,
+  });
+
+  final Map<AccountHeader, List<String>> groupedOptions;
+  final bool isHealthSyncActive;
+  final void Function(String) onOptionTap;
+
+  static const Map<String, IconData> _optionIcons = <String, IconData>{
+    'profile': Icons.person_outline,
+    'preferences': Icons.tune,
+    'contacts': Icons.contacts_outlined,
+    'reviews': Icons.rate_review_outlined,
+    'addresses': Icons.location_on_outlined,
+    'healthSync': Icons.health_and_safety,
+    'notifications': Icons.notifications_outlined,
+    'language': Icons.language,
+    'darkMode': Icons.dark_mode_outlined,
+    'helpCenter': Icons.help_outline,
+    'aboutUs': Icons.info_outline,
+    'privacyPolicy': Icons.privacy_tip_outlined,
+    'shareFeedback': Icons.feedback_outlined,
+  };
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: groupedOptions.entries.map((entry) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          BaktazSectionHeader(title: entry.key.displayName),
+
+          ...entry.value.map((optionKey) {
+            return BaktazListRow(
+              label: _optionLabel(context, optionKey),
+              leadingIcon: _optionIcons[optionKey] ?? Icons.circle,
+              // Health sync gets an active badge as trailing widget
+              trailing: optionKey == 'healthSync' && isHealthSyncActive
+                  ? BaktazStatusBadge(
+                      label: context.l10n.healthSync_active,
+                      variant: StatusBadgeVariant.active,
+                    )
+                  : const Icon(Icons.chevron_right, size: AppSizes.iconSmall),
+              onTap: () => onOptionTap(optionKey),
+            );
+          }),
+
+          // Section separator — thicker divider between groups
+          const Divider(height: 1, thickness: 4),
+        ],
+      );
+    }).toList(),
+  );
+
+  /// Maps raw option keys to display labels via l10n.
+  /// Fallback: PascalCase split of the key itself.
+  String _optionLabel(BuildContext context, String key) {
+    // In production, use context.l10n.profile_<key> getters.
+    // This fallback exists for pseudocode clarity.
+    return key.replaceAllMapped(
+      RegExp(r'([A-Z])'),
+      (m) => ' ${m.group(1)}',
+    ).trimLeft();
+  }
+}
+```
+
+#### 2.3 State Changes Required
+
+Same as Variation 1 — `AccountSummary` needs `challengeStepsTotal`, `challengesJoined`, `challengesWon`, `isHostTier`, `isHealthSyncActive`.
+
+#### 2.4 Icon Mapping Table
+
+| Option key | Leading icon | Notes |
+|---|---|---|
+| `profile` | `Icons.person_outline` | Routes to ProfileScreen |
+| `preferences` | `Icons.tune` | Account preferences |
+| `contacts` | `Icons.contacts_outlined` | Emergency contacts |
+| `reviews` | `Icons.rate_review_outlined` | User reviews |
+| `addresses` | `Icons.location_on_outlined` | Saved addresses |
+| `healthSync` | `Icons.health_and_safety` | Gets `BaktazStatusBadge` trailing |
+| `notifications` | `Icons.notifications_outlined` | Push notification settings |
+| `language` | `Icons.language` | Language picker |
+| `darkMode` | `Icons.dark_mode_outlined` | Theme picker |
+| `helpCenter` | `Icons.help_outline` | FAQ |
+| `aboutUs` | `Icons.info_outline` | About screen |
+| `privacyPolicy` | `Icons.privacy_tip_outlined` | Terms/Privacy |
+| `shareFeedback` | `Icons.feedback_outlined` | Feedback form |
+
+#### 2.5 Pros / Cons
+
+| Pros | Cons |
+|------|------|
+| Minimal chrome — Apple Settings feel | Stats row is less visually prominent |
+| Fixed 48px avatar = stable header height | No "dashboard density" — requires scrolling |
+| `BaktazListRow` already handles dividers natively | Host badge competes with name in collapsed header |
+| Easiest to extend — just add a row, no card wrappers | No card surfaces = less visual grouping |
+| Lightest widget tree — fewer nested containers | Health sync badge may feel lost in long list |
+
+---
+
+### Decision Matrix
+
+| Criterion | Variation 1 (Card Dashboard) | Variation 2 (Minimalist List) | **Hybrid (Selected)** |
+|---|---|---|---|
+| Information density | ★★★★☆ | ★★★☆☆ | **★★★★★** |
+| Visual hierarchy | ★★★★★ (cards + sections) | ★★★☆☆ (flat list) | **★★★★★** (cards + collapsible) |
+| Code complexity | Medium | Low | **Medium** |
+| Mobile scroll depth | Shorter | Longer | **Shorter** |
+| Feels like | Android Dashboard | iOS Settings | **Dashboard + iOS polish** |
+| Host tier visibility | Separate card (prominent) | Inline pill badge (subtle) | **Separate card (prominent)** |
+| Stats prominence | High (3-column grid) | Medium (inline row) | **High (3-column grid)** |
+| Dark mode harmony | Cards contrast well | Flat list blends with surface | **Cards contrast well** |
+| Header UX | Static header | Collapsible 48px header | **Collapsible 48px/80px header** |
+
+### Recommendation
+
+**Hybrid Design** is selected. Combines Variation 1's card-dense body with Variation 2's collapsible
+SliverAppBar for the best of both worlds: dashboard information density plus polished scroll behavior.
+
+- Both variations share the same `AccountSummary` model extensions, so the data layer work is identical.
+- The hybrid approach eliminates the "Edit Profile" button from the header — profile editing and logout
+  both live on `ProfileScreen` (`/account/profile`).
