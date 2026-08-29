@@ -12,7 +12,7 @@
 
 **Tech Stack:** Serverpod 4.x, `serverpod/serverpod.dart`, Flutter 3.47+, `bloc_signals`, `freezed`, `injectable`, `go_router`, `fpdart`, `chopper`, `flutter_image_compress`, `image_picker`, `mockito`, `alchemist`.
 
-**Spec:** `docs/superpowers/specs/chat/2026-08-24-00-overview.md`
+**Spec:** `docs/superpowers/specs/Chat/2026-08-24-00-overview.md`
 
 ## Sub-Plans
 

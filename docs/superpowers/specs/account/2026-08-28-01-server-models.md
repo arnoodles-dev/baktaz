@@ -1,7 +1,7 @@
 # Account Feature Architecture Spec — Server Models
 
-> **Document Version:** 1.0  
-> **Date:** 2026-08-28  
+> **Document Version:** 1.1  
+> **Date:** 2026-08-29  
 > **Parent Spec:** `docs/superpowers/specs/account/2026-08-28-00-overview.md`  
 > **Package:** `baktaz_server` (`lib/src/features/account/models/`)  
 
@@ -18,24 +18,32 @@ All account-related backend data structures are declared using Serverpod `.spy.y
 ## 2. Serverpod Model Definitions (`.spy.yaml`)
 
 ### 2.1 `UserInfo` (`user_info.spy.yaml`)
+
 Represents the public and editable identity metadata of a user account.
 
 ```yaml
 class: UserInfo
+table: user_info
 fields:
   id: UuidValue
-  fullName: String
+  firstName: String
+  lastName: String
   username: String
   avatarUrl: String?
-  memberSince: DateTime
+indexes:
+  username_unique_idx:
+    fields: username
+    unique: true
 ```
 
 - **Usage**: Returned as part of profile metadata queries and account summary calls.
 - **Constraints**: `username` must be unique across all non-deleted user records (enforced via DB index in underlying auth/user schema).
+- **Note**: `memberSince` is derived from `Account.createdAt` at read time. `fullName` is computed as `firstName + ' ' + lastName`.
 
 ---
 
 ### 2.2 `AccountChallengeStats` (`account_challenge_stats.spy.yaml`)
+
 Pre-calculated challenge statistics rendered in the 4-column `ChallengeStatsGrid`.
 
 ```yaml
@@ -56,6 +64,7 @@ fields:
 ---
 
 ### 2.3 `AccountSummary` (`account_summary.spy.yaml`)
+
 Aggregates profile identity, host subscription status, and pre-calculated challenge stats into a single RPC payload for `AccountPage`.
 
 ```yaml
@@ -72,7 +81,8 @@ fields:
 
 ---
 
-### 2.3 `SubscriptionPackage` (`subscription_package.spy.yaml`)
+### 2.4 `SubscriptionPackage` (`subscription_package.spy.yaml`)
+
 Defines available Host subscription plans offered to users.
 
 ```yaml
@@ -94,7 +104,8 @@ fields:
 
 ---
 
-### 2.4 `HostSubscription` (`host_subscription.spy.yaml`)
+### 2.5 `HostSubscription` (`host_subscription.spy.yaml`)
+
 Tracks active or historical Premium Host subscriptions for a given user account.
 
 ```yaml
@@ -122,7 +133,8 @@ fields:
 
 ---
 
-### 2.5 `Voucher` (`voucher.spy.yaml`)
+### 2.6 `Voucher` (`voucher.spy.yaml`)
+
 Promotional discount codes redeemable during host subscription checkout.
 
 ```yaml
@@ -150,7 +162,8 @@ fields:
 
 ---
 
-### 2.6 `SavedPaymentMethod` (`saved_payment_method.spy.yaml`)
+### 2.7 `SavedPaymentMethod` (`saved_payment_method.spy.yaml`)
+
 Tokenized payment methods saved by the user via HitPay gateway integration.
 
 ```yaml
@@ -174,7 +187,8 @@ fields:
 
 ---
 
-### 2.7 `PayoutDestination` (`payout_destination.spy.yaml`)
+### 2.8 `PayoutDestination` (`payout_destination.spy.yaml`)
+
 Single active bank account or e-wallet destination for receiving prize disbursements and host cuts.
 
 ```yaml
@@ -199,3 +213,21 @@ fields:
 - **Verification**: `isVerified` set to `true` upon successful SMS OTP / name validation check.
 
 ---
+
+### 2.9 `RegistrationForm` (`registration_form.spy.yaml`)
+
+User registration form data.
+
+```yaml
+class: RegistrationForm
+fields:
+  email: String
+  firstName: String
+  lastName: String
+  gender: String
+  registrationToken: String
+  birthday: DateTime?
+```
+
+- **Changes from v1.0**: Replaced `name: String` with `firstName` and `lastName` fields.
+- **Usage**: OTP registration flow; username auto-derived from email.

@@ -8,7 +8,7 @@
 
 **Tech Stack:** Dart 3.x, Flutter, Serverpod 2.x, PostgreSQL, `bloc_signals_flutter`, `fpdart`, `alchemist`, `go_router`.
 
-**Spec:** `docs/specs/account_feature_spec.md`
+**Spec:** `docs/superpowers/specs/Account/2026-08-28-00-overview.md`
 
 ## Global Constraints
 

@@ -8,7 +8,7 @@
 
 **Tech Stack:** Dart 3.x, Serverpod 2.x ORM, PostgreSQL schema migration toolchain.
 
-**Spec:** `docs/specs/account_feature_spec.md`
+**Spec:** `docs/superpowers/specs/Account/2026-08-28-00-overview.md`
 
 ## Global Constraints
 

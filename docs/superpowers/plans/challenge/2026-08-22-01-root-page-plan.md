@@ -4,7 +4,7 @@
 
 **Goal:** Implement the root Challenge Page (`/challenge`) with dynamic `initial` (Trophy Case layout) and `registered` (Pro Challenge Hub) views, host management card, prize pool card, user rank banner, leaderboard preview list, gap meter, and leave dialog.
 
-**Spec:** `docs/superpowers/specs/challenge/2026-08-22-01-challenge-root.md`
+**Spec:** `docs/superpowers/specs/Challenge/2026-08-22-01-challenge-root.md`
 
 ## Tasks
 

@@ -4,7 +4,7 @@
 
 **Goal:** Implement the Discovery page (`/challenge/explore`) with public challenge search, card listing with filters, empty state, debounced search, and challenge card layout.
 
-**Spec:** `docs/superpowers/specs/challenge/2026-08-22-02-discovery.md`
+**Spec:** `docs/superpowers/specs/Challenge/2026-08-22-02-discovery.md`
 
 ## Tasks
 

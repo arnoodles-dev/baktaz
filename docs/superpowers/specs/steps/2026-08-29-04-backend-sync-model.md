@@ -1,11 +1,6 @@
----
-title: Health Data Integration - Backend Sync & Model
-status: Proposed
-version: 1.0
-related: health_data_integration_spec.md
----
 
 # 18. Multiple Syncs Per Day
+> **Parent Spec:** `docs/superpowers/specs/Steps/2026-08-29-01-overview.md`
 
 The app will sync step data to the backend multiple times per day.
 
@@ -182,8 +177,8 @@ The `health` package normalizes this for the caller.
 
 ## See also
 
-- [Overview](overview.md)
-- [Flutter Architecture](flutter-architecture.md)
-- [UI/UX](ui-ux.md)
-- [Multi-Device Rules](multi-device-rules.md)
-- [Backend Schema](backend-schema.md)
+- [Overview](2026-08-29-01-overview.md)
+- [Flutter Architecture](2026-08-29-02-flutter-architecture.md)
+- [UI/UX](2026-08-29-06-ui-ux.md)
+- [Multi-Device Rules](2026-08-29-05-multi-device-rules.md)
+- [Backend Schema](2026-08-29-03-backend-schema.md)

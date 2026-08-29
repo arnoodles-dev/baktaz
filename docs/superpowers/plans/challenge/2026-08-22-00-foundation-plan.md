@@ -14,7 +14,7 @@
 
 **Tech Stack:** Flutter, Dart, bloc_signals, freezed, injectable, go_router, alchemist (goldens).
 
-**Spec:** `docs/superpowers/specs/challenge/2026-08-22-00-overview.md` and `docs/superpowers/specs/challenge/2026-08-22-06-shared-models.md`
+**Spec:** `docs/superpowers/specs/Challenge/2026-08-22-00-overview.md` and `docs/superpowers/specs/Challenge/2026-08-22-06-shared-models.md`
 
 ## Global Constraints
 - Target package: `baktaz_flutter` (`lib/features/challenge`)

@@ -12,7 +12,7 @@
 The Flutter presentation and domain layer for `/account` resides within `baktaz_flutter/lib/features/account/`. It strictly follows the monorepo architecture:
 - **Presentation**: `AccountPage` (lives in bottom navigation tab), Screens (navigated via GoRouter), Widgets, and Dialogs.
 - **State Management**: `CubitSignal<State>` classes leveraging `bloc_signals_flutter`, wrapped with `safeRun(onException: handleException)` for Pattern B side-effect error handling.
-- **Domain & Data**: Abstract repository interfaces (`IAccountRepository`, `IHostSubscriptionRepository`, `IPayoutRepository`, `IHealthSyncRepository`) returning `TaskResult<T>` (`fpdart`), implemented in `data/repository/` using `baktaz_client` RPC and local device APIs.
+- **Domain & Data**: Abstract repository interfaces (`IAccountRepository`, `IHostSubscriptionRepository`, `IPayoutRepository`, `IStepsRepository`) returning `TaskResult<T>` (`fpdart`), implemented in `data/repository/` using `baktaz_client` RPC and local device APIs.
 
 ```text
 baktaz_flutter/lib/features/account/
@@ -23,7 +23,7 @@ baktaz_flutter/lib/features/account/
 │       ├── account_repository.dart
 │       ├── host_subscription_repository.dart
 │       ├── payout_repository.dart
-│       └── health_sync_repository.dart
+│       └── steps_repository.dart
 ├── domain/
 │   ├── entity/                     # UI domain models
 │   │   └── enum/                   # Option Enums
@@ -35,7 +35,7 @@ baktaz_flutter/lib/features/account/
 │       ├── i_account_repository.dart
 │       ├── i_host_subscription_repository.dart
 │       ├── i_payout_repository.dart
-│       └── i_health_sync_repository.dart
+│       └── i_steps_repository.dart
 └── presentation/
     ├── cubit/
     │   ├── account_cubit.dart
@@ -44,8 +44,8 @@ baktaz_flutter/lib/features/account/
     │   ├── host_subscription_state.dart
     │   ├── payment_cubit.dart
     │   ├── payment_state.dart
-    │   ├── health_sync_cubit.dart
-    │   └── health_sync_state.dart
+    │   ├── steps_cubit.dart
+    │   └── steps_state.dart
     ├── routes/
     │   └── account_routes.dart
     ├── views/                      # Pages & Screens
@@ -53,7 +53,7 @@ baktaz_flutter/lib/features/account/
     │   ├── profile_edit_screen.dart
     │   ├── host_subscription_screen.dart
     │   ├── manage_payment_screen.dart
-    │   ├── health_sync_screen.dart
+    │   ├── steps_screen.dart
     │   ├── settings/
     │   │   ├── notification_settings_screen.dart
     │   │   ├── language_settings_screen.dart
@@ -145,7 +145,7 @@ class HealthSyncRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const HealthSyncScreen();
+    return const StepsPage();
   }
 }
 
@@ -600,21 +600,21 @@ class PaymentState with _$PaymentState {
 
 ---
 
-### 3.4 `HealthSyncCubit` & `HealthSyncState`
+### 3.4 `StepsCubit` & `StepsState`
 
 ```dart
 @injectable
-class HealthSyncCubit extends CubitSignal<HealthSyncState> {
-  HealthSyncCubit(
+class StepsCubit extends CubitSignal<StepsState> {
+  StepsCubit(
     this._healthSyncRepository,
     this._failureHandler,
-  ) : super(initialState: const HealthSyncState.initial());
+  ) : super(initialState: const StepsState.initial());
 
-  final IHealthSyncRepository _healthSyncRepository;
+  final IStepsRepository _healthSyncRepository;
   final FailureHandler _failureHandler;
 
   Future<void> diagnoseAndLoad() async {
-    emit(const HealthSyncState.loading());
+    emit(const StepsState.loading());
     await safeRun(
       onException: _failureHandler.handleException,
       action: () async {
@@ -622,10 +622,10 @@ class HealthSyncCubit extends CubitSignal<HealthSyncState> {
         result.fold(
           (failure) {
             _failureHandler.handleFailure(failure);
-            emit(const HealthSyncState.failed());
+            emit(const StepsState.failed());
           },
           (diagnostic) {
-            emit(HealthSyncState.loaded(diagnostic: diagnostic));
+            emit(StepsState.loaded(diagnostic: diagnostic));
           },
         );
       },
@@ -648,7 +648,7 @@ class HealthSyncCubit extends CubitSignal<HealthSyncState> {
             emit(currentState.copyWith(isSyncing: false));
           },
           (updatedDiagnostic) {
-            emit(HealthSyncState.loaded(diagnostic: updatedDiagnostic));
+            emit(StepsState.loaded(diagnostic: updatedDiagnostic));
           },
         );
       },
@@ -659,14 +659,14 @@ class HealthSyncCubit extends CubitSignal<HealthSyncState> {
 
 ```dart
 @freezed
-class HealthSyncState with _$HealthSyncState {
-  const factory HealthSyncState.initial() = _HealthInitial;
-  const factory HealthSyncState.loading() = _HealthLoading;
-  const factory HealthSyncState.loaded({
+class StepsState with _$StepsState {
+  const factory StepsState.initial() = _HealthInitial;
+  const factory StepsState.loading() = _HealthLoading;
+  const factory StepsState.loaded({
     required HealthDiagnosticResult diagnostic,
     @Default(false) bool isSyncing,
   }) = _HealthLoaded;
-  const factory HealthSyncState.failed() = _HealthFailed;
+  const factory StepsState.failed() = _HealthFailed;
 }
 
 class HealthDiagnosticResult {
@@ -726,7 +726,7 @@ abstract class IPayoutRepository {
   });
 }
 
-abstract class IHealthSyncRepository {
+abstract class IStepsRepository {
   TaskResult<HealthDiagnosticResult> getDiagnosticStatus();
   TaskResult<HealthDiagnosticResult> syncStepsNow();
 }

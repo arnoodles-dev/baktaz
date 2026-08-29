@@ -1,11 +1,6 @@
----
-title: Health Data Integration - Backend Schema
-status: Proposed
-version: 1.0
-related: health_data_integration_spec.md
----
 
 # 30. Backend Data Model
+> **Parent Spec:** `docs/superpowers/specs/Steps/2026-08-29-01-overview.md`
 
 ```sql
 -- Users table (existing)
@@ -35,12 +30,12 @@ user_devices (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 )
 
--- Health integrations
-health_integrations (
+-- Steps integrations (step_integrations table for step data providers)
+step_integrations (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
   user_id UUID NOT NULL REFERENCES users(id),
   device_id UUID NOT NULL REFERENCES user_devices(id),
-  health_provider TEXT NOT NULL,
+  step_provider TEXT NOT NULL,
   status TEXT NOT NULL,
   data_available BOOLEAN NOT NULL DEFAULT FALSE,
   last_synced_at TIMESTAMPTZ,
@@ -56,7 +51,7 @@ step_syncs (
   date DATE NOT NULL,
   steps INTEGER NOT NULL,
   device_id UUID NOT NULL REFERENCES user_devices(id),
-  health_provider TEXT NOT NULL,
+  step_provider TEXT NOT NULL,
   synced_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   UNIQUE (user_id, date, synced_at)
@@ -69,7 +64,7 @@ daily_steps (
   steps INTEGER,
   last_synced_at TIMESTAMPTZ,
   device_id UUID REFERENCES user_devices(id),
-  health_provider TEXT,
+  step_provider TEXT,
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (user_id, date)
 )
@@ -77,7 +72,7 @@ daily_steps (
 
 ---
 
-# 31. Backend Health Integration Metadata
+# 31. Backend Steps Integration Metadata
 
 The backend should store integration metadata, not just a single boolean.
 
@@ -102,7 +97,7 @@ This allows:
 ```
 Flutter App               Serverpod
      │                         │
-     │  1. GET /api/health/    │
+     │  1. GET /api/steps/     │
      │     diagnostic          │
      │────────────────────────▶│
      │                         │
@@ -113,7 +108,7 @@ Flutter App               Serverpod
      │  3. Request permissions │
      │     (client-side)       │
      │                         │
-     │  4. GET /api/health/    │
+     │  4. GET /api/steps/     │
      │     verify-access       │
      │────────────────────────▶│
      │                         │
@@ -121,7 +116,7 @@ Flutter App               Serverpod
      │  5. Return verified     │
      │     diagnostic state    │
      │                         │
-     │  6. GET /api/health/    │
+     │  6. GET /api/steps/     │
      │     today-steps         │
      │────────────────────────▶│
      │                         │
@@ -129,7 +124,7 @@ Flutter App               Serverpod
      │  7. Return today's      │
      │     step total          │
      │                         │
-     │  8. POST /api/health/   │
+     │  8. POST /api/steps/    │
      │     sync-steps          │
      │  {steps, synced_at,     │
      │   device_id}            │
@@ -153,7 +148,7 @@ The app sends the **total steps for today**. The backend stores the total for th
   "steps": 7842,
   "synced_at": "2024-01-15T14:30:00Z",
   "device_id": "device-abc-123",
-  "health_provider": "healthkit"
+  "step_provider": "healthkit"
 }
 ```
 
@@ -375,11 +370,11 @@ sharing step data with Health Connect.
 ### Revoked permission
 
 ```text
-Health Data Needs Attention
+Step Data Needs Attention
 
-Your health data is no longer accessible.
+Your step data is no longer accessible.
 
-Please reconnect your health provider.
+Please reconnect your step provider.
 
 [ Reconnect ]
 ```
@@ -437,9 +432,9 @@ The following decisions are recommended for Version 1:
           └─────────┬─────────┘
                     │
                     ▼
-              Flutter App
+               Flutter App
                     │
-            HealthRepository
+              StepsRepository
                     │
                     ▼
           Integration Diagnostic
@@ -452,7 +447,7 @@ The following decisions are recommended for Version 1:
    Read Steps              Show Resolution
         │
         ▼
- Active Health Provider
+   Active Step Provider
         │
         ▼
   Cumulative Daily Total
@@ -460,7 +455,7 @@ The following decisions are recommended for Version 1:
         ▼
       Serverpod
         │
-        ├── health_integrations
+        ├── step_integrations
         │
         ├── user_devices
         │
@@ -502,8 +497,8 @@ The following decisions are recommended for Version 1:
 
 ## See also
 
-- [Overview](overview.md)
-- [Flutter Architecture](flutter-architecture.md)
-- [UI/UX](ui-ux.md)
-- [Backend Sync & Model](backend-sync-model.md)
-- [Multi-Device Rules](multi-device-rules.md)
+- [Overview](2026-08-29-01-overview.md)
+- [Flutter Architecture](2026-08-29-02-flutter-architecture.md)
+- [UI/UX](2026-08-29-06-ui-ux.md)
+- [Backend Sync & Model](2026-08-29-04-backend-sync-model.md)
+- [Multi-Device Rules](2026-08-29-05-multi-device-rules.md)

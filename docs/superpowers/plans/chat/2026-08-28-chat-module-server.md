@@ -1,7 +1,7 @@
 # Chat Module — Server Sub-Plan
 
 > **Parent plan:** `docs/superpowers/plans/chat/2026-08-24-chat-module.md`
-> **Spec:** `docs/superpowers/specs/chat/2026-08-24-00-overview.md`
+> **Spec:** `docs/superpowers/specs/Chat/2026-08-24-00-overview.md`
 > **Package:** `baktaz_server`
 
 **Goal:** Implement the Serverpod backend for the chat module — models (`ChatMessage`, `ChatAttachment`, `EventMessage`, `EventTemplate`, `ChatRoom`, `ChatParticipant`, `ChatUnreadStatus`), presigned S3 upload, event template seeder, `IEventRepository` / `EventRepository` for system event dispatching, unread tracking methods (`getUnreadCounts`, `markMessagesRead`, `markEventsRead`), session extensions, and endpoints (`MessageEndpoint`, `EventAdminEndpoint`).

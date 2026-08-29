@@ -4,7 +4,7 @@
 
 **Goal:** Implement the Full Leaderboard Page (`/challenge/leaderboard/:id`) — "The Arena Dashboard" with sticky header, participant search, column sorting, infinite scroll, responsive layout, medals, daily pulse icons, and Gap Meter.
 
-**Spec:** `docs/superpowers/specs/challenge/2026-08-22-04-leaderboard.md`
+**Spec:** `docs/superpowers/specs/Challenge/2026-08-22-04-leaderboard.md`
 
 ## Tasks
 

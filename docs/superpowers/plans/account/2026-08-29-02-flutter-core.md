@@ -2,13 +2,13 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Implement Flutter repositories, reactive Cubits with `CubitSignal<S>` and Pattern B error handling, domain enums (`AccountHeader`, `SupportOption`, `MyAccountOption`, `SettingsOption`, `HealthSyncProvider`), and typed GoRouter routes for the Account feature in `baktaz_flutter`.
+**Goal:** Implement Flutter repositories, reactive Cubits with `CubitSignal<S>` and Pattern B error handling, domain enums (`AccountHeader`, `SupportOption`, `MyAccountOption`, `SettingsOption`, `StepsSyncProvider`), and typed GoRouter routes for the Account feature in `baktaz_flutter`.
 
-**Architecture:** Define domain models/enums (`AccountHeader`, `SupportOption`, `MyAccountOption`, `SettingsOption`, `HealthSyncProvider`), repository interfaces (`IAccountRepository`, `IHostSubscriptionRepository`, `IPayoutRepository`) returning `TaskResult<T>`, and state management Cubits (`AccountCubit`, `HostSubscriptionCubit`, `PaymentCubit`, `HealthSyncCubit`). `AccountCubit` MUST inject `IChallengeRepository` to fetch challenge stats. Map screen navigation with `@TypedGoRoute` annotations in `baktaz_flutter/lib/app/routes/` including `/account/profile` (`ProfileRoute`). Note: `AccountHeader.support` options (`helpCenter`, `aboutUs`, `privacyPolicy`, `shareFeedback`) explicitly do NOT include `logout`. The `Logout` action is specified as part of `ProfileScreen` (`/account/profile`) at the bottom of the profile form, triggering `LogoutConfirmationDialog`.
+**Architecture:** Define domain models/enums (`AccountHeader`, `SupportOption`, `MyAccountOption`, `SettingsOption`, `StepsSyncProvider`), repository interfaces (`IAccountRepository`, `IHostSubscriptionRepository`, `IPayoutRepository`) returning `TaskResult<T>`, and state management Cubits (`AccountCubit`, `HostSubscriptionCubit`, `PaymentCubit`, `HealthSyncCubit`). `AccountCubit` MUST inject `IChallengeRepository` to fetch challenge stats. Map screen navigation with `@TypedGoRoute` annotations in `baktaz_flutter/lib/app/routes/` including `/account/profile` (`ProfileRoute`). Note: `AccountHeader.support` options (`helpCenter`, `aboutUs`, `privacyPolicy`, `shareFeedback`) explicitly do NOT include `logout`. The `Logout` action is specified as part of `ProfileScreen` (`/account/profile`) at the bottom of the profile form, triggering `LogoutConfirmationDialog`.
 
 **Tech Stack:** Dart 3.x, Flutter, `bloc_signals` (`CubitSignal<S>`), `fpdart` (`TaskResult<T>`), `injectable`/`getIt`, `go_router` & `go_router_builder`.
 
-**Spec:** `docs/specs/account_feature_spec.md`
+**Spec:** `docs/superpowers/specs/Account/2026-08-28-00-overview.md`
 
 ## Global Constraints
 
@@ -23,7 +23,7 @@
 
 **Files:**
 - Create: `baktaz_flutter/lib/features/account/domain/entity/enum/account_navigation_option.dart`
-- Create: `baktaz_flutter/lib/features/account/domain/entity/enum/health_sync_provider.dart`
+- Create: `baktaz_flutter/lib/features/account/domain/entity/enum/steps_sync_provider.dart`
 - Create: `baktaz_flutter/lib/features/account/domain/interface/i_account_repository.dart`
 - Create: `baktaz_flutter/lib/features/account/data/repository/account_repository.dart`
 - Create: `baktaz_flutter/lib/features/account/domain/interface/i_host_subscription_repository.dart`
@@ -117,9 +117,9 @@ enum SettingsOption {
 }
 ```
 
-Create `baktaz_flutter/lib/features/account/domain/entity/enum/health_sync_provider.dart`:
+Create `baktaz_flutter/lib/features/account/domain/entity/enum/steps_sync_provider.dart`:
 ```dart
-enum HealthSyncProvider {
+enum StepsSyncProvider {
   appleHealth,
   healthConnect,
   none,
@@ -299,7 +299,7 @@ git commit -m "feat(flutter): add account domain enums and repository implementa
 - Create: `baktaz_flutter/lib/features/account/presentation/cubit/host_subscription_state.dart`
 - Create: `baktaz_flutter/lib/features/account/presentation/cubit/payment_cubit.dart`
 - Create: `baktaz_flutter/lib/features/account/presentation/cubit/payment_state.dart`
-- Create: `baktaz_flutter/lib/features/account/presentation/cubit/health_sync_cubit.dart`
+- Create: `baktaz_flutter/lib/features/account/presentation/cubit/steps_cubit.dart`
 - Create: `baktaz_flutter/lib/features/account/presentation/cubit/health_sync_state.dart`
 
 **Interfaces:**
@@ -522,14 +522,14 @@ class PaymentCubit extends CubitSignal<PaymentState> {
 Create `baktaz_flutter/lib/features/account/presentation/cubit/health_sync_state.dart`:
 ```dart
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../domain/entity/enum/health_sync_provider.dart';
+import '../../domain/entity/enum/steps_sync_provider.dart';
 
 part 'health_sync_state.freezed.dart';
 
 @freezed
 class HealthSyncState with _$HealthSyncState {
   const factory HealthSyncState({
-    @Default(HealthSyncProvider.none) HealthSyncProvider activeProvider,
+    @Default(StepsSyncProvider.none) StepsSyncProvider activeProvider,
     @Default(false) bool isAuthorized,
     @Default(false) bool isSyncing,
     DateTime? lastSyncedAt,
@@ -539,18 +539,18 @@ class HealthSyncState with _$HealthSyncState {
 }
 ```
 
-Create `baktaz_flutter/lib/features/account/presentation/cubit/health_sync_cubit.dart`:
+Create `baktaz_flutter/lib/features/account/presentation/cubit/steps_cubit.dart`:
 ```dart
 import 'package:injectable/injectable.dart';
 import 'package:bloc_signals/bloc_signals.dart';
-import '../../domain/entity/enum/health_sync_provider.dart';
+import '../../domain/entity/enum/steps_sync_provider.dart';
 import 'health_sync_state.dart';
 
 @injectable
 class HealthSyncCubit extends CubitSignal<HealthSyncState> {
   HealthSyncCubit() : super(initialState: const HealthSyncState());
 
-  void selectProvider(HealthSyncProvider provider) {
+  void selectProvider(StepsSyncProvider provider) {
     emit(stateValue.copyWith(activeProvider: provider, isAuthorized: true));
   }
 
@@ -587,7 +587,7 @@ git commit -m "feat(flutter): add AccountCubit, HostSubscriptionCubit, PaymentCu
 
 **Interfaces:**
 - Consumes: `go_router`, `go_router_builder`.
-- Produces: `@TypedGoRoute` definitions for `/account`, `/account/profile`, `/account/host-subscription`, `/account/payment`, `/account/health-sync`.
+- Produces: `@TypedGoRoute` definitions for `/account`, `/account/profile`, `/account/host-subscription`, `/account/payment`, `/account/steps`.
 
 - [ ] **Step 1: Write Route definitions**
 

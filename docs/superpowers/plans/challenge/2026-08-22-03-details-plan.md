@@ -4,7 +4,7 @@
 
 **Goal:** Implement the Challenge Details Screen (`/challenge/detail/:id`) — "The Race Contract" with countdown hero, identity block, TERMS ledger, sticky CTA, non-refundable disclaimer, and payment flow integration.
 
-**Spec:** `docs/superpowers/specs/challenge/2026-08-22-03-details.md`
+**Spec:** `docs/superpowers/specs/Challenge/2026-08-22-03-details.md`
 
 ## Tasks
 

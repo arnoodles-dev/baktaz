@@ -8,7 +8,7 @@
 
 **Tech Stack:** Serverpod 2.x Endpoints, PostgreSQL ORM, `getIt`/`injectable` DI.
 
-**Spec:** `docs/specs/account_feature_spec.md`
+**Spec:** `docs/superpowers/specs/Account/2026-08-28-00-overview.md`
 
 ## Global Constraints
 

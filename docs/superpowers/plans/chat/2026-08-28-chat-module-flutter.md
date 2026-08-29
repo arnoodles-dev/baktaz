@@ -1,7 +1,7 @@
 # Chat Module — Flutter Sub-Plan
 
 > **Parent plan:** `docs/superpowers/plans/chat/2026-08-24-chat-module.md`
-> **Spec:** `docs/superpowers/specs/chat/2026-08-24-00-overview.md`
+> **Spec:** `docs/superpowers/specs/Chat/2026-08-24-00-overview.md`
 > **Package:** `baktaz_flutter`
 
 **Goal:** Implement the Flutter client for the chat module — entities (`MessageEntity`, `AttachmentEntity`, `EventMessageEntity`, `RoomEntity`, `ParticipantEntity`), S3 presigned photo upload flow with local compression (`flutter_image_compress`), repository, cubit, unread state management (`unreadChatCount`, `unreadEventsCount`, instant read reset), UI widgets (MessageTile, AttachmentPickerPreview, sub-tab badges), BaktazNavBar red dot, pages, i18n, and golden tests.

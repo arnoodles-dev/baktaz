@@ -1,47 +1,42 @@
----
-title: Health Data Integration - Flutter Architecture
-status: Proposed
-version: 1.0
-related: health_data_integration_spec.md
----
 
 # 5. Flutter Architecture
+> **Parent Spec:** `docs/superpowers/specs/Steps/2026-08-29-01-overview.md`
 
-The health integration must be hidden behind a repository abstraction.
+The steps integration must be hidden behind a repository abstraction.
 
 Recommended structure:
 
 ```text
 lib/
 ├── features/
-│   └── health/
+│   └── steps/
 │       ├── data/
-│       │   ├── health_repository_impl.dart
-│       │   └── health_service.dart
+│       │   ├── steps_repository_impl.dart
+│       │   └── steps_service.dart
 │       │
 │       ├── domain/
-│       │   ├── health_repository.dart
-│       │   ├── health_integration.dart
-│       │   ├── health_connection_diagnostic.dart
+│       │   ├── steps_repository.dart
+│       │   ├── steps_integration.dart
+│       │   ├── step_connection_diagnostic.dart
 │       │   └── daily_steps.dart
 │       │
 │       └── presentation/
-│           ├── health_integration_screen.dart
-│           ├── health_integration_controller.dart
-│           └── health_integration_state.dart
+│           ├── steps_integration_screen.dart
+│           ├── steps_integration_controller.dart
+│           └── steps_integration_state.dart
 ```
 
 ---
 
-# 6. Health Repository
+# 6. Steps Repository
 
 Recommended interface:
 
 ```dart
-abstract interface class HealthRepository {
-  Future<HealthConnectionDiagnostic> diagnose();
+abstract interface class StepsRepository {
+  Future<StepConnectionDiagnostic> diagnose();
 
-  Future<HealthConnectionDiagnostic> connect();
+  Future<StepConnectionDiagnostic> connect();
 
   Future<int> getTodaySteps();
 
@@ -80,13 +75,13 @@ The `health` package is the recommended implementation but not required. You can
 
 ---
 
-# 8. Health Integration States
+# 8. Steps Integration States
 
 The application must distinguish between multiple states:
 
 ### Device-level states
 
-These states describe the current device's ability to access health data.
+These states describe the current device's ability to access step data.
 
 | State | Description |
 |---|---|
@@ -96,11 +91,11 @@ These states describe the current device's ability to access health data.
 | `authorized` | Permission granted, but data access has not been verified |
 | `connected` | Permission granted and data is accessible |
 | `unavailable` | The health service is temporarily unavailable |
-| `error` | An error occurred while accessing health data |
+| `error` | An error occurred while accessing step data |
 
 ### Data-level states
 
-These states describe the health data itself.
+These states describe the step data itself.
 
 | State | Description |
 |---|---|
@@ -146,14 +141,14 @@ This diagnostic should be called:
 
 - On app launch
 - On app resume
-- Before attempting to read health data
-- Before showing the health integration screen
+- Before attempting to read step data
+- Before showing the steps integration screen
 
 ---
 
 # 10. Integration Validation
 
-Do not assume that a successful permission dialog means the app can read health data.
+Do not assume that a successful permission dialog means the app can read step data.
 
 The permission dialog may:
 
@@ -166,16 +161,16 @@ The app must **verify data access** after permission is granted:
 ```dart
 Future<HealthConnectionDiagnostic> diagnose() async {
   // 1. Check if the health service is available
-  final isAvailable = await healthService.isAvailable();
+  final isAvailable = await stepsService.isAvailable();
   if (!isAvailable) return HealthConnectionDiagnostic.notInstalled;
 
   // 2. Request permission
-  final granted = await healthService.requestPermission([HealthDataType.STEPS]);
+  final granted = await stepsService.requestPermission([HealthDataType.STEPS]);
   if (!granted) return HealthConnectionDiagnostic.permissionDenied;
 
   // 3. Verify data access by reading today's steps
   try {
-    final steps = await healthService.getSteps(DateTime.now());
+    final steps = await stepsService.getSteps(DateTime.now());
     if (steps.isEmpty) {
       return HealthConnectionDiagnostic.noDataFound;
     }
@@ -311,8 +306,8 @@ To share Samsung Health data with Health Connect:
 
 ## See also
 
-- [Overview](overview.md)
-- [UI/UX](ui-ux.md)
-- [Backend Sync & Model](backend-sync-model.md)
-- [Multi-Device Rules](multi-device-rules.md)
-- [Backend Schema](backend-schema.md)
+- [Overview](2026-08-29-01-overview.md)
+- [UI/UX](2026-08-29-06-ui-ux.md)
+- [Backend Sync & Model](2026-08-29-04-backend-sync-model.md)
+- [Multi-Device Rules](2026-08-29-05-multi-device-rules.md)
+- [Backend Schema](2026-08-29-03-backend-schema.md)

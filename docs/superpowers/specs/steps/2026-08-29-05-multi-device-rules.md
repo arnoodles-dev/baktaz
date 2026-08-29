@@ -1,11 +1,6 @@
----
-title: Health Data Integration - Multi-Device Rules
-status: Proposed
-version: 1.0
-related: health_data_integration_spec.md
----
 
 # 23. Multiple Devices
+> **Parent Spec:** `docs/superpowers/specs/Steps/2026-08-29-01-overview.md`
 
 A single user account may register multiple devices over time.
 
@@ -158,8 +153,8 @@ The backend compares `synced_at` values and keeps the latest.
 
 ## See also
 
-- [Overview](overview.md)
-- [Flutter Architecture](flutter-architecture.md)
-- [UI/UX](ui-ux.md)
-- [Backend Sync & Model](backend-sync-model.md)
-- [Backend Schema](backend-schema.md)
+- [Overview](2026-08-29-01-overview.md)
+- [Flutter Architecture](2026-08-29-02-flutter-architecture.md)
+- [UI/UX](2026-08-29-06-ui-ux.md)
+- [Backend Sync & Model](2026-08-29-04-backend-sync-model.md)
+- [Backend Schema](2026-08-29-03-backend-schema.md)

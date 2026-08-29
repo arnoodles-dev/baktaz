@@ -1,7 +1,7 @@
 # Chat Module — Integration Sub-Plan
 
 > **Parent plan:** `docs/superpowers/plans/chat/2026-08-24-chat-module.md`
-> **Spec:** `docs/superpowers/specs/chat/2026-08-24-00-overview.md`
+> **Spec:** `docs/superpowers/specs/Chat/2026-08-24-00-overview.md`
 > **Packages:** `baktaz_flutter` (routing + DI), `baktaz_server` + `baktaz_flutter` (verification)
 
 **Goal:** Wire up routing, DI providers, mocks, and run full verification for the chat module.
