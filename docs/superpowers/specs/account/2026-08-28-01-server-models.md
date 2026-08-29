@@ -2,7 +2,7 @@
 
 > **Document Version:** 1.0  
 > **Date:** 2026-08-28  
-> **Parent Spec:** `docs/superpowers/specs/account/00-overview.md`  
+> **Parent Spec:** `docs/superpowers/specs/account/2026-08-28-00-overview.md`  
 > **Package:** `baktaz_server` (`lib/src/features/account/models/`)  
 
 ---
@@ -35,21 +35,39 @@ fields:
 
 ---
 
-### 2.2 `AccountSummary` (`account_summary.spy.yaml`)
-Aggregates profile identity, host subscription tier, and lifetime challenge step statistics into a single RPC payload for `AccountPage`.
+### 2.2 `AccountChallengeStats` (`account_challenge_stats.spy.yaml`)
+Pre-calculated challenge statistics rendered in the 4-column `ChallengeStatsGrid`.
+
+```yaml
+class: AccountChallengeStats
+fields:
+  totalChallengeSteps: int
+  challengesJoined: int
+  challengesWon: int
+  winRatePercentage: double
+```
+
+- **Calculated Fields**:
+  - `totalChallengeSteps`: Sum of validated step counts recorded during active challenges.
+  - `challengesJoined`: Count of unique challenges participated in.
+  - `challengesWon`: Count of challenges where user ranked #1.
+  - `winRatePercentage`: Pre-calculated `(challengesWon / challengesJoined) * 100` (rounded to 1 decimal place, e.g. `33.3`). Returns `0.0` when `challengesJoined == 0`.
+
+---
+
+### 2.3 `AccountSummary` (`account_summary.spy.yaml`)
+Aggregates profile identity, host subscription status, and pre-calculated challenge stats into a single RPC payload for `AccountPage`.
 
 ```yaml
 class: AccountSummary
 fields:
   userInfo: UserInfo
   isPremiumHost: bool
-  challengeStepsTotal: int
-  challengesJoined: int
-  challengesWon: int
+  stats: AccountChallengeStats
 ```
 
 - **Stat Rules**:
-  - `challengeStepsTotal`: Sum of validated steps recorded *strictly* during active challenge durations. Excludes general background steps.
+  - `stats`: Contains pre-calculated `AccountChallengeStats` object.
   - `isPremiumHost`: `true` if user possesses an unexpired `HostSubscription` record with status `active`.
 
 ---

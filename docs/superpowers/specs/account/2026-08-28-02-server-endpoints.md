@@ -2,7 +2,7 @@
 
 > **Document Version:** 1.0  
 > **Date:** 2026-08-28  
-> **Parent Spec:** `docs/superpowers/specs/account/00-overview.md`  
+> **Parent Spec:** `docs/superpowers/specs/account/2026-08-28-00-overview.md`  
 > **Package:** `baktaz_server` (`lib/src/features/account/`)  
 
 ---

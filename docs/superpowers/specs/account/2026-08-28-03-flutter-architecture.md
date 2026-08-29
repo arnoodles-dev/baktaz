@@ -2,7 +2,7 @@
 
 > **Document Version:** 1.0  
 > **Date:** 2026-08-28  
-> **Parent Spec:** `docs/superpowers/specs/account/00-overview.md`  
+> **Parent Spec:** `docs/superpowers/specs/account/2026-08-28-00-overview.md`  
 > **Package:** `baktaz_flutter` (`lib/features/account/`)  
 
 ---
@@ -226,7 +226,36 @@ class AboutRoute extends GoRouteData {
 
 ## 3. Cubit State Management
 
-All Cubits inherit from `CubitSignal<State>` and enforce **Pattern B Error Handling**:
+### 2.2 Cubit Injection & Repository Dependencies
+
+`AccountCubit` relies on two injected repositories:
+1. `IAccountRepository` — fetches user identity, subscription status, and account summary.
+2. `IChallengeRepository` — fetches raw challenge participation/win data to calculate `AccountChallengeStats` if needed, or delegates to server-side aggregation.
+
+```dart
+@injectable
+class AccountCubit extends CubitSignal<AccountState> {
+  AccountCubit(
+    this._accountRepository,
+    this._challengeRepository,
+    this._failureHandler,
+  ) : super(const AccountState.initial());
+
+  final IAccountRepository _accountRepository;
+  final IChallengeRepository _challengeRepository;
+  final FailureHandler _failureHandler;
+```
+
+---
+
+### 2.3 Shimmer Strategy (MVP)
+
+- **Data-Driven Widgets**: Wrap `_AccountAppBar` and `_ChallengeStatsGrid` with `Skeletonizer` (or `Shimmer`) when state is `loading`.
+- **Static Menu (`AccountContentWidget`)**: Renders **immediately** without any shimmer wrapper, ensuring instant interactive response for static navigation rows.
+
+---
+
+### 2.4 All Cubits inherit from `CubitSignal<State>`
 - Errors trigger side-effect UI alerts via `FailureHandler.handleFailure(failure)`.
 - State class contains clean UI states (`initial`, `loading`, `success`, `failure`) without holding `Failure` objects inside the state instance.
 

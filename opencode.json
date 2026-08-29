@@ -1,12 +1,12 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "default_agent": "main",
-  "model": "omniroute/auto/code",
+  "model": "omniroute/coder",
   "agent": {
     "main": {
       "description": "Full-Stack Orchestrator that coordinates task delegation and synthesizes output across mobile, web, and server",
       "mode": "primary",
-      "model": "omniroute/auto/code",
+      "model": "omniroute/coder",
       "prompt": "{file:.agents/agents/main.md}",
       "permission": {
         "edit": "deny",

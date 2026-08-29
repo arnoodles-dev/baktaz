@@ -4,7 +4,7 @@
 
 **Goal:** Implement Flutter repositories, reactive Cubits with `CubitSignal<S>` and Pattern B error handling, domain enums (`AccountHeader`, `SupportOption`, `MyAccountOption`, `SettingsOption`, `HealthSyncProvider`), and typed GoRouter routes for the Account feature in `baktaz_flutter`.
 
-**Architecture:** Define domain models/enums (`AccountHeader`, `SupportOption`, `MyAccountOption`, `SettingsOption`, `HealthSyncProvider`), repository interfaces (`IAccountRepository`, `IHostSubscriptionRepository`, `IPayoutRepository`) returning `TaskResult<T>`, and state management Cubits (`AccountCubit`, `HostSubscriptionCubit`, `PaymentCubit`, `HealthSyncCubit`). Map screen navigation with `@TypedGoRoute` annotations in `baktaz_flutter/lib/app/routes/` including `/account/profile` (`ProfileRoute`). Note: `AccountHeader.support` options (`helpCenter`, `aboutUs`, `privacyPolicy`, `shareFeedback`) explicitly do NOT include `logout`. The `Logout` action is specified as part of `ProfileScreen` (`/account/profile`) at the bottom of the profile form, triggering `LogoutConfirmationDialog`.
+**Architecture:** Define domain models/enums (`AccountHeader`, `SupportOption`, `MyAccountOption`, `SettingsOption`, `HealthSyncProvider`), repository interfaces (`IAccountRepository`, `IHostSubscriptionRepository`, `IPayoutRepository`) returning `TaskResult<T>`, and state management Cubits (`AccountCubit`, `HostSubscriptionCubit`, `PaymentCubit`, `HealthSyncCubit`). `AccountCubit` MUST inject `IChallengeRepository` to fetch challenge stats. Map screen navigation with `@TypedGoRoute` annotations in `baktaz_flutter/lib/app/routes/` including `/account/profile` (`ProfileRoute`). Note: `AccountHeader.support` options (`helpCenter`, `aboutUs`, `privacyPolicy`, `shareFeedback`) explicitly do NOT include `logout`. The `Logout` action is specified as part of `ProfileScreen` (`/account/profile`) at the bottom of the profile form, triggering `LogoutConfirmationDialog`.
 
 **Tech Stack:** Dart 3.x, Flutter, `bloc_signals` (`CubitSignal<S>`), `fpdart` (`TaskResult<T>`), `injectable`/`getIt`, `go_router` & `go_router_builder`.
 
@@ -349,15 +349,19 @@ Create `baktaz_flutter/lib/features/account/presentation/cubit/account_cubit.dar
 import 'package:injectable/injectable.dart';
 import 'package:bloc_signals/bloc_signals.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
+import '../../../challenge/domain/interface/i_challenge_repository.dart';
 import '../../domain/interface/i_account_repository.dart';
 import 'account_state.dart';
 
 @injectable
 class AccountCubit extends CubitSignal<AccountState> {
   final IAccountRepository _accountRepository;
+  final IChallengeRepository _challengeRepository;
 
-  AccountCubit(this._accountRepository)
-      : super(initialState: const AccountState.initial());
+  AccountCubit(
+    this._accountRepository,
+    this._challengeRepository,
+  ) : super(initialState: const AccountState.initial());
 
   Future<void> fetchSummary() async {
     emit(const AccountState.loading());
