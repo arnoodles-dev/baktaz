@@ -96,6 +96,7 @@ jobs:
         with:
           flavor: ${{ inputs.flavor }}
           working-directory: baktaz_flutter
+          secrets_json: ${{ toJSON(secrets) }}
 
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
@@ -157,6 +158,7 @@ jobs:
         with:
           flavor: ${{ inputs.flavor }}
           working-directory: baktaz_flutter
+          secrets_json: ${{ toJSON(secrets) }}
 
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project

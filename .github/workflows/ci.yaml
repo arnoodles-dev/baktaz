@@ -125,6 +125,7 @@ jobs:
         uses: ./.github/actions/inject-secrets
         with:
           working-directory: baktaz_flutter
+          secrets_json: ${{ toJSON(secrets) }}
 
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
@@ -172,6 +173,7 @@ jobs:
         uses: ./.github/actions/inject-secrets
         with:
           working-directory: baktaz_admin
+          secrets_json: ${{ toJSON(secrets) }}
 
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
@@ -256,11 +258,6 @@ jobs:
     steps:
       - name: 📚 Git Checkout
         uses: actions/checkout@v7
-
-      - name: 🔐 Inject Secrets
-        uses: ./.github/actions/inject-secrets
-        with:
-          working-directory: baktaz_server
 
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project

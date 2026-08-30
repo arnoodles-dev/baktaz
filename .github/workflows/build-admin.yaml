@@ -82,6 +82,7 @@ jobs:
         with:
           flavor: ${{ inputs.flavor }}
           working-directory: baktaz_admin
+          secrets_json: ${{ toJSON(secrets) }}
 
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project

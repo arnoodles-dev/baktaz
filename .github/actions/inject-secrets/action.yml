@@ -9,6 +9,10 @@ inputs:
     description: "Working directory of the project"
     required: false
     default: "."
+  secrets_json:
+    description: "JSON stringified secrets map"
+    required: false
+    default: "{}"
 
 runs:
   using: "composite"
@@ -19,4 +23,4 @@ runs:
       shell: bash
       env:
         FLAVOR: ${{ inputs.flavor }}
-        SECRETS_JSON: ${{ toJSON(secrets) }}
+        SECRETS_JSON: ${{ inputs.secrets_json }}
