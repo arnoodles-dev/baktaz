@@ -1,0 +1,22 @@
+name: "Inject Secrets"
+description: "Injects runtime secrets into environment files (.env.<flavor>)"
+inputs:
+  flavor:
+    description: "App flavor: 'development', 'staging', 'production', or 'all'"
+    required: false
+    default: "development"
+  working-directory:
+    description: "Working directory of the project"
+    required: false
+    default: "."
+
+runs:
+  using: "composite"
+  steps:
+    - name: 🔐 Inject Secrets
+      run: |
+        sh "${{ github.workspace }}/scripts/inject_env_secrets.sh" "${{ inputs.flavor }}" "${{ inputs.working-directory }}"
+      shell: bash
+      env:
+        FLAVOR: ${{ inputs.flavor }}
+        SECRETS_JSON: ${{ toJSON(secrets) }}

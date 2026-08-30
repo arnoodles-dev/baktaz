@@ -74,13 +74,20 @@ jobs:
       run:
         working-directory: "./baktaz_admin"
 
-    environment: ${{ inputs.flavor }}
+    environment: admin-${{ inputs.flavor }}
 
     steps:
+      - name: 🔐 Inject Secrets
+        uses: ./.github/actions/inject-secrets
+        with:
+          flavor: ${{ inputs.flavor }}
+          working-directory: baktaz_admin
+
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
         with:
           working-directory: baktaz_admin
+          type: flutter
 
       - name: 🔨 Build Web App
         shell: bash

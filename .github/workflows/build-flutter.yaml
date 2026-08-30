@@ -88,9 +88,15 @@ jobs:
       run:
         working-directory: "./baktaz_flutter"
 
-    environment: ${{ inputs.flavor }}
+    environment: flutter-${{ inputs.flavor }}
 
     steps:
+      - name: 🔐 Inject Secrets
+        uses: ./.github/actions/inject-secrets
+        with:
+          flavor: ${{ inputs.flavor }}
+          working-directory: baktaz_flutter
+
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
         with:
@@ -143,9 +149,15 @@ jobs:
       run:
         working-directory: "./baktaz_flutter"
 
-    environment: ${{ inputs.flavor }}
+    environment: flutter-${{ inputs.flavor }}
 
     steps:
+      - name: 🔐 Inject Secrets
+        uses: ./.github/actions/inject-secrets
+        with:
+          flavor: ${{ inputs.flavor }}
+          working-directory: baktaz_flutter
+
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
         with:
