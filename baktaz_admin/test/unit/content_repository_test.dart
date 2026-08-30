@@ -4,7 +4,7 @@ import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 
-import '../../../../fixtures/admin_fixtures.dart';
+import '../fixtures/admin_fixtures.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

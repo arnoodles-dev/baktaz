@@ -9,8 +9,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
 
-import '../../../../fixtures/admin_fixtures.dart';
-import '../../../../utils/generated_mocks.mocks.dart';
+import '../fixtures/admin_fixtures.dart';
+import '../utils/generated_mocks.mocks.dart';
 
 void main() {
   late MockIContentRepository mockRepository;

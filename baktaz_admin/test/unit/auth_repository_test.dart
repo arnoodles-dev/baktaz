@@ -8,8 +8,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart';
 
-import '../../../../utils/generated_mocks.mocks.dart';
-import '../../../../utils/test_utils.dart';
+import '../utils/generated_mocks.mocks.dart';
+import '../utils/test_utils.dart';
 
 // ponytail: login() delegates entirely to EmailAuthController's onAuthenticated/onError
 // callbacks — unit-testable only as integration. Covered by integration tests.

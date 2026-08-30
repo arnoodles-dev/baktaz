@@ -6,8 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
 
-import '../../../../utils/generated_mocks.mocks.dart';
-import '../../../../utils/test_utils.dart';
+import '../utils/generated_mocks.mocks.dart';
+import '../utils/test_utils.dart';
 
 void main() {
   group(AuthCubit, () {

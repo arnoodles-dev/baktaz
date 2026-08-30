@@ -8,7 +8,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 
-import '../../../../utils/generated_mocks.mocks.dart';
+import '../utils/generated_mocks.mocks.dart';
 
 void main() {
   group(LoginCubit, () {

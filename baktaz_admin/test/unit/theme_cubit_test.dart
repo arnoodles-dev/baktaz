@@ -8,7 +8,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
 import 'package:trust_but_verify/trust_but_verify.dart';
 
-import '../../../utils/generated_mocks.mocks.dart';
+import '../utils/generated_mocks.mocks.dart';
 
 void main() {
   group(ThemeCubit, () {

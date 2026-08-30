@@ -3,7 +3,7 @@ import 'package:bloc_signals_test/bloc_signals_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import '../../../utils/generated_mocks.mocks.dart';
+import '../utils/generated_mocks.mocks.dart';
 
 void main() {
   group(AppCoreCubit, () {

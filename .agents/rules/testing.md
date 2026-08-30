@@ -151,6 +151,18 @@ Testing may only begin **after**:
 - **Generated mocks**: `@GenerateMocks` or `@GenerateNiceMocks` in `test/utils/generated_mocks.dart`. Reuse across tests.
 - **Stubs**: `when`, `thenReturn`, `thenAnswer`
 - **Type errors**: `provideDummy<T>(dummyValue)` in `flutter_test_config.dart`
+- **Mockito codegen fallback**: When using `@GenerateNiceMocks` / `@GenerateMocks` in `test/utils/generated_mocks.dart`, all non-primitive return types and parameter types in the mocked interfaces must have `provideDummy<T>()` calls registered **inside that same `main()` function** before mock generation runs. Without these, Mockito falls back to `dynamic` types in generated mocks, causing invalid override errors (e.g. `Future<dynamic>` vs `Future<ConcreteType>`). Example:
+  ```dart
+  void main() {
+    provideDummy<OtpVerificationResult>(
+      const OtpVerificationResult(success: false),
+    );
+    provideDummy<RegistrationForm>(
+      const RegistrationForm(email: '', password: ''),
+    );
+  }
+  ```
+  Re-run `build_runner` after adding dummies.
 
 ## Coverage Targets
 
@@ -161,7 +173,77 @@ Testing may only begin **after**:
 | Widget | ≥80% | (see flutter-architecture.md)
 | `*_site` | Exempt from Flutter goldens |
 
-Exclusions in `.coverage_exclude`.
+## Coverage Exclusions
+
+Each package has a `.coverage_exclude` file that defines files excluded from coverage reports. These exclusions apply when running coverage tools.
+
+### baktaz_flutter
+```
+lib/app/*
+Lib/main.dart
+*.g.dart
+*.freezed.dart
+*.dto.dart
+*.config.dart
+*.chopper.dart
+*_screen.dart
+*_webview.dart
+**/wrappers/*.dart
+*_state.dart
+**/pages/*
+**/service/*
+**/entity/*
+**/dto/*
+**/views/*
+```
+
+### baktaz_admin
+```
+lib/app/*
+Lib/main.dart
+*.g.dart
+*.freezed.dart
+*.dto.dart
+*.config.dart
+*.chopper.dart
+*_screen.dart
+*_webview.dart
+**/wrappers/*.dart
+*_state.dart
+**/pages/*
+**/service/*
+**/entity/*
+**/dto/*
+```
+
+### baktaz_server
+```
+**/app/*
+**/generated/*
+**/domain/**
+**/*.chopper.dart
+```
+
+### baktaz_shared
+```
+*.g.dart
+*.freezed.dart
+*.dto.dart
+*.config.dart
+*.chopper.dart
+*_state.dart
+**/theme/*.dart
+**/entity/*.dart
+**/dto/*.dart
+**/converters/*.dart
+**/extensions/*.dart
+*/formatters/*.dart
+*/utils/*.dart
+*/widgets/wrappers/*.dart
+*/domain/*.dart
+*/mixin/*.dart
+*/observer/*.dart
+```
 
 ## Widget & Golden Testing
 
@@ -185,6 +267,8 @@ Exclusions in `.coverage_exclude`.
 - `mocktail` (unless specified)
 - Interface tests
 - Screen tests (only widgets)
+- State class unit tests (`*_state_test.dart` or state data object tests)
+- Nested `domain/`, `data/`, `presentation/` folders in test paths
 
 ## Automated App Testing via DTD
 
