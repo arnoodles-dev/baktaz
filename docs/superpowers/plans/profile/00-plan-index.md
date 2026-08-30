@@ -1,5 +1,8 @@
 # Profile Header & Lifetime Stats — Implementation Plan Index
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All models, paths, and invariants (username derivation logic with collision handling in `UsernameUtils`, presigned S3 avatar upload flow, Serverpod 2.x account endpoints, boundary RPC input validation, `session.auth.authenticatedUserId` identity derivation, Pattern B error handling, `TaskResult<T>` repository returns, and implementation-first testing workflows) strictly conform to the master roadmap.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement Profile Header, Lifetime Challenge Stats, Auth/Registration updates (firstName, lastName, username derivation + collision handling), and full ProfileScreen rewrite with presigned avatar upload and social login status.

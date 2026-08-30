@@ -1,5 +1,8 @@
 # 2026-08-22-00 Foundation Plan
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All domain entities (`@freezed` models, `Money`/`Number` value objects from `baktaz_shared`), repository layering (split into `Lifecycle`, `Discovery`, `Leaderboard`), `CubitSignal<S>` with `initialState:` constructor, `TaskResult<T>` error handling, Pattern B side-effect routing, and Serverpod 2.x repository injection patterns strictly conform to the master roadmap's architectural invariants. Payment integration stubs are sequenced per the master plan's Feature 6 (Payment & Payout) integration points.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Establish the foundational challenge page infrastructure — domain entities, repository layer, Cubit state machine, typed navigation, and shared widget list — enabling all subsequent route plans to build on consistent foundations.

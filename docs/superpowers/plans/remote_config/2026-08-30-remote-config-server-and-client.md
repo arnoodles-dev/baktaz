@@ -1,5 +1,8 @@
 # RemoteConfig Server Infrastructure & Client Fetch Implementation Plan
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All models, paths, and invariants (Serverpod 2.x `remote_config` feature module structure, RAM targeting engine evaluation with L1 `session.caches.local` caching, `ServerpodRemoteConfigService` implementing `IRemoteConfigService`, boundary RPC input validation, Pattern B error handling, `TaskResult<T>` repository returns, and implementation-first testing workflows) strictly conform to the master roadmap.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement the Serverpod backend infrastructure for RemoteConfig (models, targeting evaluation engine, caching, seeder, public endpoint) and integrate `baktaz_flutter`'s `RemoteConfigCubit` with `baktaz_client`.

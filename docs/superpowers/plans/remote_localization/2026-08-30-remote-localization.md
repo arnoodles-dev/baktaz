@@ -1,5 +1,8 @@
 # OTA Remote Localization Implementation Plan
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All models, paths, and invariants (complete exclusion of Firebase Remote Config in favor of custom Serverpod 2.x OTA endpoint, fail-safe silent background fallback to `en.i18n.json`, Slang override architecture, `AppLocalizationCubit` state machine, Pattern B error handling, `TaskResult<T>` repository returns, and implementation-first testing workflows) strictly conform to the master roadmap.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build a server-controlled Over-The-Air (OTA) Remote Localization mechanism with Serverpod backend, PostgreSQL persistence, local session caching, and local storage caching in Flutter for seamless Slang localization integration.

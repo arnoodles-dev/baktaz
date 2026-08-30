@@ -1,12 +1,15 @@
 # Payment & Payout Implementation Plan
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All models, paths, and invariants (webhook idempotency verification via `gatewayTransactionId`, double-entry ledger debit/credit balance verification, tax withholding & 10% host cut distribution rules, Serverpod 2.x backend repository isolation of `HitPayService`, `session.auth.authenticatedUserId` identity derivation, Pattern B error handling, `TaskResult<T>` repository returns, and implementation-first testing workflows) strictly conform to the master roadmap.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement full payment collection and prize payout flow for Baktaz competitions using HitPay provider, with double-entry ledger, tax withholding, and host cut distribution.
 
 **Architecture:** Single `payment` server feature with merged `IPaymentProvider` and `IPaymentRepository`. Chopper client for HitPay API. Flutter payment/payout features with payment method selector widget embedded in challenge flow.
 
-**Tech Stack:** Serverpod 4.x, Chopper 8.x, Dart 3.13, bloc_signals, injectable, freezed, mockito, alchemist
+**Tech Stack:** Serverpod 2.x, Chopper 8.x, Dart 3.13, bloc_signals, injectable, freezed, mockito, alchemist
 
 **Spec:** `docs/superpowers/specs/payment/00-overview.md`
 

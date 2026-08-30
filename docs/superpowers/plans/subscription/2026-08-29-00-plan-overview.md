@@ -1,5 +1,8 @@
 # Host Subscription Feature Implementation Plan
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All models, paths, and invariants (HitPay recurring card billing, strict server-side entitlement check for Premium Host Cut, 10% host fee forfeiture rule on expired subscription, Serverpod 2.x RPC boundary input validation, `session.auth.authenticatedUserId` identity derivation, Pattern B error handling, `TaskResult<T>` repository returns, and implementation-first testing workflows) strictly conform to the master roadmap.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Enable users to upgrade from Free Regular User to Subscribed Premium Host via HitPay recurring card billing, with optional voucher support. Premium Host entitlement to Host Cut enforced via strict server-side subscription status check.

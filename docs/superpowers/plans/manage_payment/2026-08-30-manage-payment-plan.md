@@ -1,5 +1,8 @@
 # Manage Payment & Payout Implementation Plan — Overview
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All models, paths, and invariants (max 5 saved payment methods limit via `AppConfig.maxSavedPaymentMethods = 5`, 1 active payout destination per user via DB unique index, Serverpod 2.x backend repository isolation of `HitPayService`, boundary RPC input validation, `session.auth.authenticatedUserId` identity derivation, Pattern B error handling, `TaskResult<T>` repository returns, and implementation-first testing workflows) strictly conform to the master roadmap.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Document Version:** 1.2  

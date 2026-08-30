@@ -1,5 +1,8 @@
 # Steps Data Integration Master Implementation Plan
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All models, paths, and invariants (monotonic `max(existingSteps, newSteps)` DB writes, anti-cheat manual step input rejection, 30,000 daily step ceiling threshold via `AppConfig.maxDailyStepCeiling = 30000`, 24-hour validation window before payout disbursement, Serverpod 2.x boundary RPC input validation, `session.auth.authenticatedUserId` identity derivation, Pattern B error handling, `TaskResult<T>` repository returns, and implementation-first testing workflows) strictly conform to the master roadmap.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Implement steps data integration across Flutter client (`baktaz_flutter`) and Serverpod backend (`baktaz_server`) supporting Apple HealthKit (iOS) and Android Health Connect. The feature includes device management, steps integration connections, step synchronization state, and dual entry points (Home CTA + Account tile).

@@ -1,5 +1,8 @@
 # Account Feature Master Implementation Plan
 
+> **Parent Canonical Roadmap:** Governed by and aligned with the Master Integration Plan in [`/Users/Arnold/Projects/baktaz/docs/superpowers/plans/2026-08-30-master-integration-plan.md`](../2026-08-30-master-integration-plan.md).
+> All models, paths, and architectural invariants (Pattern B error handling, `TaskResult<T>` repository returns, Serverpod 2.x RPC boundary input validation, auth identity derivation from `session.auth.authenticatedUserId`, implementation-first testing workflows, and 10% host fee forfeiture rules) strictly conform to the master roadmap.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Provide a comprehensive, full-stack roadmap for implementing the Account & Wallet Tab feature set (`/account`) across Serverpod backend (`baktaz_server`), client SDK (`baktaz_client`), and Flutter frontend (`baktaz_flutter`).
