@@ -15,8 +15,8 @@ dependencies:
     path: ../baktaz_client
   baktaz_shared:
     path: ../baktaz_shared
-  bloc_signals: ^1.0.0+1
-  bloc_signals_flutter: ^1.2.0
+  bloc_signals: ^1.1.0
+  bloc_signals_flutter: ^1.2.1
   cached_network_image: ^3.4.1
   chopper: ^8.7.0
   connectivity_plus: ^7.3.1
@@ -79,11 +79,11 @@ dev_dependencies:
   flutter_gen_runner: ^5.15.0
   flutter_test:
     sdk: flutter
-  freezed: ^4.0.0-dev.3
-  go_router_builder: ^4.4.0
+  freezed: ^4.0.1
+  go_router_builder: ^4.4.1
   injectable_generator: ^3.1.3
   json_serializable: ^6.14.1
-  mockito: ^5.6.4
+  mockito: ^5.8.1
   path_provider_platform_interface: ^2.1.3
   plugin_platform_interface: ^2.1.8
   serverpod_auth_core_client: 4.0.0-beta.3

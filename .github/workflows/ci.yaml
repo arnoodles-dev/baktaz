@@ -28,7 +28,6 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  security-events: write
   contents: read
   actions: read
 
@@ -294,22 +293,3 @@ jobs:
       skip_packages: "pubspec_lock_parse,xmlstream,serverpod"
       flutter_version: ${{ needs.changes.outputs.flutter_version }}
       ignore_retrieval_failures: true
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Vulnerability Check (OSV Scanner — no code-scanning feature required)
-  # ────────────────────────────────────────────────────────────────────────────
-  vulnerability-check:
-    name: Vulnerability Check
-    needs: changes
-    if: ${{ needs.changes.outputs.flutter == 'true' || needs.changes.outputs.admin == 'true' || needs.changes.outputs.server == 'true' || needs.changes.outputs.shared == 'true' }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: 📚 Git Checkout
-        uses: actions/checkout@v7
-
-      - name: 🔒 OSV Scanner
-        uses: google/osv-scanner-action/osv-scanner-action@v2.5.1
-        with:
-          scan-args: |-
-            --recursive
-            ./

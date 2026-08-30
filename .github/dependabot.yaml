@@ -4,9 +4,78 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    open-pull-requests-limit: 10
+
   - package-ecosystem: "pub"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependencies"
+    open-pull-requests-limit: 10
 
+  - package-ecosystem: "pub"
+    directory: "/baktaz_server"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "backend"
+    open-pull-requests-limit: 10
 
+  - package-ecosystem: "pub"
+    directory: "/baktaz_flutter"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "flutter"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "pub"
+    directory: "/baktaz_admin"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "admin"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "pub"
+    directory: "/baktaz_shared"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "shared"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "pub"
+    directory: "/baktaz_client"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "client"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "pub"
+    directory: "/baktaz_flutter/plugins/mobile_service_core"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "plugin"
+    open-pull-requests-limit: 10
+
+  - package-ecosystem: "pub"
+    directory: "/baktaz_flutter/plugins/google_mobile_service"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "plugin"
+    open-pull-requests-limit: 10

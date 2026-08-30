@@ -85,8 +85,16 @@ config/passwords.yaml
 .scloud/
 
 # Environment Config
-assets/env/.env.*
-baktas_flutter/ios/Flutter/ephemeral/flutter_native_integration.env
+.env.staging
+.env.production
+*.env.staging
+*.env.production
+**/assets/env/.env.staging
+**/assets/env/.env.production
+!.env.development
+!*.env.development
+!**/assets/env/.env.development
+baktaz_flutter/ios/Flutter/ephemeral/flutter_native_integration.env
 
 # Android
 **/android/**/gradle-wrapper.jar
