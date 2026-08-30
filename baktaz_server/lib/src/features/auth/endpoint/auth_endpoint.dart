@@ -18,8 +18,6 @@ final class AuthEndpoint extends Endpoint {
   @override
   bool get requireLogin => false;
 
-  Future<OtpVerificationResult> completeRegistration(
-    Session session,
-    RegistrationForm form,
-  ) async => _authRepository.completeRegistration(session, form);
+  Future<OtpVerificationResult> completeRegistration(Session session, RegistrationForm form) async =>
+      _authRepository.completeRegistration(session, form);
 }

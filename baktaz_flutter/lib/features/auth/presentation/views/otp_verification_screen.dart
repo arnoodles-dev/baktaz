@@ -21,9 +21,7 @@ class OtpVerificationScreen extends HookWidget {
       child: Builder(
         builder: (BuildContext context) => BlocSignalPresentationListener<LoginCubit, LoginStateSideEffect>(
           listener: (BuildContext context, LoginStateSideEffect event) {
-            event.when(
-              onOtpError: (String message) => otpError.value = message,
-            );
+            event.when(onOtpError: (String message) => otpError.value = message);
           },
           child: BaktazOtpScreen(
             email: email,

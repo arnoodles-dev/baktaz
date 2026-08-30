@@ -84,8 +84,10 @@ void main() {
         // Assert
         expect(result.isLeft(), isTrue);
         result.fold(
-          (Failure failure) =>
-              expect(failure, equals(const Failure.server(StatusCode.serverpod, 'FormatException: Account summary is null'))),
+          (Failure failure) => expect(
+            failure,
+            equals(const Failure.server(StatusCode.serverpod, 'FormatException: Account summary is null')),
+          ),
           (_) => fail('Expected Left'),
         );
         verify(talker.handle(any, any)).called(1);
@@ -132,7 +134,8 @@ void main() {
         // Assert
         expect(result.isLeft(), isTrue);
         result.fold(
-          (Failure failure) => expect(failure, equals(const Failure.server(StatusCode.serverpod, 'FormatException: Profile is null'))),
+          (Failure failure) =>
+              expect(failure, equals(const Failure.server(StatusCode.serverpod, 'FormatException: Profile is null'))),
           (_) => fail('Expected Left'),
         );
         verify(talker.handle(any, any)).called(1);

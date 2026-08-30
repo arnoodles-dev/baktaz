@@ -106,12 +106,7 @@ void main() {
           await expectLater(
             customEndpoint.completeRegistration(
               mockSession,
-              RegistrationForm(
-                email: testEmail,
-                name: 'John Doe',
-                gender: 'male',
-                registrationToken: 'invalid_token',
-              ),
+              RegistrationForm(email: testEmail, name: 'John Doe', gender: 'male', registrationToken: 'invalid_token'),
             ),
             throwsA(
               isA<OtpException>().having(
@@ -132,12 +127,7 @@ void main() {
           await expectLater(
             endpoints.auth.completeRegistration(
               sessionBuilder,
-              RegistrationForm(
-                email: testEmail,
-                name: 'Jane Doe',
-                gender: 'female',
-                registrationToken: 'wrong_token',
-              ),
+              RegistrationForm(email: testEmail, name: 'Jane Doe', gender: 'female', registrationToken: 'wrong_token'),
             ),
             throwsA(
               isA<OtpException>().having(
@@ -213,24 +203,14 @@ void main() {
           // First call succeeds
           await endpoints.auth.completeRegistration(
             sessionBuilder,
-            RegistrationForm(
-              email: testEmail,
-              name: 'Bob Builder',
-              gender: 'male',
-              registrationToken: token,
-            ),
+            RegistrationForm(email: testEmail, name: 'Bob Builder', gender: 'male', registrationToken: token),
           );
 
           // Second call fails because token is consumed
           await expectLater(
             endpoints.auth.completeRegistration(
               sessionBuilder,
-              RegistrationForm(
-                email: testEmail,
-                name: 'Bob Builder',
-                gender: 'male',
-                registrationToken: token,
-              ),
+              RegistrationForm(email: testEmail, name: 'Bob Builder', gender: 'male', registrationToken: token),
             ),
             throwsA(
               isA<OtpException>().having(

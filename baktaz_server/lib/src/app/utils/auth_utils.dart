@@ -59,8 +59,7 @@ final class AuthUtils {
     }
 
     // 4. Tie everything together in Account
-    final (AuthUserModel, UserProfile, UserInfo, Wallet) seed =
-        (authUser, userProfileDb, userInfoDb, walletDb);
+    final (AuthUserModel, UserProfile, UserInfo, Wallet) seed = (authUser, userProfileDb, userInfoDb, walletDb);
     final Account insertedAccount = await _createAccount(session, seed, transaction);
     session.log('Account created: ${insertedAccount.toJson()}', level: LogLevel.debug);
 

@@ -159,9 +159,7 @@ void main() {
           return loginCubit;
         },
         act: (LoginCubit cubit) => cubit.verifyOtp(email: 'user@example.com', code: '000000'),
-        expect: () => <LoginState>[
-          const LoginState.verifying(email: 'user@example.com'),
-        ],
+        expect: () => <LoginState>[const LoginState.verifying(email: 'user@example.com')],
       );
     });
 
@@ -175,8 +173,7 @@ void main() {
       blocSignalTest<LoginCubit, LoginState>(
         'emits registrationCompleted and success on completeRegistration success',
         build: () {
-          when(authRepository.completeRegistration(form))
-              .thenReturn(TaskResult<AuthSuccess>.right(mockAuthSuccess));
+          when(authRepository.completeRegistration(form)).thenReturn(TaskResult<AuthSuccess>.right(mockAuthSuccess));
           return loginCubit;
         },
         act: (LoginCubit cubit) => cubit.completeRegistration(form),
@@ -192,13 +189,11 @@ void main() {
 
     group('Pattern B — presentationStream failure events', () {
       test('emits LoginStateOtpError via presentationStream on auth error', () async {
-        when(authRepository.loginWithGoogle()).thenReturn(
-          TaskResult<AuthSuccess?>.left(const Failure.authentication('sign-in failed')),
-        );
+        when(authRepository.loginWithGoogle())
+            .thenReturn(TaskResult<AuthSuccess?>.left(const Failure.authentication('sign-in failed')));
 
         final List<LoginStateSideEffect> events = <LoginStateSideEffect>[];
-        final StreamSubscription<LoginStateSideEffect> sub =
-            loginCubit.presentationStream.listen(events.add);
+        final StreamSubscription<LoginStateSideEffect> sub = loginCubit.presentationStream.listen(events.add);
 
         await loginCubit.loginWithProvider(LoginProvider.google);
         await Future<void>.delayed(Duration.zero);
@@ -210,15 +205,12 @@ void main() {
         await sub.cancel();
       });
 
-      test('emits LoginStateOtpError with fallback message when Failure has no message',
-          () async {
-        when(authRepository.loginWithGoogle()).thenReturn(
-          TaskResult<AuthSuccess?>.left(const Failure.authentication(null)),
-        );
+      test('emits LoginStateOtpError with fallback message when Failure has no message', () async {
+        when(authRepository.loginWithGoogle())
+            .thenReturn(TaskResult<AuthSuccess?>.left(const Failure.authentication(null)));
 
         final List<LoginStateSideEffect> events = <LoginStateSideEffect>[];
-        final StreamSubscription<LoginStateSideEffect> sub =
-            loginCubit.presentationStream.listen(events.add);
+        final StreamSubscription<LoginStateSideEffect> sub = loginCubit.presentationStream.listen(events.add);
 
         await loginCubit.loginWithProvider(LoginProvider.google);
         await Future<void>.delayed(Duration.zero);
@@ -230,9 +222,8 @@ void main() {
       });
 
       test('emitted states do not include LoginState.failed', () async {
-        when(authRepository.loginWithGoogle()).thenReturn(
-          TaskResult<AuthSuccess?>.left(const Failure.authentication('fail')),
-        );
+        when(authRepository.loginWithGoogle())
+            .thenReturn(TaskResult<AuthSuccess?>.left(const Failure.authentication('fail')));
 
         final List<LoginState> states = <LoginState>[];
         final StreamSubscription<LoginState> sub = loginCubit.stream.listen(states.add);
@@ -248,13 +239,11 @@ void main() {
       });
 
       test('blocked path does NOT emit presentation event', () async {
-        when(authRepository.loginWithGoogle()).thenReturn(
-          TaskResult<AuthSuccess?>.left(const Failure.authentication('blocked', blocked: true)),
-        );
+        when(authRepository.loginWithGoogle())
+            .thenReturn(TaskResult<AuthSuccess?>.left(const Failure.authentication('blocked', blocked: true)));
 
         final List<LoginStateSideEffect> events = <LoginStateSideEffect>[];
-        final StreamSubscription<LoginStateSideEffect> sub =
-            loginCubit.presentationStream.listen(events.add);
+        final StreamSubscription<LoginStateSideEffect> sub = loginCubit.presentationStream.listen(events.add);
 
         await loginCubit.loginWithProvider(LoginProvider.google);
         await Future<void>.delayed(Duration.zero);

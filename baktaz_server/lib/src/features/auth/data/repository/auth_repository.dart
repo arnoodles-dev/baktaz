@@ -13,10 +13,7 @@ final class AuthRepository implements IAuthRepository {
   final SecurityLogger _securityLogger;
 
   @override
-  Future<OtpVerificationResult> completeRegistration(
-    Session session,
-    RegistrationForm form,
-  ) async {
+  Future<OtpVerificationResult> completeRegistration(Session session, RegistrationForm form) async {
     try {
       final String normalizedEmail = form.email.trim().toLowerCase();
 
@@ -62,7 +59,10 @@ final class AuthRepository implements IAuthRepository {
         if (userInfo != null) {
           await UserInfo.db.updateRow(
             session,
-            userInfo.copyWith(gender: Gender.values.asNameMap()[form.gender] ?? Gender.unknown, birthday: form.birthday),
+            userInfo.copyWith(
+              gender: Gender.values.asNameMap()[form.gender] ?? Gender.unknown,
+              birthday: form.birthday,
+            ),
             transaction: transaction,
           );
         }

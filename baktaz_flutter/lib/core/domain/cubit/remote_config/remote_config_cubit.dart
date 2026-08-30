@@ -33,7 +33,8 @@ class RemoteConfigCubit extends CubitSignal<RemoteConfigState> {
   // Fetch Remote Config values
   Future<void> get remoteConfig async {
     await safeRun(
-      onException: (Exception _, StackTrace? _) => safeEmit(RemoteConfigState(values: RemoteAppConfigDTO.fallback().toJson())),
+      onException: (Exception _, StackTrace? _) =>
+          safeEmit(RemoteConfigState(values: RemoteAppConfigDTO.fallback().toJson())),
       action: () async {
         final Map<String, dynamic> raw = await _remoteConfigService.remoteConfig;
         safeEmit(RemoteConfigState(values: raw));

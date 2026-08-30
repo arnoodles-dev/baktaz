@@ -171,7 +171,9 @@ class _TableHeaderState extends State<_TableHeader> {
         const Spacer(),
         MenuAnchor(
           controller: _menuController,
-          style: const MenuStyle(padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(vertical: AppSizes.xSmall))),
+          style: const MenuStyle(
+            padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(vertical: AppSizes.xSmall)),
+          ),
           menuChildren: <Widget>[
             _SortMenuItem(
               icon: Icons.sort_by_alpha,
@@ -221,7 +223,9 @@ class _TableHeaderState extends State<_TableHeader> {
             color: AppColors.colorTextSecondary,
           ),
           onPressed: widget.onToggleSort,
-          tooltip: widget.isAscending ? context.i18n.remote_config.table.sort_asc : context.i18n.remote_config.table.sort_desc,
+          tooltip: widget.isAscending
+              ? context.i18n.remote_config.table.sort_asc
+              : context.i18n.remote_config.table.sort_desc,
           padding: Paddings.allX2Small,
           constraints: const BoxConstraints(),
         ),
@@ -450,12 +454,7 @@ class _ParameterRow extends StatelessWidget {
 }
 
 class _SortMenuItem extends StatelessWidget {
-  const _SortMenuItem({
-    required this.icon,
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
+  const _SortMenuItem({required this.icon, required this.label, required this.selected, required this.onTap});
 
   final IconData icon;
   final String label;

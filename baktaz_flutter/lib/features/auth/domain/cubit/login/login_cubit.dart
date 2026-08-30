@@ -81,9 +81,7 @@ class LoginCubit extends CubitSignal<LoginState> with BlocSignalPresentationMixi
     await safeRun(
       onException: _failureHandler.handleException,
       action: () async {
-        final Either<Failure, AuthSuccess> result = await _authRepository
-            .completeRegistration(form)
-            .run();
+        final Either<Failure, AuthSuccess> result = await _authRepository.completeRegistration(form).run();
         result.fold(_onAuthError, (AuthSuccess authInfo) {
           safeEmit(LoginState.registrationCompleted(authInfo));
           _onAuthenticated(authInfo, LoginProvider.email);
