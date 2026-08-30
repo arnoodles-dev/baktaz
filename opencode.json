@@ -139,7 +139,7 @@
       }
     },
     "debugger": {
-      "description": "Runtime bug diagnosis — reproduces failures, traces stack traces, and isolates root cause across Flutter, Serverpod, and Jaspr",
+      "description": "Designated worker for investigating, diagnosing, reproducing, and analyzing bugs, stack traces, runtime errors, compile errors, or unexpected behavior",
       "mode": "subagent",
       "steps": 25,
       "prompt": "{file:.agents/agents/debugger.md}",
@@ -156,7 +156,7 @@
       }
     },
     "general": {
-      "description": "General operational tasks — Git operations, configuration, environment setup, and filesystem exploration",
+      "description": "General operational sub-agent — strictly handles codebase mapping, structural file discovery, Git operations, configuration, environment setup, and workspace administration. Do NOT route bug investigation or diagnosis here — use debugger instead.",
       "mode": "subagent",
       "steps": 25,
       "prompt": "{file:.agents/agents/general.md}",

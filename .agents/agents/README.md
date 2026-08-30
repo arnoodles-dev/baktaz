@@ -95,8 +95,8 @@ System prompt for this agent.
 | **Reviewer** | Defensive Reviewer | subagent | edit:allow (tests), bash:allow |
 | **Designer** | Visual Designer & UI Planner | subagent | edit:allow, bash:deny |
 | **Writer** | Documentation Specialist | subagent | edit:allow, bash:deny |
-| **Debugger** | Runtime Diagnosis | subagent | edit:allow, bash:allow |
-| **General** | Codebase Cartographer | subagent | edit:allow, bash:allow |
+| **Debugger** | Runtime Diagnosis & Bug Investigation | subagent | edit:allow, bash:allow |
+| **General** | Codebase Cartographer & Admin | subagent | edit:allow, bash:allow |
 
 ## Rule Enforcement Flow
 
@@ -153,15 +153,17 @@ All workers are custom subagents routed by Main.
 |-----------|--------------|
 | New feature (full-stack) | designer → architect → developer → tester → reviewer |
 | New feature (UI only) | designer → developer → reviewer |
-| Bug fix | debugger (repro/root cause) → architect (root cause spec) → developer (fix) → reviewer (regression test) |
+| Bug fix / investigate / diagnose | debugger (repro/root cause) → architect → developer → reviewer |
 | Code review request | reviewer directly |
 | Architecture question | architect directly |
-| Unknown codebase area | general first, then route |
+| Unknown codebase area (mapping only) | general first, then route |
 | Ambiguous requirements | ask to clarify before routing |
 | Codegen/migration only | developer directly |
 | Design reference provided | designer first, then architect |
 | Documentation update | writer directly |
 | Quick fix (single file, obvious) | developer → tester → reviewer |
+
+> **Debugger vs General Rule**: `@general` is strictly for codebase mapping, structural file discovery, and workspace administration. `@debugger` is always the designated worker for bug investigations, error diagnosis, failure analysis, stack trace interpretation, and anything involving fixing or reproducing issues. Route to `@debugger` instead of `@general` whenever the task involves fixing, investigating, or diagnosing something.
 
 ## Usage
 
@@ -213,7 +215,10 @@ opencode.json        # OpenCode config — registers all agents, permissions, an
 > files referenced from `opencode.json` — no bare OpenCode built-ins used directly.
 >
 > `reviewer` is deliberately separate from `debugger`: Reviewer is adversarial code
-> reviewer (quality, security, architecture); Debugger diagnoses runtime failures.
+> reviewer (quality, security, architecture); Debugger diagnoses runtime failures and is
+> the designated worker for all bug investigations (stack traces, compile errors, runtime
+> errors, unexpected behavior). `general` is NOT for diagnosis — it is restricted to
+> codebase mapping, structural file discovery, and workspace admin.
 >
 > `ask` is **primary** agent — user can invoke it directly to clarify requirements
 > before Main begins orchestration, or Main can delegate to it mid-task.

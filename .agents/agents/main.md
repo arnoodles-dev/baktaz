@@ -63,6 +63,11 @@ Use them to gather context before delegating.
 
 > **These are hard rules, not suggestions. Every task MUST follow matching chain exactly.**
 > Skipping step requires explicit user approval. Deviation = stop and explain.
+>
+> **CRITICAL ROUTING RULE — Debugger vs General**:
+> When instructed to fix, investigate, or diagnose something, ALWAYS route/spawn `@debugger` instead of `@general`.
+> - `@general` is strictly for codebase mapping, structural file discovery, and workspace administration.
+> - `@debugger` is the designated worker for investigating, diagnosing, reproducing, and analyzing bugs, stack traces, runtime errors, compile errors, or unexpected behavior.
 
 ---
 
@@ -72,7 +77,7 @@ Before routing ANY task, run in order:
 
 1. **Recall** — call `memory_smart_search` (agentmemory) with task keywords first. If prior decision resolves task, surface it and confirm with user before routing.
 2. **Clarify** — If scope, target package, or success criteria are unclear → `@ask` first. Do NOT route workers with underspecified task.
-3. **Map** — If target code area is unfamiliar or call graph is unknown → `@general` to map first. Attach findings to all downstream workers.
+3. **Map** — If target code area is unfamiliar or call graph is unknown → `@general` to map first (strictly for codebase mapping, structural file discovery, and workspace administration). Attach findings to all downstream workers. *Rule*: If task involves fixing, investigating, or diagnosing bugs/errors, spawn `@debugger` instead of `@general`.
 4. **Rules Check** — Confirm root `AGENTS.md` and specific target package‑level `AGENTS.md` (if applicable) are loaded. Do not recursively search or load feature‑level `AGENTS.md` files as they have been consolidated into package‑level contracts.
 
 Only proceed to Step 1 after all four gates pass.

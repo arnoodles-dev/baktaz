@@ -99,7 +99,7 @@ skill serverpod-sdk-changelog
 | Review | `@reviewer` |
 | Documentation | `@writer` |
 | UI design | `@designer` |
-| Bug diagnosis | `@debugger` |
+| Bug diagnosis | `@debugger` (always route here instead of `@general` for any fix/investigate/diagnose tasks) |
 | Exploration | `@general` |
 | Clarification | `@ask` |
 
