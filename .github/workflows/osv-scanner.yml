@@ -12,7 +12,7 @@
 name: OSV-Scanner
 
 on:
-  pull_request:
+  push:
     branches: ["dev"]
 
 permissions:

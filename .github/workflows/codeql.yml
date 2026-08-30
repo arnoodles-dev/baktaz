@@ -1,7 +1,7 @@
 name: CodeQL & Static Security Analysis
 
 on:
-  pull_request:
+  push:
     branches: ["dev"]
 
 permissions:
