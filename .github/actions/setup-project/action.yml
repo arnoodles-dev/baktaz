@@ -41,33 +41,18 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
-    # Install Tailwind standalone CLI (required by jaspr_tailwind).
-    # NOTE: Tailwind v4's `npm install -g tailwindcss` does NOT ship a `tailwindcss`
-    # binary (CLI moved to @tailwindcss/cli), so jaspr_tailwind's build_runner step
-    # cannot find it. Use the official standalone CLI instead. See:
-    # https://docs.jaspr.site/eco/tailwind
-    - name: 🎨 Install Tailwind CSS (standalone CLI)
-      if: ${{ inputs.working-directory == 'paxa_site' }}
-      run: |
-        curl -sL -o tailwindcss https://github.com/tailwindlabs/tailwindcss/releases/latest/download/tailwindcss-linux-x64
-        chmod +x tailwindcss
-        mv tailwindcss /usr/local/bin/tailwindcss
-        tailwindcss -h
-      shell: bash
-
-    # Localization generation only for Flutter projects
+    # Localization generation only for Flutter projects (skip for baktaz_shared)
     - name: ⚙️ Run Slang
-      if: ${{ inputs.type == 'flutter' }}
+      if: ${{ inputs.type == 'flutter' && inputs.working-directory != 'baktaz_shared' }}
       run: dart run slang
       shell: bash
       working-directory: ${{ inputs.working-directory }}
 
-    # Always run paxa_shared codegen (dependency of flutter apps)
-    - name: ⚙️ Run paxa_shared Code Generation
-      if: ${{ inputs.working-directory != 'paxa_shared' && inputs.working-directory != '.' }}
+    - name: ⚙️ Run baktaz_shared Code Generation
+      if: ${{ inputs.working-directory != 'baktaz_shared' && inputs.working-directory != '.' }}
       run: dart run build_runner build
       shell: bash
-      working-directory: paxa_shared
+      working-directory: baktaz_shared
 
     # Always run build_runner for mocks, freezed, etc.
     - name: ⚙️ Run build_runner

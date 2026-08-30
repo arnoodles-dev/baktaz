@@ -86,13 +86,16 @@ jobs:
 
     defaults:
       run:
-        working-directory: "./paxa_flutter"
+        working-directory: "./baktaz_flutter"
 
     environment: ${{ inputs.flavor }}
 
     steps:
       - name: ⚙️ Setup Project
-        uses: ./.github/actions/setup-flutter-project
+        uses: ./.github/actions/setup-project
+        with:
+          working-directory: baktaz_flutter
+          type: flutter
 
       - name: ☕ Setup Java
         uses: actions/setup-java@v5
@@ -125,7 +128,7 @@ jobs:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
           tester_groups: ${{ inputs.tester_groups }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: "paxa_flutter"
+          working-directory: "baktaz_flutter"
           workflow_id: "build-flutter.yaml"
 
   # ────────────────────────────────────────────────────────────────────────────
@@ -138,18 +141,21 @@ jobs:
 
     defaults:
       run:
-        working-directory: "./paxa_flutter"
+        working-directory: "./baktaz_flutter"
 
     environment: ${{ inputs.flavor }}
 
     steps:
       - name: ⚙️ Setup Project
-        uses: ./.github/actions/setup-flutter-project
+        uses: ./.github/actions/setup-project
+        with:
+          working-directory: baktaz_flutter
+          type: flutter
 
       - name: 💎 Setup Ruby & Bundler
         uses: ruby/setup-ruby@v1
         with:
-          working-directory: paxa_flutter/ios
+          working-directory: baktaz_flutter/ios
           bundler-cache: true
 
       - name: 🏗️ Install CocoaPods
@@ -185,11 +191,11 @@ jobs:
           firebase_token: ${{ secrets.FIREBASE_TOKEN }}
           tester_groups: ${{ inputs.tester_groups }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          working-directory: "paxa_flutter"
+          working-directory: "baktaz_flutter"
           workflow_id: "build-flutter.yaml"
 
       - name: 🧹 Cleanup signing config
-        if: ${{inputs.build_type == 'release' }}
+        if: ${{ always() && inputs.build_type == 'release' }}
         shell: bash
         run: |
           bash ../scripts/MQSwiftSign cleanup || true

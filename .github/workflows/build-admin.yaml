@@ -72,15 +72,15 @@ jobs:
 
     defaults:
       run:
-        working-directory: "./paxa_admin"
+        working-directory: "./baktaz_admin"
 
     environment: ${{ inputs.flavor }}
 
     steps:
       - name: ⚙️ Setup Project
-        uses: ./.github/actions/setup-flutter-project
+        uses: ./.github/actions/setup-project
         with:
-          working-directory: paxa_admin
+          working-directory: baktaz_admin
 
       - name: 🔨 Build Web App
         shell: bash

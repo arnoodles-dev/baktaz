@@ -33,7 +33,7 @@ inputs:
   working-directory:
     description: "Working directory of the project"
     required: false
-    default: "paxa_flutter"
+    default: "baktaz_flutter"
   workflow_id:
     description: "The workflow ID/filename to find the last successful commit"
     required: false

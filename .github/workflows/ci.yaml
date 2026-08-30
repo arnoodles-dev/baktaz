@@ -7,23 +7,19 @@ on:
   workflow_dispatch:
     inputs:
       verify_flutter:
-        description: "Verify paxa_flutter"
+        description: "Verify baktaz_flutter"
         type: boolean
         default: true
       verify_admin:
-        description: "Verify paxa_admin"
-        type: boolean
-        default: true
-      verify_site:
-        description: "Verify paxa_site"
+        description: "Verify baktaz_admin"
         type: boolean
         default: true
       verify_server:
-        description: "Verify paxa_server"
+        description: "Verify baktaz_server"
         type: boolean
         default: true
       verify_shared:
-        description: "Verify paxa_shared"
+        description: "Verify baktaz_shared"
         type: boolean
         default: true
 
@@ -43,7 +39,6 @@ jobs:
     outputs:
       flutter: ${{ steps.set_outputs.outputs.flutter }}
       admin: ${{ steps.set_outputs.outputs.admin }}
-      site: ${{ steps.set_outputs.outputs.site }}
       server: ${{ steps.set_outputs.outputs.server }}
       shared: ${{ steps.set_outputs.outputs.shared }}
       flutter_projects: ${{ steps.set_matrix.outputs.flutter_projects }}
@@ -60,24 +55,20 @@ jobs:
         with:
           filters: |
             flutter:
-              - 'paxa_flutter/**'
+              - 'baktaz_flutter/**'
               - '.github/workflows/ci.yaml'
               - '.github/actions/**'
             admin:
-              - 'paxa_admin/**'
-              - '.github/workflows/ci.yaml'
-              - '.github/actions/**'
-            site:
-              - 'paxa_site/**'
+              - 'baktaz_admin/**'
               - '.github/workflows/ci.yaml'
               - '.github/actions/**'
             server:
-              - 'paxa_server/**'
-              - 'paxa_client/**'
+              - 'baktaz_server/**'
+              - 'baktaz_client/**'
               - '.github/workflows/ci.yaml'
               - '.github/actions/**'
             shared:
-              - 'paxa_shared/**'
+              - 'baktaz_shared/**'
               - '.github/workflows/ci.yaml'
               - '.github/actions/**'
 
@@ -88,13 +79,11 @@ jobs:
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             echo "flutter=${{ inputs.verify_flutter }}" >> $GITHUB_OUTPUT
             echo "admin=${{ inputs.verify_admin }}" >> $GITHUB_OUTPUT
-            echo "site=${{ inputs.verify_site }}" >> $GITHUB_OUTPUT
             echo "server=${{ inputs.verify_server }}" >> $GITHUB_OUTPUT
             echo "shared=${{ inputs.verify_shared }}" >> $GITHUB_OUTPUT
           else
             echo "flutter=${{ steps.filter.outputs.flutter }}" >> $GITHUB_OUTPUT
             echo "admin=${{ steps.filter.outputs.admin }}" >> $GITHUB_OUTPUT
-            echo "site=${{ steps.filter.outputs.site }}" >> $GITHUB_OUTPUT
             echo "server=${{ steps.filter.outputs.server }}" >> $GITHUB_OUTPUT
             echo "shared=${{ steps.filter.outputs.shared }}" >> $GITHUB_OUTPUT
           fi
@@ -111,7 +100,6 @@ jobs:
           ADMIN: ${{ steps.set_outputs.outputs.admin }}
           SHARED: ${{ steps.set_outputs.outputs.shared }}
           SERVER: ${{ steps.set_outputs.outputs.server }}
-          SITE: ${{ steps.set_outputs.outputs.site }}
         run: bash scripts/set_projects_matrix.sh
 
   verify-semantic-pull-request:
@@ -120,7 +108,7 @@ jobs:
     if: github.event_name == 'pull_request'
 
   # ────────────────────────────────────────────────────────────────────────────
-  # Paxa Flutter Verification
+  # Baktaz Flutter Verification
   # ────────────────────────────────────────────────────────────────────────────
   verify-flutter:
     name: Verify (Flutter App)
@@ -129,7 +117,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "./paxa_flutter"
+        working-directory: "./baktaz_flutter"
     steps:
       - name: 📚 Git Checkout
         uses: actions/checkout@v7
@@ -137,7 +125,7 @@ jobs:
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
         with:
-          working-directory: paxa_flutter
+          working-directory: baktaz_flutter
           type: flutter
 
       - name: ✨ Check Formatting
@@ -156,13 +144,13 @@ jobs:
         if: failure()
         with:
           name: goldens-failures
-          path: paxa_flutter/test/widget/**/failures
+          path: baktaz_flutter/test/widget/**/failures
 
       - name: 📉 Check Coverage
         run: sh ${{ github.workspace }}/scripts/check_coverage.sh 80
 
   # ────────────────────────────────────────────────────────────────────────────
-  # Paxa Admin Verification
+  # Baktaz Admin Verification
   # ────────────────────────────────────────────────────────────────────────────
   verify-admin:
     name: Verify (Admin App)
@@ -171,7 +159,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "./paxa_admin"
+        working-directory: "./baktaz_admin"
     steps:
       - name: 📚 Git Checkout
         uses: actions/checkout@v7
@@ -179,7 +167,7 @@ jobs:
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
         with:
-          working-directory: paxa_admin
+          working-directory: baktaz_admin
           type: flutter
 
       - name: ✨ Check Formatting
@@ -198,46 +186,13 @@ jobs:
         if: failure()
         with:
           name: goldens-failures-admin
-          path: paxa_admin/test/widget/**/failures
+          path: baktaz_admin/test/widget/**/failures
 
       - name: 📉 Check Coverage
         run: sh ${{ github.workspace }}/scripts/check_coverage.sh 80
 
   # ────────────────────────────────────────────────────────────────────────────
-  # Paxa Site Verification
-  # ────────────────────────────────────────────────────────────────────────────
-  verify-site:
-    name: Verify (Site)
-    needs: changes
-    if: ${{ needs.changes.outputs.site == 'true' }}
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: "./paxa_site"
-    steps:
-      - name: 📚 Git Checkout
-        uses: actions/checkout@v7
-
-      - name: ⚙️ Setup Project
-        uses: ./.github/actions/setup-project
-        with:
-          working-directory: paxa_site
-          type: dart
-
-      - name: ✨ Check Formatting
-        run: dart format lib test
-
-      - name: 🕵️ Analyze
-        run: dart analyze lib test
-
-      - name: 🧪 Run Tests
-        run: dart test test/ --coverage=coverage
-
-      - name: 📉 Check Coverage
-        run: sh ${{ github.workspace }}/scripts/check_coverage.sh 80
-
-  # ────────────────────────────────────────────────────────────────────────────
-  # Paxa Shared Verification
+  # Baktaz Shared Verification
   # ────────────────────────────────────────────────────────────────────────────
   verify-shared:
     name: Verify (Shared)
@@ -246,7 +201,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "./paxa_shared"
+        working-directory: "./baktaz_shared"
     steps:
       - name: 📚 Git Checkout
         uses: actions/checkout@v7
@@ -254,7 +209,7 @@ jobs:
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
         with:
-          working-directory: paxa_shared
+          working-directory: baktaz_shared
           type: flutter
 
       - name: ✨ Check Formatting
@@ -273,13 +228,13 @@ jobs:
         if: failure()
         with:
           name: goldens-failures-shared
-          path: paxa_shared/test/widget/**/failures
+          path: baktaz_shared/test/widget/**/failures
 
       - name: 📉 Check Coverage
         run: sh ${{ github.workspace }}/scripts/check_coverage.sh 80
 
   # ────────────────────────────────────────────────────────────────────────────
-  # Paxa Server Verification
+  # Baktaz Server Verification
   # ────────────────────────────────────────────────────────────────────────────
   verify-server:
     name: Verify (Server)
@@ -288,7 +243,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: "./paxa_server"
+        working-directory: "./baktaz_server"
     steps:
       - name: 📚 Git Checkout
         uses: actions/checkout@v7
@@ -296,11 +251,14 @@ jobs:
       - name: ⚙️ Setup Project
         uses: ./.github/actions/setup-project
         with:
-          working-directory: paxa_server
+          working-directory: baktaz_server
           type: dart
 
       - name: 🚀 Install Serverpod CLI
         run: dart pub global activate serverpod_cli 4.0.0-beta.3
+
+      - name: 🐳 Start Docker Services
+        run: docker compose up --quiet-pull --build -d
 
       - name: 🏗️ Generate Serverpod Code
         run: serverpod generate
@@ -311,10 +269,15 @@ jobs:
       - name: 🕵️ Analyze
         run: dart analyze lib test
 
-      # ponytail: Server only has integration tests (require Docker/Postgres).
-      # Unit tests can be added under test/unit/ to enable this step.
-      # - name: 🧪 Run Tests
-      #   run: dart test test/unit --concurrency=1
+      - name: 🧪 Run Tests
+        env:
+          SERVERPOD_PASSWORD_database: "izyi8R4u5GHu9OQeHP5vIC5_m6zCPenl"
+          SERVERPOD_PASSWORD_redis: "n_AlDIA6buFYEVNPyB1nmBxrTh-ppXIj"
+        run: dart test test/ --concurrency=1
+
+      - name: 🧹 Teardown Docker Services
+        if: always()
+        run: docker compose down -v
 
   # ────────────────────────────────────────────────────────────────────────────
   # License Check
@@ -338,7 +301,7 @@ jobs:
   vulnerability-check:
     name: Vulnerability Check
     needs: changes
-    if: ${{ needs.changes.outputs.flutter == 'true' || needs.changes.outputs.admin == 'true' || needs.changes.outputs.server == 'true' || needs.changes.outputs.site == 'true' || needs.changes.outputs.shared == 'true' }}
+    if: ${{ needs.changes.outputs.flutter == 'true' || needs.changes.outputs.admin == 'true' || needs.changes.outputs.server == 'true' || needs.changes.outputs.shared == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: 📚 Git Checkout
