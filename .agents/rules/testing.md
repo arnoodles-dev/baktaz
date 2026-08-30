@@ -124,7 +124,7 @@ Testing is strictly prohibited until after these milestones. THIS IS A HARD REQU
 
 Implementation complete means:
 ✅ ALL non-test code written across **ALL packages**
-✅ ALL codegen steps completed (slang → build_runner → serverpod generate)
+✅ ALL codegen steps completed (slang → serverpod generate → build_runner)
 ✅ ALL code compiles without errors
 ✅ ALL database migrations applied
 ✅ ALL cross-package dependencies resolved and building

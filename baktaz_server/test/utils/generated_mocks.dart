@@ -25,17 +25,6 @@ import 'package:serverpod/src/cache/local_cache.dart';
   MockSpec<LocalCache>(),
 ])
 void main() {
-  provideDummy<OtpVerificationResult>(
-    OtpVerificationResult(
-      isNewUser: false,
-    ),
-  );
-  provideDummy<RegistrationForm>(
-    RegistrationForm(
-      email: '',
-      name: '',
-      gender: '',
-      registrationToken: '',
-    ),
-  );
+  provideDummy<OtpVerificationResult>(OtpVerificationResult(isNewUser: false));
+  provideDummy<RegistrationForm>(RegistrationForm(email: '', name: '', gender: '', registrationToken: ''));
 }

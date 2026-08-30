@@ -274,6 +274,9 @@ jobs:
       - name: 🏗️ Generate Serverpod Code
         run: serverpod generate
 
+      - name: ⚙️ Run build_runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
       - name: ✨ Check Formatting
         run: dart format lib test
 

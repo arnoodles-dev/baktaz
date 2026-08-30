@@ -43,8 +43,9 @@ Do NOT run these locally:
 
 Always run in this order:
 1. `slang` — localization generation
-2. `build_runner` — freezed, injectable, chopper
-3. `serverpod generate` — Serverpod client + endpoints
+2. `serverpod generate` — Serverpod protocol models (`lib/src/generated/`) & client SDK
+   (must run before `build_runner` so Mockito/injectable can resolve generated models)
+3. `build_runner` — freezed, injectable, chopper, mockito mocks
 
 ## Verification Checklist
 
@@ -57,7 +58,7 @@ After code changes, run verification:
 5. **Implementation Complete Check** — **VERIFY all packages have implementation complete before any tests**
 
    - [ ] All packages have implementation written and compiling
-   - [ ] All codegen completed (slang → build_runner → serverpod generate)
+   - [ ] All codegen completed (slang → serverpod generate → build_runner)
    - [ ] All packages in building state
    - [ ] All dependencies resolved
    - [ ] Database migrations applied (if applicable)
