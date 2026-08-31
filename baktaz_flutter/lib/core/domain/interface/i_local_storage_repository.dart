@@ -15,4 +15,10 @@ abstract interface class ILocalStorageRepository {
 
   TaskResult<bool?> getIsDarkMode();
   TaskResult<Unit> setIsDarkMode({required bool isDarkMode});
+
+  TaskResult<int?> getOtaLocalizationVersion();
+  TaskResult<Unit> setOtaLocalizationVersion(int version);
+
+  TaskResult<String?> getOtaLocalizationOverrides();
+  TaskResult<Unit> setOtaLocalizationOverrides(String jsonString);
 }

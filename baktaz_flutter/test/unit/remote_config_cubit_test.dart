@@ -71,7 +71,43 @@ void main() {
       });
     });
 
+    group('feature flags', () {
+      test('delegates feature flag getters to state', () async {
+        when(remoteConfigService.remoteConfig).thenAnswer(
+          (_) async => <String, dynamic>{
+            'enable_chat': true,
+            'enable_payout': 'true',
+            'enable_challenges': false,
+          },
+        );
+
+        final RemoteConfigCubit cubit = await createInitializedCubit();
+        await cubit.remoteConfig;
+
+        expect(cubit.isChatEnabled, isTrue);
+        expect(cubit.isPayoutEnabled, isTrue);
+        expect(cubit.isChallengesEnabled, isFalse);
+        await cubit.close();
+      });
+    });
+
     group('isMaintenance', () {
+      test('RemoteConfigState exposes feature flag getters correctly', () {
+        const RemoteConfigState state = RemoteConfigState(
+          values: <String, dynamic>{
+            'enable_chat': true,
+            'enable_payout': 'true',
+            'enable_challenges': false,
+            'custom_key': 'custom_val',
+          },
+        );
+
+        expect(state.isChatEnabled, isTrue);
+        expect(state.isPayoutEnabled, isTrue);
+        expect(state.isChallengesEnabled, isFalse);
+        expect(state.value('custom_key'), equals('custom_val'));
+      });
+
       test('returns false when state is empty', () async {
         final RemoteConfigCubit cubit = await createInitializedCubit();
         expect(cubit.isMaintenance, isFalse);

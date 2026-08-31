@@ -44,6 +44,12 @@ class RemoteConfigCubit extends CubitSignal<RemoteConfigState> {
 
   bool get isMaintenance => stateValue.isMaintenance;
 
+  bool get isChatEnabled => stateValue.isChatEnabled;
+
+  bool get isPayoutEnabled => stateValue.isPayoutEnabled;
+
+  bool get isChallengesEnabled => stateValue.isChallengesEnabled;
+
   bool get isForceUpdate {
     try {
       return _isForceUpdate(stateValue.minSupportedVersion);

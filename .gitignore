@@ -164,3 +164,4 @@ data/stream_store
 data/iii-config.yaml
 # Widget Preview related
 .widget_preview/
+.superpowers

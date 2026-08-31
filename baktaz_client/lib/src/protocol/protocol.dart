@@ -30,18 +30,35 @@ import 'features/home/domain/model/active_challenge_summary.dart' as _i16;
 import 'features/home/domain/model/daily_step_telemetry.dart' as _i17;
 import 'features/home/domain/model/home_leaderboard_entry.dart' as _i18;
 import 'features/home/domain/model/weekly_step_analytics.dart' as _i19;
-import 'features/security/domain/models/security_event.dart' as _i20;
-import 'features/wallet/domain/model/wallet.dart' as _i21;
-import 'features/wallet/domain/model/wallet_transactions.dart' as _i22;
-import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i23;
-import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
+import 'features/remote_config/domain/model/config_key.dart' as _i20;
+import 'features/remote_config/domain/model/config_snapshot_version.dart'
+    as _i21;
+import 'features/remote_config/domain/model/public_config_version.dart' as _i22;
+import 'features/remote_config/domain/model/remote_config.dart' as _i23;
+import 'features/remote_config/domain/model/remote_config_default_value.dart'
     as _i24;
-import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
-    as _i25;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+import 'features/remote_config/domain/model/remote_config_value.dart' as _i25;
+import 'features/remote_config/domain/model/remote_config_value_type.dart'
     as _i26;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i27;
+import 'features/remote_config/domain/model/targeting_override.dart' as _i27;
+import 'features/remote_localization/domain/model/remote_localization_audit_log.dart'
+    as _i28;
+import 'features/remote_localization/domain/model/remote_localization_release.dart'
+    as _i29;
+import 'features/remote_localization/domain/model/remote_localization_response.dart'
+    as _i30;
+import 'features/security/domain/models/security_event.dart' as _i31;
+import 'features/wallet/domain/model/wallet.dart' as _i32;
+import 'features/wallet/domain/model/wallet_transactions.dart' as _i33;
+import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
+    as _i34;
+import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
+    as _i35;
+import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+    as _i36;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i37;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i38;
 export 'core/domain/model/enum/gender.dart';
 export 'core/domain/model/enum/transaction_type.dart';
 export 'core/domain/model/exception/api_exception.dart';
@@ -60,6 +77,17 @@ export 'features/home/domain/model/active_challenge_summary.dart';
 export 'features/home/domain/model/daily_step_telemetry.dart';
 export 'features/home/domain/model/home_leaderboard_entry.dart';
 export 'features/home/domain/model/weekly_step_analytics.dart';
+export 'features/remote_config/domain/model/config_key.dart';
+export 'features/remote_config/domain/model/config_snapshot_version.dart';
+export 'features/remote_config/domain/model/public_config_version.dart';
+export 'features/remote_config/domain/model/remote_config.dart';
+export 'features/remote_config/domain/model/remote_config_default_value.dart';
+export 'features/remote_config/domain/model/remote_config_value.dart';
+export 'features/remote_config/domain/model/remote_config_value_type.dart';
+export 'features/remote_config/domain/model/targeting_override.dart';
+export 'features/remote_localization/domain/model/remote_localization_audit_log.dart';
+export 'features/remote_localization/domain/model/remote_localization_release.dart';
+export 'features/remote_localization/domain/model/remote_localization_response.dart';
 export 'features/security/domain/models/security_event.dart';
 export 'features/wallet/domain/model/wallet.dart';
 export 'features/wallet/domain/model/wallet_transactions.dart';
@@ -153,14 +181,47 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i19.WeeklyStepAnalytics) {
       return _i19.WeeklyStepAnalytics.fromJson(data) as T;
     }
-    if (t == _i20.SecurityEvent) {
-      return _i20.SecurityEvent.fromJson(data) as T;
+    if (t == _i20.ConfigKey) {
+      return _i20.ConfigKey.fromJson(data) as T;
     }
-    if (t == _i21.Wallet) {
-      return _i21.Wallet.fromJson(data) as T;
+    if (t == _i21.ConfigSnapshotVersion) {
+      return _i21.ConfigSnapshotVersion.fromJson(data) as T;
     }
-    if (t == _i22.WalletTransactions) {
-      return _i22.WalletTransactions.fromJson(data) as T;
+    if (t == _i22.PublicConfigVersion) {
+      return _i22.PublicConfigVersion.fromJson(data) as T;
+    }
+    if (t == _i23.RemoteConfig) {
+      return _i23.RemoteConfig.fromJson(data) as T;
+    }
+    if (t == _i24.RemoteConfigDefaultValue) {
+      return _i24.RemoteConfigDefaultValue.fromJson(data) as T;
+    }
+    if (t == _i25.RemoteConfigValue) {
+      return _i25.RemoteConfigValue.fromJson(data) as T;
+    }
+    if (t == _i26.RemoteConfigValueType) {
+      return _i26.RemoteConfigValueType.fromJson(data) as T;
+    }
+    if (t == _i27.TargetingOverride) {
+      return _i27.TargetingOverride.fromJson(data) as T;
+    }
+    if (t == _i28.RemoteLocalizationAuditLog) {
+      return _i28.RemoteLocalizationAuditLog.fromJson(data) as T;
+    }
+    if (t == _i29.RemoteLocalizationRelease) {
+      return _i29.RemoteLocalizationRelease.fromJson(data) as T;
+    }
+    if (t == _i30.RemoteLocalizationResponse) {
+      return _i30.RemoteLocalizationResponse.fromJson(data) as T;
+    }
+    if (t == _i31.SecurityEvent) {
+      return _i31.SecurityEvent.fromJson(data) as T;
+    }
+    if (t == _i32.Wallet) {
+      return _i32.Wallet.fromJson(data) as T;
+    }
+    if (t == _i33.WalletTransactions) {
+      return _i33.WalletTransactions.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.Gender?>()) {
       return (data != null ? _i2.Gender.fromJson(data) : null) as T;
@@ -221,14 +282,62 @@ class Protocol extends _i1.SerializationManager {
       return (data != null ? _i19.WeeklyStepAnalytics.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i20.SecurityEvent?>()) {
-      return (data != null ? _i20.SecurityEvent.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i20.ConfigKey?>()) {
+      return (data != null ? _i20.ConfigKey.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.Wallet?>()) {
-      return (data != null ? _i21.Wallet.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i21.ConfigSnapshotVersion?>()) {
+      return (data != null ? _i21.ConfigSnapshotVersion.fromJson(data) : null)
+          as T;
     }
-    if (t == _i1.getType<_i22.WalletTransactions?>()) {
-      return (data != null ? _i22.WalletTransactions.fromJson(data) : null)
+    if (t == _i1.getType<_i22.PublicConfigVersion?>()) {
+      return (data != null ? _i22.PublicConfigVersion.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i23.RemoteConfig?>()) {
+      return (data != null ? _i23.RemoteConfig.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i24.RemoteConfigDefaultValue?>()) {
+      return (data != null
+              ? _i24.RemoteConfigDefaultValue.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i25.RemoteConfigValue?>()) {
+      return (data != null ? _i25.RemoteConfigValue.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i26.RemoteConfigValueType?>()) {
+      return (data != null ? _i26.RemoteConfigValueType.fromJson(data) : null)
+          as T;
+    }
+    if (t == _i1.getType<_i27.TargetingOverride?>()) {
+      return (data != null ? _i27.TargetingOverride.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i28.RemoteLocalizationAuditLog?>()) {
+      return (data != null
+              ? _i28.RemoteLocalizationAuditLog.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i29.RemoteLocalizationRelease?>()) {
+      return (data != null
+              ? _i29.RemoteLocalizationRelease.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i30.RemoteLocalizationResponse?>()) {
+      return (data != null
+              ? _i30.RemoteLocalizationResponse.fromJson(data)
+              : null)
+          as T;
+    }
+    if (t == _i1.getType<_i31.SecurityEvent?>()) {
+      return (data != null ? _i31.SecurityEvent.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i32.Wallet?>()) {
+      return (data != null ? _i32.Wallet.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i33.WalletTransactions?>()) {
+      return (data != null ? _i33.WalletTransactions.fromJson(data) : null)
           as T;
     }
     if (t == List<String>) {
@@ -243,31 +352,40 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == List<_i22.WalletTransactions>) {
+    if (t == Map<String, _i25.RemoteConfigValue>) {
+      return (data as Map).map(
+            (k, v) => MapEntry(
+              deserialize<String>(k),
+              deserialize<_i25.RemoteConfigValue>(v),
+            ),
+          )
+          as T;
+    }
+    if (t == List<_i33.WalletTransactions>) {
       return (data as List)
-              .map((e) => deserialize<_i22.WalletTransactions>(e))
+              .map((e) => deserialize<_i33.WalletTransactions>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i22.WalletTransactions>?>()) {
+    if (t == _i1.getType<List<_i33.WalletTransactions>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i22.WalletTransactions>(e))
+                    .map((e) => deserialize<_i33.WalletTransactions>(e))
                     .toList()
               : null)
           as T;
     }
     if (t ==
         List<
-          ({_i23.AuthUserModel authUser, _i23.UserProfileModel userProfile})
+          ({_i34.AuthUserModel authUser, _i34.UserProfileModel userProfile})
         >) {
       return (data as List)
               .map(
                 (e) =>
                     deserialize<
                       ({
-                        _i23.AuthUserModel authUser,
-                        _i23.UserProfileModel userProfile,
+                        _i34.AuthUserModel authUser,
+                        _i34.UserProfileModel userProfile,
                       })
                     >(e),
               )
@@ -277,13 +395,13 @@ class Protocol extends _i1.SerializationManager {
     if (t ==
         _i1
             .getType<
-              ({_i23.AuthUserModel authUser, _i23.UserProfileModel userProfile})
+              ({_i34.AuthUserModel authUser, _i34.UserProfileModel userProfile})
             >()) {
       return (
-            authUser: deserialize<_i23.AuthUserModel>(
+            authUser: deserialize<_i34.AuthUserModel>(
               ((data as Map)['n'] as Map)['authUser'],
             ),
-            userProfile: deserialize<_i23.UserProfileModel>(
+            userProfile: deserialize<_i34.UserProfileModel>(
               data['n']['userProfile'],
             ),
           )
@@ -292,47 +410,47 @@ class Protocol extends _i1.SerializationManager {
     if (t ==
         _i1
             .getType<
-              ({_i23.AuthUserModel authUser, _i23.UserProfileModel userProfile})
+              ({_i34.AuthUserModel authUser, _i34.UserProfileModel userProfile})
             >()) {
       return (
-            authUser: deserialize<_i23.AuthUserModel>(
+            authUser: deserialize<_i34.AuthUserModel>(
               ((data as Map)['n'] as Map)['authUser'],
             ),
-            userProfile: deserialize<_i23.UserProfileModel>(
+            userProfile: deserialize<_i34.UserProfileModel>(
               data['n']['userProfile'],
             ),
           )
           as T;
     }
-    if (t == List<_i23.AuthUserModel>) {
+    if (t == List<_i34.AuthUserModel>) {
       return (data as List)
-              .map((e) => deserialize<_i23.AuthUserModel>(e))
+              .map((e) => deserialize<_i34.AuthUserModel>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i24.HomeLeaderboardEntry>) {
+    if (t == List<_i35.HomeLeaderboardEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i24.HomeLeaderboardEntry>(e))
+              .map((e) => deserialize<_i35.HomeLeaderboardEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i25.SecurityEvent>) {
+    if (t == List<_i36.SecurityEvent>) {
       return (data as List)
-              .map((e) => deserialize<_i25.SecurityEvent>(e))
+              .map((e) => deserialize<_i36.SecurityEvent>(e))
               .toList()
           as T;
     }
     try {
-      return _i23.Protocol().deserialize<T>(data, t);
+      return _i34.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i26.Protocol().deserialize<T>(data, t);
+      return _i37.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i27.Protocol().deserialize<T>(data, t);
+      return _i38.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -357,9 +475,20 @@ class Protocol extends _i1.SerializationManager {
       _i17.DailyStepTelemetry => 'DailyStepTelemetry',
       _i18.HomeLeaderboardEntry => 'HomeLeaderboardEntry',
       _i19.WeeklyStepAnalytics => 'WeeklyStepAnalytics',
-      _i20.SecurityEvent => 'SecurityEvent',
-      _i21.Wallet => 'Wallet',
-      _i22.WalletTransactions => 'WalletTransactions',
+      _i20.ConfigKey => 'ConfigKey',
+      _i21.ConfigSnapshotVersion => 'ConfigSnapshotVersion',
+      _i22.PublicConfigVersion => 'PublicConfigVersion',
+      _i23.RemoteConfig => 'RemoteConfig',
+      _i24.RemoteConfigDefaultValue => 'RemoteConfigDefaultValue',
+      _i25.RemoteConfigValue => 'RemoteConfigValue',
+      _i26.RemoteConfigValueType => 'RemoteConfigValueType',
+      _i27.TargetingOverride => 'TargetingOverride',
+      _i28.RemoteLocalizationAuditLog => 'RemoteLocalizationAuditLog',
+      _i29.RemoteLocalizationRelease => 'RemoteLocalizationRelease',
+      _i30.RemoteLocalizationResponse => 'RemoteLocalizationResponse',
+      _i31.SecurityEvent => 'SecurityEvent',
+      _i32.Wallet => 'Wallet',
+      _i33.WalletTransactions => 'WalletTransactions',
       _ => null,
     };
   }
@@ -410,26 +539,48 @@ class Protocol extends _i1.SerializationManager {
         return 'HomeLeaderboardEntry';
       case _i19.WeeklyStepAnalytics():
         return 'WeeklyStepAnalytics';
-      case _i20.SecurityEvent():
+      case _i20.ConfigKey():
+        return 'ConfigKey';
+      case _i21.ConfigSnapshotVersion():
+        return 'ConfigSnapshotVersion';
+      case _i22.PublicConfigVersion():
+        return 'PublicConfigVersion';
+      case _i23.RemoteConfig():
+        return 'RemoteConfig';
+      case _i24.RemoteConfigDefaultValue():
+        return 'RemoteConfigDefaultValue';
+      case _i25.RemoteConfigValue():
+        return 'RemoteConfigValue';
+      case _i26.RemoteConfigValueType():
+        return 'RemoteConfigValueType';
+      case _i27.TargetingOverride():
+        return 'TargetingOverride';
+      case _i28.RemoteLocalizationAuditLog():
+        return 'RemoteLocalizationAuditLog';
+      case _i29.RemoteLocalizationRelease():
+        return 'RemoteLocalizationRelease';
+      case _i30.RemoteLocalizationResponse():
+        return 'RemoteLocalizationResponse';
+      case _i31.SecurityEvent():
         return 'SecurityEvent';
-      case _i21.Wallet():
+      case _i32.Wallet():
         return 'Wallet';
-      case _i22.WalletTransactions():
+      case _i33.WalletTransactions():
         return 'WalletTransactions';
     }
-    className = _i23.Protocol().getClassNameForObject(data);
+    className = _i34.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_core.$className';
     }
-    className = _i26.Protocol().getClassNameForObject(data);
+    className = _i37.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_idp.$className';
     }
-    className = _i27.Protocol().getClassNameForObject(data);
+    className = _i38.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod_auth.$className';
     }
@@ -496,34 +647,67 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'WeeklyStepAnalytics') {
       return deserialize<_i19.WeeklyStepAnalytics>(data['data']);
     }
+    if (dataClassName == 'ConfigKey') {
+      return deserialize<_i20.ConfigKey>(data['data']);
+    }
+    if (dataClassName == 'ConfigSnapshotVersion') {
+      return deserialize<_i21.ConfigSnapshotVersion>(data['data']);
+    }
+    if (dataClassName == 'PublicConfigVersion') {
+      return deserialize<_i22.PublicConfigVersion>(data['data']);
+    }
+    if (dataClassName == 'RemoteConfig') {
+      return deserialize<_i23.RemoteConfig>(data['data']);
+    }
+    if (dataClassName == 'RemoteConfigDefaultValue') {
+      return deserialize<_i24.RemoteConfigDefaultValue>(data['data']);
+    }
+    if (dataClassName == 'RemoteConfigValue') {
+      return deserialize<_i25.RemoteConfigValue>(data['data']);
+    }
+    if (dataClassName == 'RemoteConfigValueType') {
+      return deserialize<_i26.RemoteConfigValueType>(data['data']);
+    }
+    if (dataClassName == 'TargetingOverride') {
+      return deserialize<_i27.TargetingOverride>(data['data']);
+    }
+    if (dataClassName == 'RemoteLocalizationAuditLog') {
+      return deserialize<_i28.RemoteLocalizationAuditLog>(data['data']);
+    }
+    if (dataClassName == 'RemoteLocalizationRelease') {
+      return deserialize<_i29.RemoteLocalizationRelease>(data['data']);
+    }
+    if (dataClassName == 'RemoteLocalizationResponse') {
+      return deserialize<_i30.RemoteLocalizationResponse>(data['data']);
+    }
     if (dataClassName == 'SecurityEvent') {
-      return deserialize<_i20.SecurityEvent>(data['data']);
+      return deserialize<_i31.SecurityEvent>(data['data']);
     }
     if (dataClassName == 'Wallet') {
-      return deserialize<_i21.Wallet>(data['data']);
+      return deserialize<_i32.Wallet>(data['data']);
     }
     if (dataClassName == 'WalletTransactions') {
-      return deserialize<_i22.WalletTransactions>(data['data']);
+      return deserialize<_i33.WalletTransactions>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i23.Protocol().deserializeByClassName(data);
+      return _i34.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i26.Protocol().deserializeByClassName(data);
+      return _i37.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i27.Protocol().deserializeByClassName(data);
+      return _i38.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i23.Protocol().registerHostProtocol('baktaz', this);
-    _i26.Protocol().registerHostProtocol('baktaz', this);
-    _i27.Protocol().registerHostProtocol('baktaz', this);
+    _i34.Protocol().registerHostProtocol('baktaz', this);
+    _i37.Protocol().registerHostProtocol('baktaz', this);
+    _i38.Protocol().registerHostProtocol('baktaz', this);
   }
 
   @override
@@ -539,7 +723,7 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     if (record
-        is ({_i23.AuthUserModel authUser, _i23.UserProfileModel userProfile})) {
+        is ({_i34.AuthUserModel authUser, _i34.UserProfileModel userProfile})) {
       return {
         "n": {
           "authUser": record.authUser.toJson(),
@@ -548,13 +732,13 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i23.Protocol().mapRecordToJson(record);
+      return _i34.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i26.Protocol().mapRecordToJson(record);
+      return _i37.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i27.Protocol().mapRecordToJson(record);
+      return _i38.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

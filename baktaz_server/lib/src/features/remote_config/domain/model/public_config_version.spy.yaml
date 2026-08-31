@@ -1,0 +1,4 @@
+class: PublicConfigVersion
+fields:
+  versionNumber: String
+  updateTime: DateTime

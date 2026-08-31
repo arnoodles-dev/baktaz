@@ -1,3 +1,4 @@
+import 'package:baktaz_client/baktaz_client.dart';
 import 'package:baktaz_flutter/app/config/chopper_config.dart';
 import 'package:baktaz_flutter/app/config/serverpod_config.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
@@ -9,7 +10,7 @@ import 'package:injectable/injectable.dart';
 import 'package:mobile_service/mobile_service_repository.dart';
 import 'package:mobile_service_core/features/analytics/i_analytics_service.dart';
 import 'package:mobile_service_core/features/crashlytics/i_crashlytics_service.dart';
-import 'package:mobile_service_core/features/remote_config/i_remote_config_service.dart';
+
 import 'package:mobile_service_core/mobile_service_core.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:retry/retry.dart';
@@ -84,15 +85,15 @@ abstract class ServiceModule {
   IAnalyticsService get analytics => getIt<IMobileServiceRepository>().analyticsService;
 
   @lazySingleton
-  IRemoteConfigService get remoteConfig => getIt<IMobileServiceRepository>().remoteConfigService;
-
-  @lazySingleton
   ICrashlyticsService get crashlytics => getIt<IMobileServiceRepository>().crashlyticsService;
 
   @lazySingleton
   RetryOptions get retryOptions => const RetryOptions(maxAttempts: 2);
 
   //Backend Service
+  @lazySingleton
+  Client get client => getIt<Serverpod>().client;
+
   @Scope('server')
   @lazySingleton
   @preResolve

@@ -1,0 +1,14 @@
+class: RemoteLocalizationRelease
+table: remote_localization_release
+fields:
+  version: int
+  publishedBy: String
+  publishedAt: DateTime
+  active: bool
+  notes: String?
+  payloadJson: String
+  checksum: String
+indexes:
+  remote_localization_release_version_idx:
+    fields: version
+    unique: true

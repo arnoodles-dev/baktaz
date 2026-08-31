@@ -284,5 +284,108 @@ void main() {
         result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
       });
     });
+
+    group('getOtaLocalizationVersion', () {
+      test('returns Right with version when stored', () async {
+        when(unsecuredStorage.getInt(any)).thenReturn(42);
+
+        final Either<Failure, int?> result = await localStorageRepository.getOtaLocalizationVersion().run();
+
+        expect(result.isRight(), isTrue);
+        result.fold((Failure failure) => fail('Expected Right'), (int? value) => expect(value, equals(42)));
+        verify(unsecuredStorage.getInt('ota_localization_version')).called(1);
+      });
+
+      test('returns Right with null when version is not stored', () async {
+        when(unsecuredStorage.getInt(any)).thenReturn(null);
+
+        final Either<Failure, int?> result = await localStorageRepository.getOtaLocalizationVersion().run();
+
+        expect(result.isRight(), isTrue);
+        result.fold((Failure failure) => fail('Expected Right'), (int? value) => expect(value, isNull));
+      });
+
+      test('returns Left(Failure.deviceStorage) when getInt throws', () async {
+        when(unsecuredStorage.getInt(any)).thenThrow(Exception('Storage error'));
+
+        final Either<Failure, int?> result = await localStorageRepository.getOtaLocalizationVersion().run();
+
+        expect(result.isLeft(), isTrue);
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
+      });
+    });
+
+    group('setOtaLocalizationVersion', () {
+      test('writes version to shared preferences', () async {
+        when(unsecuredStorage.setInt(any, any)).thenAnswer((_) async => true);
+
+        final Either<Failure, Unit> result = await localStorageRepository.setOtaLocalizationVersion(42).run();
+
+        expect(result.isRight(), isTrue);
+        verify(unsecuredStorage.setInt('ota_localization_version', 42)).called(1);
+      });
+
+      test('returns Left(Failure.deviceStorage) when setInt throws', () async {
+        when(unsecuredStorage.setInt(any, any)).thenThrow(Exception('Write error'));
+
+        final Either<Failure, Unit> result = await localStorageRepository.setOtaLocalizationVersion(42).run();
+
+        expect(result.isLeft(), isTrue);
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
+      });
+    });
+
+    group('getOtaLocalizationOverrides', () {
+      test('returns Right with overrides string when stored', () async {
+        const String jsonStr = '{"auth.loginButton":"Sign in"}';
+        when(unsecuredStorage.getString(any)).thenReturn(jsonStr);
+
+        final Either<Failure, String?> result = await localStorageRepository.getOtaLocalizationOverrides().run();
+
+        expect(result.isRight(), isTrue);
+        result.fold((Failure failure) => fail('Expected Right'), (String? value) => expect(value, equals(jsonStr)));
+        verify(unsecuredStorage.getString('ota_localization_overrides')).called(1);
+      });
+
+      test('returns Right with null when overrides not set', () async {
+        when(unsecuredStorage.getString(any)).thenReturn(null);
+
+        final Either<Failure, String?> result = await localStorageRepository.getOtaLocalizationOverrides().run();
+
+        expect(result.isRight(), isTrue);
+        result.fold((Failure failure) => fail('Expected Right'), (String? value) => expect(value, isNull));
+      });
+
+      test('returns Left(Failure.deviceStorage) when getString throws', () async {
+        when(unsecuredStorage.getString(any)).thenThrow(Exception('Storage error'));
+
+        final Either<Failure, String?> result = await localStorageRepository.getOtaLocalizationOverrides().run();
+
+        expect(result.isLeft(), isTrue);
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
+      });
+    });
+
+    group('setOtaLocalizationOverrides', () {
+      test('writes overrides JSON string to shared preferences', () async {
+        const String jsonStr = '{"auth.loginButton":"Sign in"}';
+        when(unsecuredStorage.setString(any, any)).thenAnswer((_) async => true);
+
+        final Either<Failure, Unit> result = await localStorageRepository.setOtaLocalizationOverrides(jsonStr).run();
+
+        expect(result.isRight(), isTrue);
+        verify(unsecuredStorage.setString('ota_localization_overrides', jsonStr)).called(1);
+      });
+
+      test('returns Left(Failure.deviceStorage) when setString throws', () async {
+        const String jsonStr = '{"auth.loginButton":"Sign in"}';
+        when(unsecuredStorage.setString(any, any)).thenThrow(Exception('Write error'));
+
+        final Either<Failure, Unit> result = await localStorageRepository.setOtaLocalizationOverrides(jsonStr).run();
+
+        expect(result.isLeft(), isTrue);
+        result.fold((Failure failure) => expect(failure, isA<DeviceStorageFailure>()), (_) => fail('Expected Left'));
+      });
+    });
   });
 }

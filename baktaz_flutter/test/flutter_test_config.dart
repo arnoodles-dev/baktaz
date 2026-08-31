@@ -37,6 +37,9 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
   provideDummy<AppLocale>(AppLocale.en);
   provideDummy<I18n>(AppLocale.en.buildSync());
   provideDummy<TaskResult<bool?>>(TaskResult<bool?>.right(null));
+  provideDummy<TaskResult<int?>>(TaskResult<int?>.right(null));
+  provideDummy<TaskResult<String?>>(TaskResult<String?>.right(null));
+  provideDummy<TaskResult<bool>>(TaskResult<bool>.right(false));
   provideDummy<TaskResult<Unit>>(TaskResult<Unit>.right(unit));
   provideDummy<TaskResult<Profile>>(
     TaskResult<Profile>.right(Profile(fullName: ValueName('dummy'), gender: sp.Gender.unknown)),

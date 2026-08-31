@@ -11,6 +11,8 @@ final class _Keys {
   static const String refreshToken = 'refresh_token';
   static const String isOnboardingDone = 'is_onboarding_done';
   static const String isDarkMode = 'is_dark_mode';
+  static const String otaLocalizationVersion = 'ota_localization_version';
+  static const String otaLocalizationOverrides = 'ota_localization_overrides';
 }
 
 @LazySingleton(as: ILocalStorageRepository)
@@ -127,6 +129,48 @@ final class LocalStorageRepository implements ILocalStorageRepository {
   TaskResult<Unit> setIsDarkMode({required bool isDarkMode}) => TaskResult<Unit>.tryCatch(
     () async {
       await _unsecuredStorage.setBool(_Keys.isDarkMode, isDarkMode);
+      return unit;
+    },
+    (Object error, StackTrace stackTrace) {
+      _talker.handle(error, stackTrace);
+      return Failure.deviceStorage(error.toString());
+    },
+  );
+
+  @override
+  TaskResult<int?> getOtaLocalizationVersion() => TaskResult<int?>.tryCatch(
+    () async => _unsecuredStorage.getInt(_Keys.otaLocalizationVersion),
+    (Object error, StackTrace stackTrace) {
+      _talker.handle(error, stackTrace);
+      return Failure.deviceStorage(error.toString());
+    },
+  );
+
+  @override
+  TaskResult<Unit> setOtaLocalizationVersion(int version) => TaskResult<Unit>.tryCatch(
+    () async {
+      await _unsecuredStorage.setInt(_Keys.otaLocalizationVersion, version);
+      return unit;
+    },
+    (Object error, StackTrace stackTrace) {
+      _talker.handle(error, stackTrace);
+      return Failure.deviceStorage(error.toString());
+    },
+  );
+
+  @override
+  TaskResult<String?> getOtaLocalizationOverrides() => TaskResult<String?>.tryCatch(
+    () async => _unsecuredStorage.getString(_Keys.otaLocalizationOverrides),
+    (Object error, StackTrace stackTrace) {
+      _talker.handle(error, stackTrace);
+      return Failure.deviceStorage(error.toString());
+    },
+  );
+
+  @override
+  TaskResult<Unit> setOtaLocalizationOverrides(String jsonString) => TaskResult<Unit>.tryCatch(
+    () async {
+      await _unsecuredStorage.setString(_Keys.otaLocalizationOverrides, jsonString);
       return unit;
     },
     (Object error, StackTrace stackTrace) {

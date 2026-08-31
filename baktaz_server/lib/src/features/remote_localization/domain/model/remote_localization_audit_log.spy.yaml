@@ -1,0 +1,9 @@
+class: RemoteLocalizationAuditLog
+table: remote_localization_audit_log
+fields:
+  timestamp: DateTime
+  author: String
+  action: String
+  details: String
+  previousValue: String?
+  newValue: String?

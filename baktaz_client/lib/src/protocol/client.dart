@@ -35,11 +35,15 @@ import 'package:baktaz_client/src/protocol/features/home/domain/model/active_cha
     as _i12;
 import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
     as _i13;
-import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+import 'package:baktaz_client/src/protocol/features/remote_config/domain/model/remote_config.dart'
     as _i14;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i15;
-import 'package:http/http.dart' as _i16;
-import 'protocol.dart' as _i17;
+import 'package:baktaz_client/src/protocol/features/remote_localization/domain/model/remote_localization_response.dart'
+    as _i15;
+import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+    as _i16;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i17;
+import 'package:http/http.dart' as _i18;
+import 'protocol.dart' as _i19;
 
 /// {@category Endpoint}
 abstract class EndpointAdminEndpointBase extends _i1.EndpointRef {
@@ -524,18 +528,60 @@ class EndpointHome extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
+class EndpointRemoteConfig extends _i1.EndpointRef {
+  EndpointRemoteConfig(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'remoteConfig';
+
+  _i2.Future<_i14.RemoteConfig> getRemoteConfig({
+    required String appVersion,
+    required String platform,
+    String? userId,
+    String? userTier,
+    String? customSegment,
+  }) => caller.callServerEndpoint<_i14.RemoteConfig>(
+    'remoteConfig',
+    'getRemoteConfig',
+    {
+      'appVersion': appVersion,
+      'platform': platform,
+      'userId': userId,
+      'userTier': userTier,
+      'customSegment': customSegment,
+    },
+  );
+}
+
+/// {@category Endpoint}
+class EndpointRemoteLocalization extends _i1.EndpointRef {
+  EndpointRemoteLocalization(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'remoteLocalization';
+
+  /// Returns active remote localization payload.
+  _i2.Future<_i15.RemoteLocalizationResponse> get(int clientVersion) =>
+      caller.callServerEndpoint<_i15.RemoteLocalizationResponse>(
+        'remoteLocalization',
+        'get',
+        {'clientVersion': clientVersion},
+      );
+}
+
+/// {@category Endpoint}
 class EndpointSecurity extends EndpointAdminEndpointBase {
   EndpointSecurity(_i1.EndpointCaller caller) : super(caller);
 
   @override
   String get name => 'security';
 
-  _i2.Future<List<_i14.SecurityEvent>> listSecurityEvents({
+  _i2.Future<List<_i16.SecurityEvent>> listSecurityEvents({
     required int limit,
     required int offset,
     String? eventType,
     _i1.UuidValue? authUserId,
-  }) => caller.callServerEndpoint<List<_i14.SecurityEvent>>(
+  }) => caller.callServerEndpoint<List<_i16.SecurityEvent>>(
     'security',
     'listSecurityEvents',
     {
@@ -551,14 +597,14 @@ class Modules {
   Modules(Client client) {
     auth_core = _i6.Caller(client);
     serverpod_auth_idp = _i9.Caller(client);
-    auth = _i15.Caller(client);
+    auth = _i17.Caller(client);
   }
 
   late final _i6.Caller auth_core;
 
   late final _i9.Caller serverpod_auth_idp;
 
-  late final _i15.Caller auth;
+  late final _i17.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -575,10 +621,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i16.Client? httpClientOverride,
+    _i18.Client? httpClientOverride,
   }) : super(
          host,
-         _i17.Protocol(),
+         _i19.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -597,6 +643,8 @@ class Client extends _i1.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     otp = EndpointOtp(this);
     home = EndpointHome(this);
+    remoteConfig = EndpointRemoteConfig(this);
+    remoteLocalization = EndpointRemoteLocalization(this);
     security = EndpointSecurity(this);
     modules = Modules(this);
   }
@@ -619,6 +667,10 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointHome home;
 
+  late final EndpointRemoteConfig remoteConfig;
+
+  late final EndpointRemoteLocalization remoteLocalization;
+
   late final EndpointSecurity security;
 
   late final Modules modules;
@@ -634,6 +686,8 @@ class Client extends _i1.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'otp': otp,
     'home': home,
+    'remoteConfig': remoteConfig,
+    'remoteLocalization': remoteLocalization,
     'security': security,
   };
 

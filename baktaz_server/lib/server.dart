@@ -81,6 +81,8 @@ Future<void> run(List<String> args) async {
   final Session session = await pod.createSession();
   try {
     await seedAdminUser(session);
+    await seedRemoteConfig(session);
+    await seedRemoteLocalization(session);
   } finally {
     await session.close();
   }

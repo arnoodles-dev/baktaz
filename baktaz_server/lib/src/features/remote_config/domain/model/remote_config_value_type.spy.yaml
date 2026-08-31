@@ -1,0 +1,7 @@
+enum: RemoteConfigValueType
+values:
+  - string
+  - boolean
+  - integer
+  - double
+  - json

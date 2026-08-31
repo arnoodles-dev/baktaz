@@ -1,0 +1,15 @@
+class: ConfigKey
+table: config_key
+fields:
+  id: UuidValue?, defaultPersist=random
+  key: String
+  valueType: RemoteConfigValueType
+  defaultValue: String
+  description: String?
+  createdAt: DateTime, default=now
+  updatedAt: DateTime?, scope=serverOnly
+
+indexes:
+  config_key_key_unique_idx:
+    fields: key
+    unique: true

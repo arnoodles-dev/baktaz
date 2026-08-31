@@ -1,0 +1,17 @@
+class: TargetingOverride
+table: targeting_override
+fields:
+  id: UuidValue?, defaultPersist=random
+  configKeyId: UuidValue
+  configKey: ConfigKey?, relation(field=configKeyId, onDelete=Cascade)
+  priority: int
+  appVersionConstraint: String?
+  userTiers: List<String>?
+  customSegmentValues: List<String>?
+  rolloutPercentage: int?
+  servedValue: String
+  isActive: bool
+
+indexes:
+  targeting_override_priority_idx:
+    fields: configKeyId, priority

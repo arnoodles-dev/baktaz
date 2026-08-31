@@ -1,0 +1,14 @@
+class: ConfigSnapshotVersion
+table: config_snapshot_version
+fields:
+  id: UuidValue?, defaultPersist=random
+  versionNumber: String
+  updateTime: DateTime, default=now
+  updateUserEmail: String?
+  updateOrigin: String?
+  updateType: String?
+
+indexes:
+  config_version_number_idx:
+    fields: versionNumber
+    unique: true

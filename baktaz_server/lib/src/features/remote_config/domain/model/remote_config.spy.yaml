@@ -1,0 +1,4 @@
+class: RemoteConfig
+fields:
+  config: Map<String, RemoteConfigValue>
+  version: PublicConfigVersion

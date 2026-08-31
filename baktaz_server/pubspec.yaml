@@ -10,6 +10,7 @@ resolution: workspace
 
 dependencies:
   chopper: ^8.7.0
+  crypto: ^3.0.3
   email_validator: ^3.0.0
   fpdart: ^1.2.0
   get_it: ^9.2.1

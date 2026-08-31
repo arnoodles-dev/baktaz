@@ -1,4 +1,4 @@
-// ignore_for_file: prefer-match-file-name, prefer-bloc-state-suffix, depend_on_referenced_packages
+// ignore_for_file: prefer-match-file-name, prefer-bloc-state-suffix, depend_on_referenced_packages, unused_import, directives_ordering
 
 import 'dart:async';
 
@@ -10,6 +10,7 @@ import 'package:baktaz_flutter/core/domain/cubit/app_localization/app_localizati
 import 'package:baktaz_flutter/core/domain/cubit/hidable/hidable_cubit.dart';
 import 'package:baktaz_flutter/core/domain/interface/i_device_info_repository.dart';
 import 'package:baktaz_flutter/core/domain/interface/i_local_storage_repository.dart';
+import 'package:baktaz_flutter/core/domain/interface/i_remote_localization_repository.dart';
 import 'package:baktaz_flutter/features/account/domain/cubit/account_cubit.dart';
 import 'package:baktaz_flutter/features/account/domain/interface/i_account_repository.dart';
 import 'package:baktaz_flutter/features/auth/domain/cubit/auth/auth_cubit.dart';
@@ -24,7 +25,7 @@ import 'package:mobile_service_core/features/analytics/i_analytics_service.dart'
 import 'package:mobile_service_core/features/crashlytics/i_crashlytics_service.dart';
 import 'package:mobile_service_core/features/remote_config/i_remote_config_service.dart';
 import 'package:mockito/annotations.dart';
-import 'package:mockito/mockito.dart' as mockito;
+import 'package:mockito/mockito.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:serverpod_auth_idp_flutter/serverpod_auth_idp_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -37,9 +38,12 @@ export 'generated_mocks.mocks.dart';
   MockSpec<EndpointAccount>(),
   MockSpec<EndpointAuth>(),
   MockSpec<EndpointOtp>(),
+  MockSpec<EndpointRemoteConfig>(),
+  MockSpec<EndpointRemoteLocalization>(),
   MockSpec<IAuthRepository>(),
   MockSpec<IAccountRepository>(),
   MockSpec<ILocalStorageRepository>(),
+  MockSpec<IRemoteLocalizationRepository>(),
   MockSpec<ICrashlyticsService>(),
   MockSpec<IRemoteConfigService>(),
   MockSpec<IAnalyticsService>(),
@@ -65,7 +69,7 @@ export 'generated_mocks.mocks.dart';
 ])
 void main() {}
 
-class MockAppLocalizationCubit extends mockito.Mock implements AppLocalizationCubit {
+class MockAppLocalizationCubit extends Mock implements AppLocalizationCubit {
   @override
   I18n get stateValue {
     final I18n fallback = AppLocale.values.first.buildSync();

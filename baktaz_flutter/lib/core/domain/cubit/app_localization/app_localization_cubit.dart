@@ -4,40 +4,51 @@ import 'dart:async';
 
 import 'package:baktaz_flutter/app/generated/localization.g.dart';
 import 'package:baktaz_flutter/app/helpers/mixins/failure_handler.dart';
+import 'package:baktaz_flutter/app/utils/slang_override_helper.dart';
+import 'package:baktaz_flutter/core/domain/interface/i_remote_localization_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:bloc_signals/bloc_signals.dart';
 import 'package:injectable/injectable.dart';
-import 'package:mobile_service_core/features/remote_config/i_remote_config_service.dart';
 
 @lazySingleton
 class AppLocalizationCubit extends CubitSignal<I18n> {
-  AppLocalizationCubit(this._remoteConfigService, this._failureHandler)
+  AppLocalizationCubit(this._remoteLocRepository, this._failureHandler)
     : super(initialState: AppLocale.values.first.buildSync()) {
     unawaited(initialize());
   }
 
-  final IRemoteConfigService _remoteConfigService;
+  final IRemoteLocalizationRepository _remoteLocRepository;
   final FailureHandler _failureHandler;
 
   Future<void> initialize() async {
-    final AppLocale appLocale = AppLocaleUtils.findDeviceLocale();
+    await _loadCachedOverrides();
+    _syncInBackground();
+  }
 
+  Future<void> _loadCachedOverrides() async {
     await safeRun(
-      onException: (Exception error, StackTrace? stackTrace) async {
-        _failureHandler.handleException(error, stackTrace);
-        safeEmit(await AppLocaleUtils.findDeviceLocale().build());
-      },
+      onException: _failureHandler.handleException,
       action: () async {
-        safeEmit(
-          await I18nLoader.loadLocalization<AppLocale, I18n>(
-            deviceLocale: appLocale,
-            languageCode: appLocale.languageCode,
-            fetchRemote: _remoteConfigService.getString,
-            fetchLocalFallback: () async => AppLocaleUtils.findDeviceLocale().build(),
-            buildWithOverrides: (AppLocale locale, {required bool isFlatMap, required Map<String, dynamic> map}) =>
-                AppLocaleUtils.buildWithOverridesFromMap(locale: locale, isFlatMap: isFlatMap, map: map),
-          ),
-        );
+        final Result<String?> result = await _remoteLocRepository.getCachedOverrides().run();
+        result.fold(_failureHandler.handleFailure, (String? overridesJson) {
+          if (overridesJson != null) {
+            safeEmit(SlangOverrideHelper.applyOverridesJson(jsonContent: overridesJson));
+          }
+        });
+      },
+    );
+  }
+
+  void _syncInBackground() {
+    safeRun(
+      onException: _failureHandler.handleException,
+      action: () async {
+        final Result<bool> result = await _remoteLocRepository.syncRemoteLocalization().run();
+        result.fold(_failureHandler.handleFailure, (bool hasNewOverrides) {
+          if (hasNewOverrides) {
+            unawaited(_loadCachedOverrides());
+          }
+        });
       },
     );
   }

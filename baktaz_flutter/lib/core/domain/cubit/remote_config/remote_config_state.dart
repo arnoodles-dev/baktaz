@@ -14,6 +14,12 @@ sealed class RemoteConfigState with _$RemoteConfigState {
 
   String? get iosStoreUrl => values['ios_store_url'] as String?;
 
+  bool get isChatEnabled => values['enable_chat'] == true || values['enable_chat'] == 'true';
+
+  bool get isPayoutEnabled => values['enable_payout'] == true || values['enable_payout'] == 'true';
+
+  bool get isChallengesEnabled => values['enable_challenges'] == true || values['enable_challenges'] == 'true';
+
   /// Escape hatch for dynamic admin-defined keys (e.g. webview configKey).
   String? value(String key) => values[key] as String?;
 }

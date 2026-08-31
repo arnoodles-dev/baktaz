@@ -1,0 +1,6 @@
+class: RemoteLocalizationResponse
+fields:
+  version: int
+  updated: bool
+  checksum: String?
+  overridesJson: String?
