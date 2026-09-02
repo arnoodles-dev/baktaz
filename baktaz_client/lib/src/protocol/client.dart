@@ -13,27 +13,27 @@
 
 import 'package:serverpod_client/serverpod_client.dart' as _i1;
 import 'dart:async' as _i2;
-import 'package:baktaz_client/src/protocol/features/account/domain/model/account.dart'
-    as _i3;
 import 'package:baktaz_client/src/protocol/features/account/domain/model/account_summary.dart'
+    as _i3;
+import 'package:baktaz_client/src/protocol/features/account/domain/model/account.dart'
     as _i4;
-import 'package:baktaz_client/src/protocol/features/account/domain/model/profile.dart'
-    as _i5;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i6;
+    as _i5;
 import 'package:baktaz_client/src/protocol/features/auth/domain/models/otp_verification_result.dart'
-    as _i7;
+    as _i6;
 import 'package:baktaz_client/src/protocol/features/auth/domain/models/registration_form.dart'
-    as _i8;
+    as _i7;
 import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
-    as _i9;
+    as _i8;
 import 'package:baktaz_client/src/protocol/features/home/domain/model/daily_step_telemetry.dart'
-    as _i10;
+    as _i9;
 import 'package:baktaz_client/src/protocol/features/home/domain/model/weekly_step_analytics.dart'
-    as _i11;
+    as _i10;
 import 'package:baktaz_client/src/protocol/features/home/domain/model/active_challenge_summary.dart'
-    as _i12;
+    as _i11;
 import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
+    as _i12;
+import 'package:baktaz_client/src/protocol/features/account/domain/model/user_info.dart'
     as _i13;
 import 'package:baktaz_client/src/protocol/features/remote_config/domain/model/remote_config.dart'
     as _i14;
@@ -50,6 +50,7 @@ abstract class EndpointAdminEndpointBase extends _i1.EndpointRef {
   EndpointAdminEndpointBase(_i1.EndpointCaller caller) : super(caller);
 }
 
+/// Endpoint for account management operations such as summary fetching and account deletion.
 /// {@category Endpoint}
 class EndpointAccount extends _i1.EndpointRef {
   EndpointAccount(_i1.EndpointCaller caller) : super(caller);
@@ -57,27 +58,23 @@ class EndpointAccount extends _i1.EndpointRef {
   @override
   String get name => 'account';
 
-  _i2.Future<_i3.Account?> getCurrentAccount() =>
-      caller.callServerEndpoint<_i3.Account?>(
+  /// Retrieves summary information ([AccountSummary]) for the currently authenticated user.
+  _i2.Future<_i3.AccountSummary> getSummary() =>
+      caller.callServerEndpoint<_i3.AccountSummary>(
+        'account',
+        'getSummary',
+        {},
+      );
+
+  /// Retrieves the full [Account] entity for the currently authenticated user.
+  _i2.Future<_i4.Account?> getCurrentAccount() =>
+      caller.callServerEndpoint<_i4.Account?>(
         'account',
         'getCurrentAccount',
         {},
       );
 
-  _i2.Future<_i4.AccountSummary?> getAccountSummary() =>
-      caller.callServerEndpoint<_i4.AccountSummary?>(
-        'account',
-        'getAccountSummary',
-        {},
-      );
-
-  _i2.Future<_i5.Profile?> getProfile() =>
-      caller.callServerEndpoint<_i5.Profile?>(
-        'account',
-        'getProfile',
-        {},
-      );
-
+  /// Deletes the account of the currently authenticated user.
   _i2.Future<void> deleteAccount() => caller.callServerEndpoint<void>(
     'account',
     'deleteAccount',
@@ -93,19 +90,19 @@ class EndpointAdmin extends EndpointAdminEndpointBase {
   String get name => 'admin';
 
   _i2.Future<
-    List<({_i6.AuthUserModel authUser, _i6.UserProfileModel userProfile})>
+    List<({_i5.AuthUserModel authUser, _i5.UserProfileModel userProfile})>
   >
   listAdminUsers() =>
       caller.callServerEndpoint<
-        List<({_i6.AuthUserModel authUser, _i6.UserProfileModel userProfile})>
+        List<({_i5.AuthUserModel authUser, _i5.UserProfileModel userProfile})>
       >(
         'admin',
         'listAdminUsers',
         {},
       );
 
-  _i2.Future<List<_i6.AuthUserModel>> listAuthUsers() =>
-      caller.callServerEndpoint<List<_i6.AuthUserModel>>(
+  _i2.Future<List<_i5.AuthUserModel>> listAuthUsers() =>
+      caller.callServerEndpoint<List<_i5.AuthUserModel>>(
         'admin',
         'listAuthUsers',
         {},
@@ -145,9 +142,9 @@ class EndpointAuth extends _i1.EndpointRef {
   @override
   String get name => 'auth';
 
-  _i2.Future<_i7.OtpVerificationResult> completeRegistration(
-    _i8.RegistrationForm form,
-  ) => caller.callServerEndpoint<_i7.OtpVerificationResult>(
+  _i2.Future<_i6.OtpVerificationResult> completeRegistration(
+    _i7.RegistrationForm form,
+  ) => caller.callServerEndpoint<_i6.OtpVerificationResult>(
     'auth',
     'completeRegistration',
     {'form': form},
@@ -155,7 +152,7 @@ class EndpointAuth extends _i1.EndpointRef {
 }
 
 /// {@category Endpoint}
-class EndpointEmailIdp extends _i9.EndpointEmailIdpBase {
+class EndpointEmailIdp extends _i8.EndpointEmailIdpBase {
   EndpointEmailIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -171,10 +168,10 @@ class EndpointEmailIdp extends _i9.EndpointEmailIdpBase {
   ///
   /// Throws an [AuthUserBlockedException] if the auth user is blocked.
   @override
-  _i2.Future<_i6.AuthSuccess> login({
+  _i2.Future<_i5.AuthSuccess> login({
     required String email,
     required String password,
-  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i5.AuthSuccess>(
     'emailIdp',
     'login',
     {
@@ -239,10 +236,10 @@ class EndpointEmailIdp extends _i9.EndpointEmailIdpBase {
   ///
   /// Returns a session for the newly created user.
   @override
-  _i2.Future<_i6.AuthSuccess> finishRegistration({
+  _i2.Future<_i5.AuthSuccess> finishRegistration({
     required String registrationToken,
     required String password,
-  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i5.AuthSuccess>(
     'emailIdp',
     'finishRegistration',
     {
@@ -335,7 +332,7 @@ class EndpointEmailIdp extends _i9.EndpointEmailIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointFacebookIdp extends _i9.EndpointFacebookIdpBase {
+class EndpointFacebookIdp extends _i8.EndpointFacebookIdpBase {
   EndpointFacebookIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -347,8 +344,8 @@ class EndpointFacebookIdp extends _i9.EndpointFacebookIdpBase {
   /// If the access token is invalid or expired, the
   /// [FacebookAccessTokenVerificationException] will be thrown.
   @override
-  _i2.Future<_i6.AuthSuccess> login({required String accessToken}) =>
-      caller.callServerEndpoint<_i6.AuthSuccess>(
+  _i2.Future<_i5.AuthSuccess> login({required String accessToken}) =>
+      caller.callServerEndpoint<_i5.AuthSuccess>(
         'facebookIdp',
         'login',
         {'accessToken': accessToken},
@@ -363,7 +360,7 @@ class EndpointFacebookIdp extends _i9.EndpointFacebookIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointGoogleIdp extends _i9.EndpointGoogleIdpBase {
+class EndpointGoogleIdp extends _i8.EndpointGoogleIdpBase {
   EndpointGoogleIdp(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -374,10 +371,10 @@ class EndpointGoogleIdp extends _i9.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i6.AuthSuccess> login({
+  _i2.Future<_i5.AuthSuccess> login({
     required String idToken,
     required String? accessToken,
-  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i5.AuthSuccess>(
     'googleIdp',
     'login',
     {
@@ -394,11 +391,11 @@ class EndpointGoogleIdp extends _i9.EndpointGoogleIdpBase {
   ///
   /// If a new user is created an associated [UserProfile] is also created.
   @override
-  _i2.Future<_i6.AuthSuccess> loginWithCode({
+  _i2.Future<_i5.AuthSuccess> loginWithCode({
     required String code,
     required String codeVerifier,
     required String redirectUri,
-  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i5.AuthSuccess>(
     'googleIdp',
     'loginWithCode',
     {
@@ -417,7 +414,7 @@ class EndpointGoogleIdp extends _i9.EndpointGoogleIdpBase {
 }
 
 /// {@category Endpoint}
-class EndpointJwtRefresh extends _i6.EndpointRefreshJwtTokens {
+class EndpointJwtRefresh extends _i5.EndpointRefreshJwtTokens {
   EndpointJwtRefresh(_i1.EndpointCaller caller) : super(caller);
 
   @override
@@ -442,9 +439,9 @@ class EndpointJwtRefresh extends _i6.EndpointRefreshJwtTokens {
   /// This endpoint is unauthenticated, meaning the client won't include any
   /// authentication information with the call.
   @override
-  _i2.Future<_i6.AuthSuccess> refreshAccessToken({
+  _i2.Future<_i5.AuthSuccess> refreshAccessToken({
     required String refreshToken,
-  }) => caller.callServerEndpoint<_i6.AuthSuccess>(
+  }) => caller.callServerEndpoint<_i5.AuthSuccess>(
     'jwtRefresh',
     'refreshAccessToken',
     {'refreshToken': refreshToken},
@@ -466,10 +463,10 @@ class EndpointOtp extends _i1.EndpointRef {
         {'email': email},
       );
 
-  _i2.Future<_i7.OtpVerificationResult> verifyOtp({
+  _i2.Future<_i6.OtpVerificationResult> verifyOtp({
     required String email,
     required String code,
-  }) => caller.callServerEndpoint<_i7.OtpVerificationResult>(
+  }) => caller.callServerEndpoint<_i6.OtpVerificationResult>(
     'otp',
     'verifyOtp',
     {
@@ -486,38 +483,38 @@ class EndpointHome extends _i1.EndpointRef {
   @override
   String get name => 'home';
 
-  _i2.Future<_i10.DailyStepTelemetry> getDailyStepTelemetry() =>
-      caller.callServerEndpoint<_i10.DailyStepTelemetry>(
+  _i2.Future<_i9.DailyStepTelemetry> getDailyStepTelemetry() =>
+      caller.callServerEndpoint<_i9.DailyStepTelemetry>(
         'home',
         'getDailyStepTelemetry',
         {},
       );
 
-  _i2.Future<_i11.WeeklyStepAnalytics> getWeeklyStepAnalytics() =>
-      caller.callServerEndpoint<_i11.WeeklyStepAnalytics>(
+  _i2.Future<_i10.WeeklyStepAnalytics> getWeeklyStepAnalytics() =>
+      caller.callServerEndpoint<_i10.WeeklyStepAnalytics>(
         'home',
         'getWeeklyStepAnalytics',
         {},
       );
 
-  _i2.Future<_i12.ActiveChallengeSummary?> getActiveChallengeSummary() =>
-      caller.callServerEndpoint<_i12.ActiveChallengeSummary?>(
+  _i2.Future<_i11.ActiveChallengeSummary?> getActiveChallengeSummary() =>
+      caller.callServerEndpoint<_i11.ActiveChallengeSummary?>(
         'home',
         'getActiveChallengeSummary',
         {},
       );
 
-  _i2.Future<List<_i13.HomeLeaderboardEntry>> getLeaderboardPreview() =>
-      caller.callServerEndpoint<List<_i13.HomeLeaderboardEntry>>(
+  _i2.Future<List<_i12.HomeLeaderboardEntry>> getLeaderboardPreview() =>
+      caller.callServerEndpoint<List<_i12.HomeLeaderboardEntry>>(
         'home',
         'getLeaderboardPreview',
         {},
       );
 
-  _i2.Future<_i10.DailyStepTelemetry> syncSteps(
+  _i2.Future<_i9.DailyStepTelemetry> syncSteps(
     int steps,
     String source,
-  ) => caller.callServerEndpoint<_i10.DailyStepTelemetry>(
+  ) => caller.callServerEndpoint<_i9.DailyStepTelemetry>(
     'home',
     'syncSteps',
     {
@@ -525,6 +522,46 @@ class EndpointHome extends _i1.EndpointRef {
       'source': source,
     },
   );
+}
+
+/// Endpoint for user profile management including retrieving, updating profiles, and checking username availability.
+/// {@category Endpoint}
+class EndpointProfile extends _i1.EndpointRef {
+  EndpointProfile(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'profile';
+
+  /// Fetches [UserInfo] profile details for the currently authenticated user.
+  _i2.Future<_i13.UserInfo?> getProfile() =>
+      caller.callServerEndpoint<_i13.UserInfo?>(
+        'profile',
+        'getProfile',
+        {},
+      );
+
+  /// Updates profile information ([firstName], [lastName], [username]) for the currently authenticated user.
+  _i2.Future<_i13.UserInfo?> updateProfile(
+    String? firstName,
+    String? lastName,
+    String? username,
+  ) => caller.callServerEndpoint<_i13.UserInfo?>(
+    'profile',
+    'updateProfile',
+    {
+      'firstName': firstName,
+      'lastName': lastName,
+      'username': username,
+    },
+  );
+
+  /// Checks whether [username] is available for registration or update.
+  _i2.Future<bool> checkUsernameAvailability(String username) =>
+      caller.callServerEndpoint<bool>(
+        'profile',
+        'checkUsernameAvailability',
+        {'username': username},
+      );
 }
 
 /// {@category Endpoint}
@@ -595,14 +632,14 @@ class EndpointSecurity extends EndpointAdminEndpointBase {
 
 class Modules {
   Modules(Client client) {
-    auth_core = _i6.Caller(client);
-    serverpod_auth_idp = _i9.Caller(client);
+    auth_core = _i5.Caller(client);
+    serverpod_auth_idp = _i8.Caller(client);
     auth = _i17.Caller(client);
   }
 
-  late final _i6.Caller auth_core;
+  late final _i5.Caller auth_core;
 
-  late final _i9.Caller serverpod_auth_idp;
+  late final _i8.Caller serverpod_auth_idp;
 
   late final _i17.Caller auth;
 }
@@ -643,6 +680,7 @@ class Client extends _i1.ServerpodClientShared {
     jwtRefresh = EndpointJwtRefresh(this);
     otp = EndpointOtp(this);
     home = EndpointHome(this);
+    profile = EndpointProfile(this);
     remoteConfig = EndpointRemoteConfig(this);
     remoteLocalization = EndpointRemoteLocalization(this);
     security = EndpointSecurity(this);
@@ -667,6 +705,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointHome home;
 
+  late final EndpointProfile profile;
+
   late final EndpointRemoteConfig remoteConfig;
 
   late final EndpointRemoteLocalization remoteLocalization;
@@ -686,6 +726,7 @@ class Client extends _i1.ServerpodClientShared {
     'jwtRefresh': jwtRefresh,
     'otp': otp,
     'home': home,
+    'profile': profile,
     'remoteConfig': remoteConfig,
     'remoteLocalization': remoteLocalization,
     'security': security,

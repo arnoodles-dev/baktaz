@@ -22,43 +22,44 @@ import 'features/account/domain/model/account_summary.dart' as _i8;
 import 'features/account/domain/model/address.dart' as _i9;
 import 'features/account/domain/model/contact.dart' as _i10;
 import 'features/account/domain/model/profile.dart' as _i11;
-import 'features/account/domain/model/user_info.dart' as _i12;
-import 'features/auth/domain/models/otp_exception.dart' as _i13;
-import 'features/auth/domain/models/otp_verification_result.dart' as _i14;
-import 'features/auth/domain/models/registration_form.dart' as _i15;
-import 'features/home/domain/model/active_challenge_summary.dart' as _i16;
-import 'features/home/domain/model/daily_step_telemetry.dart' as _i17;
-import 'features/home/domain/model/home_leaderboard_entry.dart' as _i18;
-import 'features/home/domain/model/weekly_step_analytics.dart' as _i19;
-import 'features/remote_config/domain/model/config_key.dart' as _i20;
+import 'features/account/domain/model/rank.dart' as _i12;
+import 'features/account/domain/model/user_info.dart' as _i13;
+import 'features/auth/domain/models/otp_exception.dart' as _i14;
+import 'features/auth/domain/models/otp_verification_result.dart' as _i15;
+import 'features/auth/domain/models/registration_form.dart' as _i16;
+import 'features/home/domain/model/active_challenge_summary.dart' as _i17;
+import 'features/home/domain/model/daily_step_telemetry.dart' as _i18;
+import 'features/home/domain/model/home_leaderboard_entry.dart' as _i19;
+import 'features/home/domain/model/weekly_step_analytics.dart' as _i20;
+import 'features/remote_config/domain/model/config_key.dart' as _i21;
 import 'features/remote_config/domain/model/config_snapshot_version.dart'
-    as _i21;
-import 'features/remote_config/domain/model/public_config_version.dart' as _i22;
-import 'features/remote_config/domain/model/remote_config.dart' as _i23;
+    as _i22;
+import 'features/remote_config/domain/model/public_config_version.dart' as _i23;
+import 'features/remote_config/domain/model/remote_config.dart' as _i24;
 import 'features/remote_config/domain/model/remote_config_default_value.dart'
-    as _i24;
-import 'features/remote_config/domain/model/remote_config_value.dart' as _i25;
+    as _i25;
+import 'features/remote_config/domain/model/remote_config_value.dart' as _i26;
 import 'features/remote_config/domain/model/remote_config_value_type.dart'
-    as _i26;
-import 'features/remote_config/domain/model/targeting_override.dart' as _i27;
+    as _i27;
+import 'features/remote_config/domain/model/targeting_override.dart' as _i28;
 import 'features/remote_localization/domain/model/remote_localization_audit_log.dart'
-    as _i28;
-import 'features/remote_localization/domain/model/remote_localization_release.dart'
     as _i29;
-import 'features/remote_localization/domain/model/remote_localization_response.dart'
+import 'features/remote_localization/domain/model/remote_localization_release.dart'
     as _i30;
-import 'features/security/domain/models/security_event.dart' as _i31;
-import 'features/wallet/domain/model/wallet.dart' as _i32;
-import 'features/wallet/domain/model/wallet_transactions.dart' as _i33;
+import 'features/remote_localization/domain/model/remote_localization_response.dart'
+    as _i31;
+import 'features/security/domain/models/security_event.dart' as _i32;
+import 'features/wallet/domain/model/wallet.dart' as _i33;
+import 'features/wallet/domain/model/wallet_transactions.dart' as _i34;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i34;
-import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
     as _i35;
-import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
     as _i36;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
     as _i37;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i38;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i38;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i39;
 export 'core/domain/model/enum/gender.dart';
 export 'core/domain/model/enum/transaction_type.dart';
 export 'core/domain/model/exception/api_exception.dart';
@@ -69,6 +70,7 @@ export 'features/account/domain/model/account_summary.dart';
 export 'features/account/domain/model/address.dart';
 export 'features/account/domain/model/contact.dart';
 export 'features/account/domain/model/profile.dart';
+export 'features/account/domain/model/rank.dart';
 export 'features/account/domain/model/user_info.dart';
 export 'features/auth/domain/models/otp_exception.dart';
 export 'features/auth/domain/models/otp_verification_result.dart';
@@ -157,71 +159,74 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i11.Profile) {
       return _i11.Profile.fromJson(data) as T;
     }
-    if (t == _i12.UserInfo) {
-      return _i12.UserInfo.fromJson(data) as T;
+    if (t == _i12.Rank) {
+      return _i12.Rank.fromJson(data) as T;
     }
-    if (t == _i13.OtpException) {
-      return _i13.OtpException.fromJson(data) as T;
+    if (t == _i13.UserInfo) {
+      return _i13.UserInfo.fromJson(data) as T;
     }
-    if (t == _i14.OtpVerificationResult) {
-      return _i14.OtpVerificationResult.fromJson(data) as T;
+    if (t == _i14.OtpException) {
+      return _i14.OtpException.fromJson(data) as T;
     }
-    if (t == _i15.RegistrationForm) {
-      return _i15.RegistrationForm.fromJson(data) as T;
+    if (t == _i15.OtpVerificationResult) {
+      return _i15.OtpVerificationResult.fromJson(data) as T;
     }
-    if (t == _i16.ActiveChallengeSummary) {
-      return _i16.ActiveChallengeSummary.fromJson(data) as T;
+    if (t == _i16.RegistrationForm) {
+      return _i16.RegistrationForm.fromJson(data) as T;
     }
-    if (t == _i17.DailyStepTelemetry) {
-      return _i17.DailyStepTelemetry.fromJson(data) as T;
+    if (t == _i17.ActiveChallengeSummary) {
+      return _i17.ActiveChallengeSummary.fromJson(data) as T;
     }
-    if (t == _i18.HomeLeaderboardEntry) {
-      return _i18.HomeLeaderboardEntry.fromJson(data) as T;
+    if (t == _i18.DailyStepTelemetry) {
+      return _i18.DailyStepTelemetry.fromJson(data) as T;
     }
-    if (t == _i19.WeeklyStepAnalytics) {
-      return _i19.WeeklyStepAnalytics.fromJson(data) as T;
+    if (t == _i19.HomeLeaderboardEntry) {
+      return _i19.HomeLeaderboardEntry.fromJson(data) as T;
     }
-    if (t == _i20.ConfigKey) {
-      return _i20.ConfigKey.fromJson(data) as T;
+    if (t == _i20.WeeklyStepAnalytics) {
+      return _i20.WeeklyStepAnalytics.fromJson(data) as T;
     }
-    if (t == _i21.ConfigSnapshotVersion) {
-      return _i21.ConfigSnapshotVersion.fromJson(data) as T;
+    if (t == _i21.ConfigKey) {
+      return _i21.ConfigKey.fromJson(data) as T;
     }
-    if (t == _i22.PublicConfigVersion) {
-      return _i22.PublicConfigVersion.fromJson(data) as T;
+    if (t == _i22.ConfigSnapshotVersion) {
+      return _i22.ConfigSnapshotVersion.fromJson(data) as T;
     }
-    if (t == _i23.RemoteConfig) {
-      return _i23.RemoteConfig.fromJson(data) as T;
+    if (t == _i23.PublicConfigVersion) {
+      return _i23.PublicConfigVersion.fromJson(data) as T;
     }
-    if (t == _i24.RemoteConfigDefaultValue) {
-      return _i24.RemoteConfigDefaultValue.fromJson(data) as T;
+    if (t == _i24.RemoteConfig) {
+      return _i24.RemoteConfig.fromJson(data) as T;
     }
-    if (t == _i25.RemoteConfigValue) {
-      return _i25.RemoteConfigValue.fromJson(data) as T;
+    if (t == _i25.RemoteConfigDefaultValue) {
+      return _i25.RemoteConfigDefaultValue.fromJson(data) as T;
     }
-    if (t == _i26.RemoteConfigValueType) {
-      return _i26.RemoteConfigValueType.fromJson(data) as T;
+    if (t == _i26.RemoteConfigValue) {
+      return _i26.RemoteConfigValue.fromJson(data) as T;
     }
-    if (t == _i27.TargetingOverride) {
-      return _i27.TargetingOverride.fromJson(data) as T;
+    if (t == _i27.RemoteConfigValueType) {
+      return _i27.RemoteConfigValueType.fromJson(data) as T;
     }
-    if (t == _i28.RemoteLocalizationAuditLog) {
-      return _i28.RemoteLocalizationAuditLog.fromJson(data) as T;
+    if (t == _i28.TargetingOverride) {
+      return _i28.TargetingOverride.fromJson(data) as T;
     }
-    if (t == _i29.RemoteLocalizationRelease) {
-      return _i29.RemoteLocalizationRelease.fromJson(data) as T;
+    if (t == _i29.RemoteLocalizationAuditLog) {
+      return _i29.RemoteLocalizationAuditLog.fromJson(data) as T;
     }
-    if (t == _i30.RemoteLocalizationResponse) {
-      return _i30.RemoteLocalizationResponse.fromJson(data) as T;
+    if (t == _i30.RemoteLocalizationRelease) {
+      return _i30.RemoteLocalizationRelease.fromJson(data) as T;
     }
-    if (t == _i31.SecurityEvent) {
-      return _i31.SecurityEvent.fromJson(data) as T;
+    if (t == _i31.RemoteLocalizationResponse) {
+      return _i31.RemoteLocalizationResponse.fromJson(data) as T;
     }
-    if (t == _i32.Wallet) {
-      return _i32.Wallet.fromJson(data) as T;
+    if (t == _i32.SecurityEvent) {
+      return _i32.SecurityEvent.fromJson(data) as T;
     }
-    if (t == _i33.WalletTransactions) {
-      return _i33.WalletTransactions.fromJson(data) as T;
+    if (t == _i33.Wallet) {
+      return _i33.Wallet.fromJson(data) as T;
+    }
+    if (t == _i34.WalletTransactions) {
+      return _i34.WalletTransactions.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.Gender?>()) {
       return (data != null ? _i2.Gender.fromJson(data) : null) as T;
@@ -253,91 +258,94 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i11.Profile?>()) {
       return (data != null ? _i11.Profile.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i12.UserInfo?>()) {
-      return (data != null ? _i12.UserInfo.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i12.Rank?>()) {
+      return (data != null ? _i12.Rank.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i13.OtpException?>()) {
-      return (data != null ? _i13.OtpException.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i13.UserInfo?>()) {
+      return (data != null ? _i13.UserInfo.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i14.OtpVerificationResult?>()) {
-      return (data != null ? _i14.OtpVerificationResult.fromJson(data) : null)
+    if (t == _i1.getType<_i14.OtpException?>()) {
+      return (data != null ? _i14.OtpException.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i15.OtpVerificationResult?>()) {
+      return (data != null ? _i15.OtpVerificationResult.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i15.RegistrationForm?>()) {
-      return (data != null ? _i15.RegistrationForm.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i16.RegistrationForm?>()) {
+      return (data != null ? _i16.RegistrationForm.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i16.ActiveChallengeSummary?>()) {
-      return (data != null ? _i16.ActiveChallengeSummary.fromJson(data) : null)
+    if (t == _i1.getType<_i17.ActiveChallengeSummary?>()) {
+      return (data != null ? _i17.ActiveChallengeSummary.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i17.DailyStepTelemetry?>()) {
-      return (data != null ? _i17.DailyStepTelemetry.fromJson(data) : null)
+    if (t == _i1.getType<_i18.DailyStepTelemetry?>()) {
+      return (data != null ? _i18.DailyStepTelemetry.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i18.HomeLeaderboardEntry?>()) {
-      return (data != null ? _i18.HomeLeaderboardEntry.fromJson(data) : null)
+    if (t == _i1.getType<_i19.HomeLeaderboardEntry?>()) {
+      return (data != null ? _i19.HomeLeaderboardEntry.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i19.WeeklyStepAnalytics?>()) {
-      return (data != null ? _i19.WeeklyStepAnalytics.fromJson(data) : null)
+    if (t == _i1.getType<_i20.WeeklyStepAnalytics?>()) {
+      return (data != null ? _i20.WeeklyStepAnalytics.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i20.ConfigKey?>()) {
-      return (data != null ? _i20.ConfigKey.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i21.ConfigKey?>()) {
+      return (data != null ? _i21.ConfigKey.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i21.ConfigSnapshotVersion?>()) {
-      return (data != null ? _i21.ConfigSnapshotVersion.fromJson(data) : null)
+    if (t == _i1.getType<_i22.ConfigSnapshotVersion?>()) {
+      return (data != null ? _i22.ConfigSnapshotVersion.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i22.PublicConfigVersion?>()) {
-      return (data != null ? _i22.PublicConfigVersion.fromJson(data) : null)
+    if (t == _i1.getType<_i23.PublicConfigVersion?>()) {
+      return (data != null ? _i23.PublicConfigVersion.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i23.RemoteConfig?>()) {
-      return (data != null ? _i23.RemoteConfig.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i24.RemoteConfig?>()) {
+      return (data != null ? _i24.RemoteConfig.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i24.RemoteConfigDefaultValue?>()) {
+    if (t == _i1.getType<_i25.RemoteConfigDefaultValue?>()) {
       return (data != null
-              ? _i24.RemoteConfigDefaultValue.fromJson(data)
+              ? _i25.RemoteConfigDefaultValue.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i25.RemoteConfigValue?>()) {
-      return (data != null ? _i25.RemoteConfigValue.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i26.RemoteConfigValue?>()) {
+      return (data != null ? _i26.RemoteConfigValue.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i26.RemoteConfigValueType?>()) {
-      return (data != null ? _i26.RemoteConfigValueType.fromJson(data) : null)
+    if (t == _i1.getType<_i27.RemoteConfigValueType?>()) {
+      return (data != null ? _i27.RemoteConfigValueType.fromJson(data) : null)
           as T;
     }
-    if (t == _i1.getType<_i27.TargetingOverride?>()) {
-      return (data != null ? _i27.TargetingOverride.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i28.TargetingOverride?>()) {
+      return (data != null ? _i28.TargetingOverride.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i28.RemoteLocalizationAuditLog?>()) {
+    if (t == _i1.getType<_i29.RemoteLocalizationAuditLog?>()) {
       return (data != null
-              ? _i28.RemoteLocalizationAuditLog.fromJson(data)
+              ? _i29.RemoteLocalizationAuditLog.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i29.RemoteLocalizationRelease?>()) {
+    if (t == _i1.getType<_i30.RemoteLocalizationRelease?>()) {
       return (data != null
-              ? _i29.RemoteLocalizationRelease.fromJson(data)
+              ? _i30.RemoteLocalizationRelease.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i30.RemoteLocalizationResponse?>()) {
+    if (t == _i1.getType<_i31.RemoteLocalizationResponse?>()) {
       return (data != null
-              ? _i30.RemoteLocalizationResponse.fromJson(data)
+              ? _i31.RemoteLocalizationResponse.fromJson(data)
               : null)
           as T;
     }
-    if (t == _i1.getType<_i31.SecurityEvent?>()) {
-      return (data != null ? _i31.SecurityEvent.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i32.SecurityEvent?>()) {
+      return (data != null ? _i32.SecurityEvent.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i32.Wallet?>()) {
-      return (data != null ? _i32.Wallet.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i33.Wallet?>()) {
+      return (data != null ? _i33.Wallet.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i33.WalletTransactions?>()) {
-      return (data != null ? _i33.WalletTransactions.fromJson(data) : null)
+    if (t == _i1.getType<_i34.WalletTransactions?>()) {
+      return (data != null ? _i34.WalletTransactions.fromJson(data) : null)
           as T;
     }
     if (t == List<String>) {
@@ -352,40 +360,40 @@ class Protocol extends _i1.SerializationManager {
     if (t == List<int>) {
       return (data as List).map((e) => deserialize<int>(e)).toList() as T;
     }
-    if (t == Map<String, _i25.RemoteConfigValue>) {
+    if (t == Map<String, _i26.RemoteConfigValue>) {
       return (data as Map).map(
             (k, v) => MapEntry(
               deserialize<String>(k),
-              deserialize<_i25.RemoteConfigValue>(v),
+              deserialize<_i26.RemoteConfigValue>(v),
             ),
           )
           as T;
     }
-    if (t == List<_i33.WalletTransactions>) {
+    if (t == List<_i34.WalletTransactions>) {
       return (data as List)
-              .map((e) => deserialize<_i33.WalletTransactions>(e))
+              .map((e) => deserialize<_i34.WalletTransactions>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i33.WalletTransactions>?>()) {
+    if (t == _i1.getType<List<_i34.WalletTransactions>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i33.WalletTransactions>(e))
+                    .map((e) => deserialize<_i34.WalletTransactions>(e))
                     .toList()
               : null)
           as T;
     }
     if (t ==
         List<
-          ({_i34.AuthUserModel authUser, _i34.UserProfileModel userProfile})
+          ({_i35.AuthUserModel authUser, _i35.UserProfileModel userProfile})
         >) {
       return (data as List)
               .map(
                 (e) =>
                     deserialize<
                       ({
-                        _i34.AuthUserModel authUser,
-                        _i34.UserProfileModel userProfile,
+                        _i35.AuthUserModel authUser,
+                        _i35.UserProfileModel userProfile,
                       })
                     >(e),
               )
@@ -395,13 +403,13 @@ class Protocol extends _i1.SerializationManager {
     if (t ==
         _i1
             .getType<
-              ({_i34.AuthUserModel authUser, _i34.UserProfileModel userProfile})
+              ({_i35.AuthUserModel authUser, _i35.UserProfileModel userProfile})
             >()) {
       return (
-            authUser: deserialize<_i34.AuthUserModel>(
+            authUser: deserialize<_i35.AuthUserModel>(
               ((data as Map)['n'] as Map)['authUser'],
             ),
-            userProfile: deserialize<_i34.UserProfileModel>(
+            userProfile: deserialize<_i35.UserProfileModel>(
               data['n']['userProfile'],
             ),
           )
@@ -410,47 +418,47 @@ class Protocol extends _i1.SerializationManager {
     if (t ==
         _i1
             .getType<
-              ({_i34.AuthUserModel authUser, _i34.UserProfileModel userProfile})
+              ({_i35.AuthUserModel authUser, _i35.UserProfileModel userProfile})
             >()) {
       return (
-            authUser: deserialize<_i34.AuthUserModel>(
+            authUser: deserialize<_i35.AuthUserModel>(
               ((data as Map)['n'] as Map)['authUser'],
             ),
-            userProfile: deserialize<_i34.UserProfileModel>(
+            userProfile: deserialize<_i35.UserProfileModel>(
               data['n']['userProfile'],
             ),
           )
           as T;
     }
-    if (t == List<_i34.AuthUserModel>) {
+    if (t == List<_i35.AuthUserModel>) {
       return (data as List)
-              .map((e) => deserialize<_i34.AuthUserModel>(e))
+              .map((e) => deserialize<_i35.AuthUserModel>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i35.HomeLeaderboardEntry>) {
+    if (t == List<_i36.HomeLeaderboardEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i35.HomeLeaderboardEntry>(e))
+              .map((e) => deserialize<_i36.HomeLeaderboardEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i36.SecurityEvent>) {
+    if (t == List<_i37.SecurityEvent>) {
       return (data as List)
-              .map((e) => deserialize<_i36.SecurityEvent>(e))
+              .map((e) => deserialize<_i37.SecurityEvent>(e))
               .toList()
           as T;
     }
     try {
-      return _i34.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
-    try {
-      return _i37.Protocol().deserialize<T>(data, t);
+      return _i35.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i38.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i39.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -467,28 +475,29 @@ class Protocol extends _i1.SerializationManager {
       _i9.Address => 'Address',
       _i10.Contact => 'Contact',
       _i11.Profile => 'Profile',
-      _i12.UserInfo => 'UserInfo',
-      _i13.OtpException => 'OtpException',
-      _i14.OtpVerificationResult => 'OtpVerificationResult',
-      _i15.RegistrationForm => 'RegistrationForm',
-      _i16.ActiveChallengeSummary => 'ActiveChallengeSummary',
-      _i17.DailyStepTelemetry => 'DailyStepTelemetry',
-      _i18.HomeLeaderboardEntry => 'HomeLeaderboardEntry',
-      _i19.WeeklyStepAnalytics => 'WeeklyStepAnalytics',
-      _i20.ConfigKey => 'ConfigKey',
-      _i21.ConfigSnapshotVersion => 'ConfigSnapshotVersion',
-      _i22.PublicConfigVersion => 'PublicConfigVersion',
-      _i23.RemoteConfig => 'RemoteConfig',
-      _i24.RemoteConfigDefaultValue => 'RemoteConfigDefaultValue',
-      _i25.RemoteConfigValue => 'RemoteConfigValue',
-      _i26.RemoteConfigValueType => 'RemoteConfigValueType',
-      _i27.TargetingOverride => 'TargetingOverride',
-      _i28.RemoteLocalizationAuditLog => 'RemoteLocalizationAuditLog',
-      _i29.RemoteLocalizationRelease => 'RemoteLocalizationRelease',
-      _i30.RemoteLocalizationResponse => 'RemoteLocalizationResponse',
-      _i31.SecurityEvent => 'SecurityEvent',
-      _i32.Wallet => 'Wallet',
-      _i33.WalletTransactions => 'WalletTransactions',
+      _i12.Rank => 'Rank',
+      _i13.UserInfo => 'UserInfo',
+      _i14.OtpException => 'OtpException',
+      _i15.OtpVerificationResult => 'OtpVerificationResult',
+      _i16.RegistrationForm => 'RegistrationForm',
+      _i17.ActiveChallengeSummary => 'ActiveChallengeSummary',
+      _i18.DailyStepTelemetry => 'DailyStepTelemetry',
+      _i19.HomeLeaderboardEntry => 'HomeLeaderboardEntry',
+      _i20.WeeklyStepAnalytics => 'WeeklyStepAnalytics',
+      _i21.ConfigKey => 'ConfigKey',
+      _i22.ConfigSnapshotVersion => 'ConfigSnapshotVersion',
+      _i23.PublicConfigVersion => 'PublicConfigVersion',
+      _i24.RemoteConfig => 'RemoteConfig',
+      _i25.RemoteConfigDefaultValue => 'RemoteConfigDefaultValue',
+      _i26.RemoteConfigValue => 'RemoteConfigValue',
+      _i27.RemoteConfigValueType => 'RemoteConfigValueType',
+      _i28.TargetingOverride => 'TargetingOverride',
+      _i29.RemoteLocalizationAuditLog => 'RemoteLocalizationAuditLog',
+      _i30.RemoteLocalizationRelease => 'RemoteLocalizationRelease',
+      _i31.RemoteLocalizationResponse => 'RemoteLocalizationResponse',
+      _i32.SecurityEvent => 'SecurityEvent',
+      _i33.Wallet => 'Wallet',
+      _i34.WalletTransactions => 'WalletTransactions',
       _ => null,
     };
   }
@@ -523,64 +532,66 @@ class Protocol extends _i1.SerializationManager {
         return 'Contact';
       case _i11.Profile():
         return 'Profile';
-      case _i12.UserInfo():
+      case _i12.Rank():
+        return 'Rank';
+      case _i13.UserInfo():
         return 'UserInfo';
-      case _i13.OtpException():
+      case _i14.OtpException():
         return 'OtpException';
-      case _i14.OtpVerificationResult():
+      case _i15.OtpVerificationResult():
         return 'OtpVerificationResult';
-      case _i15.RegistrationForm():
+      case _i16.RegistrationForm():
         return 'RegistrationForm';
-      case _i16.ActiveChallengeSummary():
+      case _i17.ActiveChallengeSummary():
         return 'ActiveChallengeSummary';
-      case _i17.DailyStepTelemetry():
+      case _i18.DailyStepTelemetry():
         return 'DailyStepTelemetry';
-      case _i18.HomeLeaderboardEntry():
+      case _i19.HomeLeaderboardEntry():
         return 'HomeLeaderboardEntry';
-      case _i19.WeeklyStepAnalytics():
+      case _i20.WeeklyStepAnalytics():
         return 'WeeklyStepAnalytics';
-      case _i20.ConfigKey():
+      case _i21.ConfigKey():
         return 'ConfigKey';
-      case _i21.ConfigSnapshotVersion():
+      case _i22.ConfigSnapshotVersion():
         return 'ConfigSnapshotVersion';
-      case _i22.PublicConfigVersion():
+      case _i23.PublicConfigVersion():
         return 'PublicConfigVersion';
-      case _i23.RemoteConfig():
+      case _i24.RemoteConfig():
         return 'RemoteConfig';
-      case _i24.RemoteConfigDefaultValue():
+      case _i25.RemoteConfigDefaultValue():
         return 'RemoteConfigDefaultValue';
-      case _i25.RemoteConfigValue():
+      case _i26.RemoteConfigValue():
         return 'RemoteConfigValue';
-      case _i26.RemoteConfigValueType():
+      case _i27.RemoteConfigValueType():
         return 'RemoteConfigValueType';
-      case _i27.TargetingOverride():
+      case _i28.TargetingOverride():
         return 'TargetingOverride';
-      case _i28.RemoteLocalizationAuditLog():
+      case _i29.RemoteLocalizationAuditLog():
         return 'RemoteLocalizationAuditLog';
-      case _i29.RemoteLocalizationRelease():
+      case _i30.RemoteLocalizationRelease():
         return 'RemoteLocalizationRelease';
-      case _i30.RemoteLocalizationResponse():
+      case _i31.RemoteLocalizationResponse():
         return 'RemoteLocalizationResponse';
-      case _i31.SecurityEvent():
+      case _i32.SecurityEvent():
         return 'SecurityEvent';
-      case _i32.Wallet():
+      case _i33.Wallet():
         return 'Wallet';
-      case _i33.WalletTransactions():
+      case _i34.WalletTransactions():
         return 'WalletTransactions';
     }
-    className = _i34.Protocol().getClassNameForObject(data);
+    className = _i35.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_core.$className';
     }
-    className = _i37.Protocol().getClassNameForObject(data);
+    className = _i38.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
           : 'serverpod_auth_idp.$className';
     }
-    className = _i38.Protocol().getClassNameForObject(data);
+    className = _i39.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod_auth.$className';
     }
@@ -623,91 +634,94 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'Profile') {
       return deserialize<_i11.Profile>(data['data']);
     }
+    if (dataClassName == 'Rank') {
+      return deserialize<_i12.Rank>(data['data']);
+    }
     if (dataClassName == 'UserInfo') {
-      return deserialize<_i12.UserInfo>(data['data']);
+      return deserialize<_i13.UserInfo>(data['data']);
     }
     if (dataClassName == 'OtpException') {
-      return deserialize<_i13.OtpException>(data['data']);
+      return deserialize<_i14.OtpException>(data['data']);
     }
     if (dataClassName == 'OtpVerificationResult') {
-      return deserialize<_i14.OtpVerificationResult>(data['data']);
+      return deserialize<_i15.OtpVerificationResult>(data['data']);
     }
     if (dataClassName == 'RegistrationForm') {
-      return deserialize<_i15.RegistrationForm>(data['data']);
+      return deserialize<_i16.RegistrationForm>(data['data']);
     }
     if (dataClassName == 'ActiveChallengeSummary') {
-      return deserialize<_i16.ActiveChallengeSummary>(data['data']);
+      return deserialize<_i17.ActiveChallengeSummary>(data['data']);
     }
     if (dataClassName == 'DailyStepTelemetry') {
-      return deserialize<_i17.DailyStepTelemetry>(data['data']);
+      return deserialize<_i18.DailyStepTelemetry>(data['data']);
     }
     if (dataClassName == 'HomeLeaderboardEntry') {
-      return deserialize<_i18.HomeLeaderboardEntry>(data['data']);
+      return deserialize<_i19.HomeLeaderboardEntry>(data['data']);
     }
     if (dataClassName == 'WeeklyStepAnalytics') {
-      return deserialize<_i19.WeeklyStepAnalytics>(data['data']);
+      return deserialize<_i20.WeeklyStepAnalytics>(data['data']);
     }
     if (dataClassName == 'ConfigKey') {
-      return deserialize<_i20.ConfigKey>(data['data']);
+      return deserialize<_i21.ConfigKey>(data['data']);
     }
     if (dataClassName == 'ConfigSnapshotVersion') {
-      return deserialize<_i21.ConfigSnapshotVersion>(data['data']);
+      return deserialize<_i22.ConfigSnapshotVersion>(data['data']);
     }
     if (dataClassName == 'PublicConfigVersion') {
-      return deserialize<_i22.PublicConfigVersion>(data['data']);
+      return deserialize<_i23.PublicConfigVersion>(data['data']);
     }
     if (dataClassName == 'RemoteConfig') {
-      return deserialize<_i23.RemoteConfig>(data['data']);
+      return deserialize<_i24.RemoteConfig>(data['data']);
     }
     if (dataClassName == 'RemoteConfigDefaultValue') {
-      return deserialize<_i24.RemoteConfigDefaultValue>(data['data']);
+      return deserialize<_i25.RemoteConfigDefaultValue>(data['data']);
     }
     if (dataClassName == 'RemoteConfigValue') {
-      return deserialize<_i25.RemoteConfigValue>(data['data']);
+      return deserialize<_i26.RemoteConfigValue>(data['data']);
     }
     if (dataClassName == 'RemoteConfigValueType') {
-      return deserialize<_i26.RemoteConfigValueType>(data['data']);
+      return deserialize<_i27.RemoteConfigValueType>(data['data']);
     }
     if (dataClassName == 'TargetingOverride') {
-      return deserialize<_i27.TargetingOverride>(data['data']);
+      return deserialize<_i28.TargetingOverride>(data['data']);
     }
     if (dataClassName == 'RemoteLocalizationAuditLog') {
-      return deserialize<_i28.RemoteLocalizationAuditLog>(data['data']);
+      return deserialize<_i29.RemoteLocalizationAuditLog>(data['data']);
     }
     if (dataClassName == 'RemoteLocalizationRelease') {
-      return deserialize<_i29.RemoteLocalizationRelease>(data['data']);
+      return deserialize<_i30.RemoteLocalizationRelease>(data['data']);
     }
     if (dataClassName == 'RemoteLocalizationResponse') {
-      return deserialize<_i30.RemoteLocalizationResponse>(data['data']);
+      return deserialize<_i31.RemoteLocalizationResponse>(data['data']);
     }
     if (dataClassName == 'SecurityEvent') {
-      return deserialize<_i31.SecurityEvent>(data['data']);
+      return deserialize<_i32.SecurityEvent>(data['data']);
     }
     if (dataClassName == 'Wallet') {
-      return deserialize<_i32.Wallet>(data['data']);
+      return deserialize<_i33.Wallet>(data['data']);
     }
     if (dataClassName == 'WalletTransactions') {
-      return deserialize<_i33.WalletTransactions>(data['data']);
+      return deserialize<_i34.WalletTransactions>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i34.Protocol().deserializeByClassName(data);
+      return _i35.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i37.Protocol().deserializeByClassName(data);
+      return _i38.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i38.Protocol().deserializeByClassName(data);
+      return _i39.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i34.Protocol().registerHostProtocol('baktaz', this);
-    _i37.Protocol().registerHostProtocol('baktaz', this);
+    _i35.Protocol().registerHostProtocol('baktaz', this);
     _i38.Protocol().registerHostProtocol('baktaz', this);
+    _i39.Protocol().registerHostProtocol('baktaz', this);
   }
 
   @override
@@ -723,7 +737,7 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     if (record
-        is ({_i34.AuthUserModel authUser, _i34.UserProfileModel userProfile})) {
+        is ({_i35.AuthUserModel authUser, _i35.UserProfileModel userProfile})) {
       return {
         "n": {
           "authUser": record.authUser.toJson(),
@@ -732,13 +746,13 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i34.Protocol().mapRecordToJson(record);
-    } catch (_) {}
-    try {
-      return _i37.Protocol().mapRecordToJson(record);
+      return _i35.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
       return _i38.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i39.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

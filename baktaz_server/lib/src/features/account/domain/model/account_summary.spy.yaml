@@ -1,6 +1,17 @@
 class: AccountSummary
 fields:
-  name: String
-  imageUrl: Uri?
-  cashBalance: double
-  connectBalance: int
+  userId: UuidValue
+  isPremium: bool
+  totalSteps: int
+  activeChallengeCount: int
+  fullName: String
+  username: String
+  avatarUrl: String?
+  challengesJoined: int
+  challengesWon: int
+  winRatePercentage: double
+  isHostTier: bool
+  isStepsSyncActive: bool
+  memberSince: DateTime?
+  avgStepsPerDay: int
+  rank: Rank
