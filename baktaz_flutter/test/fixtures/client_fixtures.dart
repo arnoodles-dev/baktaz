@@ -19,30 +19,43 @@ final AuthSuccess mockExpiredAuthSuccess = AuthSuccess(
 );
 
 final serverpod.AccountSummary mockServerAccountSummary = serverpod.AccountSummary(
-  name: 'John Doe',
-  cashBalance: 250.75,
-  connectBalance: 100,
-  imageUrl: Uri.parse('https://example.com/avatar.png'),
+  userId: UuidValue.fromString('00000000-0000-0000-0000-000000000001'),
+  isPremium: true,
+  totalSteps: 12500,
+  activeChallengeCount: 2,
+  fullName: 'John Doe',
+  username: 'johndoe',
+  avatarUrl: 'https://example.com/avatar.png',
+  challengesJoined: 10,
+  challengesWon: 5,
+  winRatePercentage: 50,
 );
 
 final AccountSummary mockAccountSummary = AccountSummary.fromServer(mockServerAccountSummary);
 
-final serverpod.AccountSummary mockServerAccountSummaryNullUrl = serverpod.AccountSummary(
-  name: 'Jane Doe',
-  cashBalance: 0,
-  connectBalance: 0,
+final serverpod.AccountSummary mockServerAccountSummaryNonPremium = serverpod.AccountSummary(
+  userId: UuidValue.fromString('00000000-0000-0000-0000-000000000002'),
+  isPremium: false,
+  totalSteps: 0,
+  activeChallengeCount: 0,
+  fullName: 'Jane Doe',
+  username: 'janedoe',
+  challengesJoined: 0,
+  challengesWon: 0,
+  winRatePercentage: 0,
 );
 
-final AccountSummary mockAccountSummaryNullUrl = AccountSummary.fromServer(mockServerAccountSummaryNullUrl);
+final AccountSummary mockAccountSummaryNonPremium = AccountSummary.fromServer(mockServerAccountSummaryNonPremium);
 
-final serverpod.Profile mockServerProfile = serverpod.Profile(
-  fullName: 'John Doe',
-  gender: serverpod.Gender.male,
+final serverpod.UserInfo mockServerProfile = serverpod.UserInfo(
+  userIdentifier: UuidValue.fromString('00000000-0000-0000-0000-000000000001'),
   email: 'john.doe@baktaz.com',
-  mobileNumber: '+1234567890',
-  age: 28,
+  username: 'johndoe',
+  firstName: 'John',
+  lastName: 'Doe',
+  gender: serverpod.Gender.male,
   birthday: DateTime(1998, 5, 15),
-  imageUrl: Uri.parse('https://example.com/avatar.png'),
+  mobileNumber: '+1234567890',
 );
 
 final Profile mockProfile = Profile.fromServer(mockServerProfile);
@@ -51,6 +64,9 @@ final Profile mockEmptyProfile = Profile(fullName: ValueName('Unnamed User'), ge
 
 final serverpod.UserInfo mockUserInfo = serverpod.UserInfo(
   id: UuidValue.fromString('00000000-0000-0000-0000-000000000002'),
+  userIdentifier: UuidValue.fromString('00000000-0000-0000-0000-000000000002'),
+  email: 'test@baktaz.com',
+  username: 'testuser',
   gender: serverpod.Gender.male,
   birthday: DateTime(1998, 5, 15),
   mobileNumber: '+1234567890',

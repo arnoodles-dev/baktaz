@@ -22,12 +22,9 @@ class AccountOptionsMapper {
 
   Either<String, IconData> _getSettingsTitle(SettingsOption option) => right(option.icon);
 
-  MyAccountOption toMyAccountOption(String title) =>
-      MyAccountOption.fromName(title) ?? (throw UnimplementedError('Invalid MyAccountOption title: $title'));
+  MyAccountOption toMyAccountOption(String title) => MyAccountOption.fromName(title);
 
-  SettingsOption toSettingsOption(String title) =>
-      SettingsOption.fromName(title) ?? (throw UnimplementedError('Invalid SettingsOption title: $title'));
+  SettingsOption toSettingsOption(String title) => SettingsOption.fromName(title);
 
-  SupportOption toSupportOption(String title) =>
-      SupportOption.fromName(title) ?? (throw UnimplementedError('Invalid SupportOption title: $title'));
+  SupportOption toSupportOption(String title) => SupportOption.fromName(title);
 }

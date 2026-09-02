@@ -1,0 +1,9 @@
+enum: Rank
+values:
+  - unknown
+  - bronze
+  - silver
+  - gold
+  - platinum
+  - diamond
+  - challengers

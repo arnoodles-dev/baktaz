@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 enum SettingsOption {
-  language(displayName: 'Language', icon: Icons.language),
   darkMode(displayName: 'Dark Mode', icon: Icons.contrast);
 
   const SettingsOption({required this.displayName, required this.icon});
@@ -9,6 +8,12 @@ enum SettingsOption {
   final String displayName;
   final IconData icon;
 
-  static SettingsOption? fromName(String name) =>
-      SettingsOption.values.where((SettingsOption option) => option.name == name).firstOrNull;
+  static SettingsOption fromName(String name) {
+    final SettingsOption? result =
+        SettingsOption.values.where((SettingsOption option) => option.name == name).firstOrNull;
+    if (result == null) {
+      throw ArgumentError('Unknown SettingsOption name: $name');
+    }
+    return result;
+  }
 }

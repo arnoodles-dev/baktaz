@@ -17,141 +17,111 @@ void main() {
     late MockServerpod serverpod;
     late MockClient client;
     late MockEndpointAccount endpointAccount;
+    late MockEndpointProfile endpointProfile;
     late MockTalker talker;
-    late RetryOptions retryOptions;
     late AccountRepository accountRepository;
 
     setUp(() {
       serverpod = MockServerpod();
       client = MockClient();
       endpointAccount = MockEndpointAccount();
+      endpointProfile = MockEndpointProfile();
       talker = MockTalker();
-      retryOptions = const RetryOptions(maxAttempts: 1);
 
       when(serverpod.client).thenReturn(client);
       when(client.account).thenReturn(endpointAccount);
+      when(client.profile).thenReturn(endpointProfile);
 
-      accountRepository = AccountRepository(serverpod, retryOptions, talker);
-    });
-
-    tearDown(() {
-      reset(serverpod);
-      reset(client);
-      reset(endpointAccount);
-      reset(talker);
+      accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
     });
 
     group('getAccountSummary', () {
-      test('should return Right(AccountSummary) when client returns valid server model', () async {
-        // Arrange
-        when(endpointAccount.getAccountSummary()).thenAnswer((_) async => mockServerAccountSummary);
-
-        // Act
-        final Either<Failure, AccountSummary> result = await accountRepository.getAccountSummary().run();
-
-        // Assert
-        expect(result.isRight(), isTrue);
-        result.fold((_) => fail('Expected Right'), (AccountSummary summary) {
-          expect(summary.name.value, equals(const Right<Failure, String>('John Doe')));
-          expect(summary.balance.value, equals(const Right<Failure, double>(250.75)));
-          expect(summary.connect.value, equals(const Right<Failure, int>(100)));
-        });
-        verify(endpointAccount.getAccountSummary()).called(1);
-      });
-
-      test('should return Right(AccountSummary) when imageUrl is null', () async {
-        // Arrange
-        when(endpointAccount.getAccountSummary()).thenAnswer((_) async => mockServerAccountSummaryNullUrl);
-
-        // Act
-        final Either<Failure, AccountSummary> result = await accountRepository.getAccountSummary().run();
-
-        // Assert
-        expect(result.isRight(), isTrue);
-        result.fold((_) => fail('Expected Right'), (AccountSummary summary) {
-          expect(summary.imageUrl, isNull);
-        });
-        verify(endpointAccount.getAccountSummary()).called(1);
-      });
-
-      test('should return Left(Failure.server) when client returns null', () async {
-        // Arrange
-        when(endpointAccount.getAccountSummary()).thenAnswer((_) async => null);
-
-        // Act
-        final Either<Failure, AccountSummary> result = await accountRepository.getAccountSummary().run();
-
-        // Assert
-        expect(result.isLeft(), isTrue);
-        result.fold(
-          (Failure failure) => expect(
-            failure,
-            equals(const Failure.server(StatusCode.serverpod, 'FormatException: Account summary is null')),
-          ),
-          (_) => fail('Expected Left'),
+      test('should return Right(AccountSummary) when client returns data successfully', () async {
+        final serverpod_dto.AccountSummary summaryDto = serverpod_dto.AccountSummary(
+          userId: serverpod_dto.UuidValue.fromString('00000000-0000-0000-0000-000000000001'),
+          isPremium: true,
+          totalSteps: 1000,
+          activeChallengeCount: 2,
+          fullName: 'John Doe',
+          username: 'johndoe',
+          challengesJoined: 10,
+          challengesWon: 5,
+          winRatePercentage: 50,
         );
-        verify(talker.handle(any, any)).called(1);
+        when(endpointAccount.getSummary()).thenAnswer((_) async => summaryDto);
+
+        final Either<Failure, AccountSummary> result = await accountRepository.getAccountSummary().run();
+
+        result.fold((_) => fail('Expected Right'), (AccountSummary summary) {
+          expect(summary.totalSteps, equals(1000));
+          expect(summary.activeChallengeCount, equals(2));
+          expect(summary.isPremium, isTrue);
+        });
       });
 
       test('should return Left(Failure.server) when network connectivity error occurs', () async {
-        // Arrange
         final Exception exception = Exception('Network connection failed');
-        when(endpointAccount.getAccountSummary()).thenThrow(exception);
+        when(endpointAccount.getSummary()).thenThrow(exception);
 
-        // Act
         final Either<Failure, AccountSummary> result = await accountRepository.getAccountSummary().run();
 
-        // Assert
-        expect(result.isLeft(), isTrue);
+        result.fold(
+          (Failure failure) =>
+              expect(failure, equals(const Failure.server(StatusCode.serverpod, 'Exception: Network connection failed'))),
+          (_) => fail('Expected Left'),
+        );
         verify(talker.handle(exception, any)).called(1);
       });
     });
 
     group('getProfile', () {
-      test('should return Right(Profile) when client returns valid server profile', () async {
-        // Arrange
-        when(endpointAccount.getProfile()).thenAnswer((_) async => mockServerProfile);
+      test('should return Right(Profile) when client returns valid UserInfo', () async {
+        when(endpointProfile.getProfile()).thenAnswer((_) async => mockServerProfile);
 
-        // Act
         final Either<Failure, Profile> result = await accountRepository.getProfile().run();
 
-        // Assert
-        expect(result.isRight(), isTrue);
         result.fold((_) => fail('Expected Right'), (Profile profile) {
           expect(profile.fullName.value, equals(const Right<Failure, String>('John Doe')));
-          expect(profile.gender, equals(serverpod_dto.Gender.male));
         });
-        verify(endpointAccount.getProfile()).called(1);
+      });
+
+      test('should return Left(Failure.server) when profile validation fails', () async {
+        final serverpod_dto.UserInfo invalidUserInfo = serverpod_dto.UserInfo(
+          userIdentifier: serverpod_dto.UuidValue.fromString('00000000-0000-0000-0000-000000000001'),
+          email: 'invalid-email',
+          username: '',
+          firstName: '',
+          lastName: '',
+        );
+        when(endpointProfile.getProfile()).thenAnswer((_) async => invalidUserInfo);
+
+        final Either<Failure, Profile> result = await accountRepository.getProfile().run();
+
+        result.fold(
+          (Failure failure) => expect(failure, isA<Failure>()),
+          (_) => fail('Expected Left'),
+        );
       });
 
       test('should return Left(Failure.server) when client returns null profile', () async {
-        // Arrange
-        when(endpointAccount.getProfile()).thenAnswer((_) async => null);
+        when(endpointProfile.getProfile()).thenAnswer((_) async => null);
 
-        // Act
         final Either<Failure, Profile> result = await accountRepository.getProfile().run();
 
-        // Assert
-        expect(result.isLeft(), isTrue);
         result.fold(
           (Failure failure) =>
               expect(failure, equals(const Failure.server(StatusCode.serverpod, 'FormatException: Profile is null'))),
           (_) => fail('Expected Left'),
         );
-        verify(talker.handle(any, any)).called(1);
       });
     });
 
     group('addAddress', () {
       test('should return Left(Failure.unexpected) as unimplemented', () async {
-        // Arrange
         final Address dummyAddress = Address(id: UniqueId(), street: '123 Main St');
 
-        // Act
         final Either<Failure, Unit> result = await accountRepository.addAddress(dummyAddress).run();
 
-        // Assert
-        expect(result.isLeft(), isTrue);
         result.fold(
           (Failure failure) => expect(failure, equals(const Failure.unexpected('Not implemented'))),
           (_) => fail('Expected Left'),
@@ -161,12 +131,34 @@ void main() {
 
     group('getDefaultAddress', () {
       test('should return Right(null)', () async {
-        // Act
         final Either<Failure, Address?> result = await accountRepository.getDefaultAddress().run();
 
-        // Assert
-        expect(result.isRight(), isTrue);
         result.fold((_) => fail('Expected Right'), (Address? address) => expect(address, isNull));
+      });
+    });
+
+    group('deleteAccount', () {
+      test('should return Right(unit) when deleteAccount endpoint succeeds', () async {
+        when(endpointAccount.deleteAccount()).thenAnswer((_) async => true);
+
+        final Either<Failure, Unit> result = await accountRepository.deleteAccount().run();
+
+        result.fold((_) => fail('Expected Right'), (Unit val) => expect(val, equals(unit)));
+        verify(endpointAccount.deleteAccount()).called(1);
+      });
+
+      test('should return Left(Failure.server) when deleteAccount endpoint throws', () async {
+        final Exception exception = Exception('Account deletion failed');
+        when(endpointAccount.deleteAccount()).thenThrow(exception);
+
+        final Either<Failure, Unit> result = await accountRepository.deleteAccount().run();
+
+        result.fold(
+          (Failure failure) =>
+              expect(failure, equals(const Failure.server(StatusCode.serverpod, 'Exception: Account deletion failed'))),
+          (_) => fail('Expected Left'),
+        );
+        verify(talker.handle(exception, any)).called(1);
       });
     });
   });

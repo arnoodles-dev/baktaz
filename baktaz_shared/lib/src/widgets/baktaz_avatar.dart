@@ -20,6 +20,7 @@ class BaktazAvatar extends StatelessWidget {
     this.cacheManager,
     this.maxSize,
     this.defaultIcon,
+    this.initialsBackgroundColor,
     super.key,
   });
 
@@ -34,6 +35,7 @@ class BaktazAvatar extends StatelessWidget {
   final BaseCacheManager? cacheManager;
   final int? maxSize;
   final Either<String, IconData>? defaultIcon;
+  final Color? initialsBackgroundColor;
 
   // DESIGN.md §12.8 size constants
   static const double sizeXS = 24;
@@ -53,7 +55,11 @@ class BaktazAvatar extends StatelessWidget {
         image: true,
         child: Padding(
           padding: padding ?? EdgeInsets.zero,
-          child: _InitialsAvatar(initials: effectiveInitials, size: size),
+          child: _InitialsAvatar(
+            initials: effectiveInitials,
+            size: size,
+            backgroundColor: initialsBackgroundColor,
+          ),
         ),
       );
     }
@@ -106,20 +112,26 @@ class BaktazAvatar extends StatelessWidget {
 }
 
 class _InitialsAvatar extends StatelessWidget {
-  const _InitialsAvatar({required this.initials, required this.size});
+  const _InitialsAvatar({
+    required this.initials,
+    required this.size,
+    this.backgroundColor,
+  });
 
   final String initials;
   final double size;
+  final Color? backgroundColor;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final String label = initials.characters.take(2).string.toUpperCase();
+    final Color bgColor = backgroundColor ?? theme.colorScheme.primaryContainer;
 
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer, shape: BoxShape.circle),
+      decoration: BoxDecoration(color: bgColor, shape: BoxShape.circle),
       child: Center(
         child: BaktazText(
           text: label,

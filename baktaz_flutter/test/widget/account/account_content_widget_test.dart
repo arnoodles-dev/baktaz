@@ -12,6 +12,8 @@ import '../../utils/mock_material_app.dart';
 import '../../utils/test_utils.dart';
 
 void main() {
+  setUpAll(setupInjection);
+
   group(AccountContentWidget, () {
     final Map<AccountHeader, List<String>> sampleGroupedOptions = <AccountHeader, List<String>>{
       AccountHeader.myAccount: MyAccountOption.values.map((MyAccountOption option) => option.name).toList(),
@@ -27,7 +29,7 @@ void main() {
           GoldenTestScenario(
             name: 'default with grouped options',
             child: MockMaterialApp(
-              surfaceHeight: 600,
+              surfaceHeight: 1200,
               child: Scaffold(
                 body: AccountContentWidget(groupedOptions: sampleGroupedOptions, onOptionsTap: (_) {}),
               ),
@@ -36,11 +38,11 @@ void main() {
           GoldenTestScenario(
             name: 'single category options',
             child: MockMaterialApp(
-              surfaceHeight: 300,
+              surfaceHeight: 400,
               child: Scaffold(
                 body: AccountContentWidget(
                   groupedOptions: <AccountHeader, List<String>>{
-                    AccountHeader.myAccount: <String>[MyAccountOption.profile.name, MyAccountOption.addresses.name],
+                    AccountHeader.myAccount: <String>[MyAccountOption.profile.name, MyAccountOption.contacts.name],
                   },
                   onOptionsTap: (_) {},
                 ),
