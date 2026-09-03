@@ -157,10 +157,10 @@ packages:
     dependency: transitive
     description:
       name: bloc_signals
-      sha256: "3fe67c5bc29ea825e07059a1dd8779bae6ac7c9ca4601e34d2137ef1f04068dd"
+      sha256: cdc20568c2ec50ec1ea7c6bbd6466f24ba51f1b90f2a37266a23d4c380196801
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   bloc_signals_flutter:
     dependency: transitive
     description:
