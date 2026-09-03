@@ -15,7 +15,7 @@ dependencies:
     path: ../baktaz_client
   baktaz_shared:
     path: ../baktaz_shared
-  bloc_signals: ^1.1.0
+  bloc_signals: ^1.2.0
   bloc_signals_flutter: ^1.2.1
   cached_network_image: ^3.4.1
   chopper: ^8.7.0
