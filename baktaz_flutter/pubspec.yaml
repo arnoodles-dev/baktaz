@@ -66,11 +66,11 @@ dependencies:
   retry: ^3.1.2
   rxdart: ^0.28.0
   safe_device: ^1.4.1
-  serverpod_auth_core_client: 4.0.0-beta.3
-  serverpod_auth_idp_flutter: 4.0.0-beta.3
-  serverpod_auth_idp_flutter_facebook: 4.0.0-beta.3
-  serverpod_auth_shared_flutter: 4.0.0-beta.3
-  serverpod_flutter: 4.0.0-beta.3
+  serverpod_auth_core_client: 4.0.0-rc.1
+  serverpod_auth_idp_flutter: 4.0.0-rc.1
+  serverpod_auth_idp_flutter_facebook: 4.0.0-rc.1
+  serverpod_auth_shared_flutter: 4.0.0-rc.1
+  serverpod_flutter: 4.0.0-rc.1
   shared_preferences: ^2.5.5
   signals_hooks: ^7.1.0
   skeletonizer: ^2.1.3
