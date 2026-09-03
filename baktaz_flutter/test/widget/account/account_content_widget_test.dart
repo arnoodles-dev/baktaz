@@ -1,10 +1,6 @@
 import 'package:alchemist/alchemist.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/enum/account_header.dart';
-import 'package:baktaz_flutter/features/account/domain/entity/enum/my_account_option.dart';
-import 'package:baktaz_flutter/features/account/domain/entity/enum/settings_option.dart';
-import 'package:baktaz_flutter/features/account/domain/entity/enum/support_option.dart';
 import 'package:baktaz_flutter/features/account/presentation/widgets/account_content_widget.dart';
-import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -16,9 +12,9 @@ void main() {
 
   group(AccountContentWidget, () {
     final Map<AccountHeader, List<String>> sampleGroupedOptions = <AccountHeader, List<String>>{
-      AccountHeader.myAccount: MyAccountOption.values.map((MyAccountOption option) => option.name).toList(),
-      AccountHeader.support: SupportOption.values.map((SupportOption option) => option.name).toList(),
-      AccountHeader.settings: SettingsOption.values.map((SettingsOption option) => option.name).toList(),
+      AccountHeader.accountMonetization: AccountHeader.accountMonetization.options,
+      AccountHeader.preferencesSettings: AccountHeader.preferencesSettings.options,
+      AccountHeader.supportLegal: AccountHeader.supportLegal.options,
     };
 
     goldenTest(
@@ -31,7 +27,11 @@ void main() {
             child: MockMaterialApp(
               surfaceHeight: 1200,
               child: Scaffold(
-                body: AccountContentWidget(groupedOptions: sampleGroupedOptions, onOptionsTap: (_) {}),
+                body: AccountContentWidget(
+                  groupedOptions: sampleGroupedOptions,
+                  isStepsSyncActive: false,
+                  onOptionsTap: (_) {},
+                ),
               ),
             ),
           ),
@@ -41,9 +41,10 @@ void main() {
               surfaceHeight: 400,
               child: Scaffold(
                 body: AccountContentWidget(
-                  groupedOptions: <AccountHeader, List<String>>{
-                    AccountHeader.myAccount: <String>[MyAccountOption.profile.name, MyAccountOption.contacts.name],
+                  groupedOptions: const <AccountHeader, List<String>>{
+                    AccountHeader.accountMonetization: <String>['managePayment', 'healthSync'],
                   },
+                  isStepsSyncActive: false,
                   onOptionsTap: (_) {},
                 ),
               ),
@@ -60,9 +61,10 @@ void main() {
         MockMaterialApp(
           child: Scaffold(
             body: AccountContentWidget(
-              groupedOptions: <AccountHeader, List<String>>{
-                AccountHeader.myAccount: <String>[MyAccountOption.profile.name],
+              groupedOptions: const <AccountHeader, List<String>>{
+                AccountHeader.accountMonetization: <String>['managePayment'],
               },
+              isStepsSyncActive: false,
               onOptionsTap: (String option) {
                 tappedOption = option;
               },
@@ -73,13 +75,13 @@ void main() {
 
       await tester.pumpAndSettle();
 
-      final Finder tileFinder = find.text(MyAccountOption.profile.name.camelToSentence());
+      final Finder tileFinder = find.text('Manage Payment');
       expect(tileFinder, findsOneWidget);
 
       await tester.tap(tileFinder);
       await tester.pumpAndSettle();
 
-      expect(tappedOption, equals(MyAccountOption.profile.name));
+      expect(tappedOption, equals('managePayment'));
     });
   });
 }

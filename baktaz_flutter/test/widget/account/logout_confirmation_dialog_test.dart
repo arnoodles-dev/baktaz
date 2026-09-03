@@ -8,6 +8,8 @@ import '../../utils/mock_material_app.dart';
 import '../../utils/test_utils.dart';
 
 void main() {
+  setUpAll(setupInjection);
+
   group(LogoutConfirmationDialog, () {
     goldenTest(
       'renders correctly',

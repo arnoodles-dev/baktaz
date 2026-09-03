@@ -1,12 +1,39 @@
-enum AccountHeader {
-  myAccount(displayName: 'My Account', options: <String>['profile', 'contacts', 'reviews']),
-  support(displayName: 'Support', options: <String>['helpCenter', 'aboutUs', 'privacyPolicy']),
-  settings(displayName: 'Settings', options: <String>['darkMode']);
+import 'package:flutter/material.dart';
 
-  const AccountHeader({required this.displayName, required this.options});
+enum AccountHeader {
+  accountMonetization(
+    displayName: 'ACCOUNT & MONETIZATION',
+    options: <String>['managePayment', 'healthSync'],
+    icons: <IconData>[Icons.payment, Icons.favorite],
+  ),
+  preferencesSettings(
+    displayName: 'PREFERENCES & SETTINGS',
+    options: <String>['pushNotifications', 'language', 'darkMode'],
+    icons: <IconData>[Icons.notifications, Icons.language, Icons.contrast],
+  ),
+  supportLegal(
+    displayName: 'SUPPORT & LEGAL',
+    options: <String>['helpCenter', 'shareFeedback', 'termsPrivacy', 'aboutUs'],
+    icons: <IconData>[Icons.help, Icons.feedback, Icons.policy, Icons.info],
+  );
+
+  const AccountHeader({
+    required this.displayName,
+    required this.options,
+    required this.icons,
+  });
 
   final String displayName;
   final List<String> options;
+  final List<IconData> icons;
+
+  IconData iconForOption(String optionKey) {
+    final int index = options.indexOf(optionKey);
+    if (index >= 0 && index < icons.length) {
+      return icons[index];
+    }
+    return Icons.help_outline;
+  }
 
   static AccountHeader fromName(String name) {
     final AccountHeader? result =

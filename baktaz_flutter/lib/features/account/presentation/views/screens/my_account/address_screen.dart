@@ -17,7 +17,7 @@ class AddressScreen extends StatelessWidget {
     ),
     body: ColoredBox(
       color: context.colorScheme.primary,
-      child: const Center(child: BaktazText(text: 'Address Screen')), // TODO: Localize hardcoded string
+      child: Center(child: BaktazText(text: context.i18n.account.address_screen)),
     ),
   );
 }

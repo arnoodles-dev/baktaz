@@ -9,6 +9,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  characters: ^1.4.0
   chopper: ^8.7.0
   crypto: ^3.0.3
   email_validator: ^3.0.0

@@ -1,9 +1,13 @@
+import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/app/themes/app_theme.dart';
 import 'package:baktaz_flutter/app/utils/app_utils.dart';
 import 'package:baktaz_flutter/features/account/domain/cubit/account_cubit.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/enum/account_header.dart';
+import 'package:baktaz_flutter/features/account/domain/entity/model/user_rank.dart';
 import 'package:baktaz_flutter/features/account/presentation/widgets/account_content_widget.dart';
-import 'package:baktaz_flutter/features/account/presentation/widgets/challenge_stats_grid.dart';
+import 'package:baktaz_flutter/features/account/presentation/widgets/account_header_card.dart';
+import 'package:baktaz_flutter/features/account/presentation/widgets/host_subscription_banner.dart';
+import 'package:baktaz_flutter/features/account/presentation/widgets/lifetime_stats_grid.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
@@ -21,28 +25,18 @@ class AccountPage extends HookWidget {
       } ||
       state.accountSummary == null;
 
-  /// Derive initials from [fullName] (e.g. 'John Doe' → 'JD').
-  /// Returns null if input is empty.
-  static String? _initialsFromFullName(String? fullName) {
-    final String? trimmed = fullName?.trim();
-    if (trimmed == null || trimmed.isEmpty) return null;
-    final List<String> parts = trimmed.split(RegExp(r'\s+'));
-    final String first = parts.first[0];
-    final String last = parts.length > 1 ? parts.last[0] : '';
-    return (first + last).toUpperCase();
-  }
-
   @override
   Widget build(BuildContext context) {
     final ScrollController scrollController = useScrollController();
-    final ValueNotifier<double> avatarSize = useState(AppSizes.size80);
-    final ValueNotifier<TextStyle?> titleStyle = useState(context.textTheme.headlineMedium);
+    final ValueNotifier<double> avatarSize = useState(AppSizes.avatarXL);
 
     useEffect(() {
       scrollController.addListener(() {
-        AppUtils.isSliverAppBarExpanded(scrollController)
-            ? avatarSize.value = AppSizes.size80
-            : avatarSize.value = AppSizes.xLarge;
+        if (AppUtils.isSliverAppBarExpanded(scrollController)) {
+          avatarSize.value = AppSizes.avatarXL;
+        } else {
+          avatarSize.value = AppSizes.avatarLG;
+        }
       });
 
       return null;
@@ -70,12 +64,13 @@ class AccountPage extends HookWidget {
                       ? _AccountAppBar(
                           isSliverAppBarExpanded: AppUtils.isSliverAppBarExpanded(scrollController),
                           avatarSize: avatarSize.value,
-                          titleStyle: titleStyle.value,
                           fullName: state.accountSummary?.fullName,
                           username: state.accountSummary?.username,
+                          memberSince: state.accountSummary?.memberSince,
                           avatarUrl: state.accountSummary?.avatarUrl,
+                          rank: state.accountSummary?.rank,
                         )
-                      : _AccountAppBar.loading(avatarSize: avatarSize.value, titleStyle: titleStyle.value),
+                      : _AccountAppBar.loading(avatarSize: avatarSize.value),
                 ),
               ),
               SliverToBoxAdapter(
@@ -83,19 +78,26 @@ class AccountPage extends HookWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Gap.medium(),
-                    ChallengeStatsGrid(
+                    HostSubscriptionBanner(
+                      isHostTier: state.accountSummary?.isHostTier ?? false,
+                      onUpgrade: () => context.goNamed('host-subscription'),
                       isLoading: _isLoading(state),
-                      totalSteps: state.accountSummary?.totalSteps ?? 0,
+                    ),
+                    Gap.medium(),
+                    LifetimeStatsGrid(
+                      isLoading: _isLoading(state),
+                      challengeStepsTotal: state.accountSummary?.totalSteps ?? 0,
                       challengesJoined: state.accountSummary?.challengesJoined ?? 0,
                       challengesWon: state.accountSummary?.challengesWon ?? 0,
-                      winRatePercentage: state.accountSummary?.winRatePercentage ?? 0.0,
+                      avgStepsPerDay: state.accountSummary?.avgStepsPerDay ?? 0,
                     ),
-                    Gap.large(),
+                    Gap.medium(),
                     BlocSignalSelector<AccountCubit, AccountState, Map<AccountHeader, List<String>>>(
                       selector: (AccountState state) => state.groupedOptions,
                       builder: (BuildContext context, Map<AccountHeader, List<String>> groupedOptions) =>
                           AccountContentWidget(
                             groupedOptions: groupedOptions,
+                            isStepsSyncActive: state.isStepsSyncActive,
                             onOptionsTap: (String title) => GoRouter.of(context).goNamed(title),
                           ),
                     ),
@@ -118,23 +120,24 @@ class _AccountAppBar extends StatelessWidget {
     required this.username,
     required this.isSliverAppBarExpanded,
     required this.avatarSize,
-    required this.titleStyle,
+    this.memberSince,
     this.avatarUrl,
+    this.rank,
     this.isLoading = false,
   });
 
   final String? fullName;
   final String? username;
+  final DateTime? memberSince;
   final String? avatarUrl;
   final bool isSliverAppBarExpanded;
   final double avatarSize;
-  final TextStyle? titleStyle;
   final bool isLoading;
+  final UserRank? rank;
 
-  static Widget loading({required double avatarSize, required TextStyle? titleStyle}) => _AccountAppBar(
+  static Widget loading({required double avatarSize}) => _AccountAppBar(
     isSliverAppBarExpanded: true,
     avatarSize: avatarSize,
-    titleStyle: titleStyle,
     fullName: null,
     username: null,
     isLoading: true,
@@ -143,20 +146,17 @@ class _AccountAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final String? effectiveAvatarUrl = (avatarUrl != null && avatarUrl!.isNotEmpty) ? avatarUrl : null;
-    final String? effectiveInitials = effectiveAvatarUrl == null ? AccountPage._initialsFromFullName(fullName) : null;
+    final String? effectiveInitials = effectiveAvatarUrl == null
+        ? AccountHeaderCard.initialsFromFullName(fullName)
+        : null;
 
     return Skeletonizer(
       enabled: isLoading,
       child: Row(
         children: <Widget>[
           Gap.medium(),
-          BaktazAvatar(
-            size: avatarSize,
-            imageUrl: effectiveAvatarUrl,
-            initials: effectiveInitials,
-            maxSize: 80,
-          ),
-          Gap.xSmall(),
+          BaktazAvatar(size: avatarSize, imageUrl: effectiveAvatarUrl, initials: effectiveInitials),
+          Gap.medium(),
           Expanded(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -164,7 +164,7 @@ class _AccountAppBar extends StatelessWidget {
               children: <Widget>[
                 BaktazText(
                   text: fullName ?? '',
-                  style: context.textTheme.titleMedium?.copyWith(
+                  style: context.textTheme.headlineMedium?.copyWith(
                     fontWeight: AppFontWeight.bold,
                     color: context.colorScheme.onSurface,
                   ),
@@ -173,13 +173,32 @@ class _AccountAppBar extends StatelessWidget {
                 ),
                 if (username case final String effectiveUsername) ...<Widget>[
                   Gap.x2Small(),
+                  Row(
+                    children: <Widget>[
+                      BaktazText(
+                        text: '@$effectiveUsername',
+                        style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (rank != null) ...<Widget>[
+                        Gap.small(),
+                        BaktazText(
+                          text: rank!.label,
+                          style: context.textTheme.bodyMedium?.copyWith(
+                            fontWeight: AppFontWeight.bold,
+                            color: rank!.color,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+                if (isSliverAppBarExpanded && memberSince != null) ...<Widget>[
+                  Gap.xSmall(),
                   BaktazText(
-                    text: '@$effectiveUsername',
-                    style: context.textTheme.bodySmall?.copyWith(
-                      color: context.colorScheme.onSurfaceVariant,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    text: context.i18n.account.account_header_card.member_since(date: memberSince!.year.toString()),
+                    style: context.textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
                   ),
                 ],
               ],

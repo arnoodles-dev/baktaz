@@ -2,7 +2,19 @@ class: UserInfo
 table: user_info
 fields:
   id: UuidValue?, defaultPersist=random
+  userIdentifier: UuidValue
+  email: String
+  firstName: String?
+  lastName: String?
+  username: String
   gender: Gender, default=unknown
   birthday: DateTime?
-  updatedAt: DateTime?
   mobileNumber: String?
+  avatarUrl: String?
+  createdAt: DateTime, default=now
+  updatedAt: DateTime?
+
+indexes:
+  username_unique_index:
+    fields: username
+    unique: true

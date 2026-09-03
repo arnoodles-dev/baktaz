@@ -20,15 +20,32 @@
 
 ## Endpoints
 
-Admin endpoints (`AdminEndpointBase`, `Scope.admin`): user management, blocking, scoping.
-Auth endpoints: email/password, Google OAuth, Facebook OAuth, JWT refresh.
-Account endpoints: profiles, addresses, contacts, wallets.
+- Admin endpoints (`AdminEndpointBase`, `Scope.admin`): user management, blocking, scoping.
+- Auth endpoints: email/password, Google OAuth, Facebook OAuth, JWT refresh.
+- AccountEndpoint (`lib/src/features/account/endpoint/account_endpoint.dart`):
+  - `getSummary(Session)` -> `AccountSummary`
+  - `deleteAccount(Session)` -> `void` (requires login)
+- ProfileEndpoint (`lib/src/features/profile/endpoint/profile_endpoint.dart`):
+  - `getProfile(Session)` -> `UserInfo?`
+  - `updateProfile(Session, firstName?, lastName?, username?)` -> `UserInfo?`
+  - `checkUsernameAvailability(Session, username)` -> `bool` (requires login)
 
 ---
 
 ## Data Models
 
-See `.spy.yaml` — account, address, contact, profile, wallet entities.
+Defined in `.spy.yaml` files under `lib/src/features/account/domain/model/`:
+- `UserInfo` (`user_info` table): Core user identity, email, username (unique index), mobile, name, gender, dates.
+- `AccountSummary`: Aggregated account metric snapshot (`userId`, `isPremium`, `totalSteps`, `activeChallengeCount`).
+- `Profile`: User profile presentation model (`fullName`, `gender`, `email`, `mobileNumber`, `birthday`, `age`, `imageUrl`, `updatedAt`).
+- Additional entities: `Account`, `AccountState`, `Address`, `Contact`, `Wallet`.
+
+---
+
+## Services & Repositories
+
+- `IAccountRepository` / `AccountRepository`: Backend account data operations (summary retrieval, account deletion).
+- `IProfileRepository` / `ProfileRepository`: User profile management and username availability checks.
 
 ---
 

@@ -1,3 +1,4 @@
+import 'package:baktaz_server/src/app/utils/username_utils.dart';
 import 'package:baktaz_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
@@ -37,7 +38,7 @@ final class AuthUtils {
     session.log('onAfterUserProfileCreated', level: LogLevel.debug);
 
     // 1. Create default UserInfo
-    final UserInfo userInfoDb = await _createUserInfo(session, transaction);
+    final UserInfo userInfoDb = await _createUserInfo(session, userProfile, transaction);
 
     // 2. Create default Wallet
     final Wallet walletDb = await _createWallet(session, transaction);
@@ -95,8 +96,21 @@ final class AuthUtils {
     );
   }
 
-  static Future<UserInfo> _createUserInfo(Session session, Transaction transaction) async {
-    final UserInfo userInfo = UserInfo(gender: Gender.unknown);
+  static Future<UserInfo> _createUserInfo(
+    Session session,
+    UserProfileModel userProfile,
+    Transaction transaction,
+  ) async {
+    final String email = userProfile.email ?? '';
+    final String handle = UsernameUtils.generateUniqueHandle(userProfile.fullName, email);
+    final UserInfo userInfo = UserInfo(
+      userIdentifier: userProfile.authUserId,
+      email: email,
+      username: handle,
+      firstName: userProfile.fullName,
+      gender: Gender.unknown,
+      createdAt: DateTime.now(),
+    );
     return UserInfo.db.insertRow(session, userInfo, transaction: transaction);
   }
 

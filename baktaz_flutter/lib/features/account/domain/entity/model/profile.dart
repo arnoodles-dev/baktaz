@@ -20,15 +20,16 @@ abstract class Profile with _$Profile {
 
   const Profile._();
 
-  factory Profile.fromServer(serverpod.Profile profile) => Profile(
-    fullName: ValueName(profile.fullName),
-    gender: profile.gender,
-    birthday: profile.birthday.let(LocalDateTime.new),
-    age: profile.age.let(Number.new),
-    imageUrl: profile.imageUrl.let((Uri uri) => Url(uri.toString())),
-    updatedAt: profile.updatedAt.let(LocalDateTime.new),
-    email: profile.email.let(EmailAddress.new),
-    mobileNumber: profile.mobileNumber.let(MobileNumber.new),
+  factory Profile.fromServer(serverpod.UserInfo userInfo) => Profile(
+    fullName: ValueName(<String>[
+      if (userInfo.firstName case final String first) first,
+      if (userInfo.lastName case final String last) last,
+    ].join(' ')),
+    gender: userInfo.gender,
+    birthday: userInfo.birthday.let(LocalDateTime.new),
+    updatedAt: userInfo.updatedAt.let(LocalDateTime.new),
+    email: userInfo.email.let(EmailAddress.new),
+    mobileNumber: userInfo.mobileNumber.let(MobileNumber.new),
   );
 
   Option<Failure> get validate => fullName.validate

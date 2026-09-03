@@ -55,15 +55,13 @@ abstract class UserRank with _$UserRank {
         assetPath: 'assets/rank/challengers.png',
       );
 
-  static UserRank fromRank(String rankValue) {
-    return switch (rankValue) {
-      'bronze' => UserRank.bronze(),
-      'silver' => UserRank.silver(),
-      'gold' => UserRank.gold(),
-      'platinum' => UserRank.platinum(),
-      'diamond' => UserRank.diamond(),
-      'challengers' => UserRank.challengers(),
-      _ => UserRank.unknown(),
-    };
-  }
+  factory UserRank.fromRank(String rankValue) => switch (rankValue) {
+    'bronze' => UserRank.bronze(),
+    'silver' => UserRank.silver(),
+    'gold' => UserRank.gold(),
+    'platinum' => UserRank.platinum(),
+    'diamond' => UserRank.diamond(),
+    'challengers' => UserRank.challengers(),
+    _ => UserRank.unknown(),
+  };
 }

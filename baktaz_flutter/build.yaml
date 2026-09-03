@@ -55,7 +55,7 @@ targets:
           line_length: 120
       ## https://github.com/slang-i18n/slang/issues/351
       slang_build_runner:
-        enabled: false
+        enabled: true
       slang_build_runner:legacy:
         options:
           base_locale: en
@@ -64,9 +64,9 @@ targets:
           input_file_pattern: .i18n.json
           output_directory: lib/app/generated
           output_file_name: localization.g.dart
-          translate_var: i18n
+          translate_var: l10n
           class_name: I18n
-          locale_handling: false
+          locale_handling: true
           translation_class_visibility: public
           translation_overrides: true
           format:

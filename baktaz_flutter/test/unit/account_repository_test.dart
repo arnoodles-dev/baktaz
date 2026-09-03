@@ -9,7 +9,6 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mockito/mockito.dart';
 import 'package:retry/retry.dart';
 
-import '../fixtures/client_fixtures.dart';
 import '../utils/generated_mocks.mocks.dart';
 
 void main() {
@@ -19,7 +18,25 @@ void main() {
     late MockEndpointAccount endpointAccount;
     late MockEndpointProfile endpointProfile;
     late MockTalker talker;
-    late AccountRepository accountRepository;
+
+    final serverpod_dto.UuidValue userId = serverpod_dto.UuidValue.fromString('123e4567-e89b-12d3-a456-426614174000');
+    final serverpod_dto.AccountSummary serverpodAccountSummary = serverpod_dto.AccountSummary(
+      userId: userId,
+      isPremium: true,
+      totalSteps: 100000,
+      activeChallengeCount: 2,
+      fullName: 'John Doe',
+      username: 'johndoe',
+      avatarUrl: 'https://example.com/avatar.png',
+      challengesJoined: 10,
+      challengesWon: 3,
+      winRatePercentage: 30,
+      isHostTier: true,
+      isStepsSyncActive: false,
+      memberSince: DateTime(2024, 1, 15),
+      avgStepsPerDay: 3333,
+      rank: serverpod_dto.Rank.gold,
+    );
 
     setUp(() {
       serverpod = MockServerpod();
@@ -31,37 +48,40 @@ void main() {
       when(serverpod.client).thenReturn(client);
       when(client.account).thenReturn(endpointAccount);
       when(client.profile).thenReturn(endpointProfile);
+    });
 
-      accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
+    tearDown(() {
+      reset(serverpod);
+      reset(client);
+      reset(endpointAccount);
+      reset(endpointProfile);
+      reset(talker);
     });
 
     group('getAccountSummary', () {
-      test('should return Right(AccountSummary) when client returns data successfully', () async {
-        final serverpod_dto.AccountSummary summaryDto = serverpod_dto.AccountSummary(
-          userId: serverpod_dto.UuidValue.fromString('00000000-0000-0000-0000-000000000001'),
-          isPremium: true,
-          totalSteps: 1000,
-          activeChallengeCount: 2,
-          fullName: 'John Doe',
-          username: 'johndoe',
-          challengesJoined: 10,
-          challengesWon: 5,
-          winRatePercentage: 50,
-        );
-        when(endpointAccount.getSummary()).thenAnswer((_) async => summaryDto);
+      test('should return Right(AccountSummary) when successful', () async {
+        when(endpointAccount.getSummary()).thenAnswer((_) async => serverpodAccountSummary);
+
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
 
         final Either<Failure, AccountSummary> result = await accountRepository.getAccountSummary().run();
 
         result.fold((_) => fail('Expected Right'), (AccountSummary summary) {
-          expect(summary.totalSteps, equals(1000));
-          expect(summary.activeChallengeCount, equals(2));
-          expect(summary.isPremium, isTrue);
+          expect(summary.userId, equals(userId));
+          expect(summary.isPremium, equals(true));
+          expect(summary.totalSteps, equals(100000));
+          expect(summary.challengesJoined, equals(10));
+          expect(summary.challengesWon, equals(3));
         });
+
+        verify(endpointAccount.getSummary()).called(1);
       });
 
       test('should return Left(Failure.server) when network connectivity error occurs', () async {
         final Exception exception = Exception('Network connection failed');
         when(endpointAccount.getSummary()).thenThrow(exception);
+
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
 
         final Either<Failure, AccountSummary> result = await accountRepository.getAccountSummary().run();
 
@@ -70,30 +90,50 @@ void main() {
               expect(failure, equals(const Failure.server(StatusCode.serverpod, 'Exception: Network connection failed'))),
           (_) => fail('Expected Left'),
         );
+
         verify(talker.handle(exception, any)).called(1);
       });
     });
 
     group('getProfile', () {
-      test('should return Right(Profile) when client returns valid UserInfo', () async {
-        when(endpointProfile.getProfile()).thenAnswer((_) async => mockServerProfile);
+      test('should return Right(Profile) when successful', () async {
+        final serverpod_dto.UserInfo serverpodUserInfo = serverpod_dto.UserInfo(
+          userIdentifier: userId,
+          email: 'john@example.com',
+          firstName: 'John',
+          lastName: 'Doe',
+          username: 'johndoe',
+          gender: serverpod_dto.Gender.male,
+          mobileNumber: '+1234567890',
+        );
+
+        when(endpointProfile.getProfile()).thenAnswer((_) async => serverpodUserInfo);
+
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
 
         final Either<Failure, Profile> result = await accountRepository.getProfile().run();
 
         result.fold((_) => fail('Expected Right'), (Profile profile) {
           expect(profile.fullName.value, equals(const Right<Failure, String>('John Doe')));
         });
+
+        verify(endpointProfile.getProfile()).called(1);
       });
 
       test('should return Left(Failure.server) when profile validation fails', () async {
-        final serverpod_dto.UserInfo invalidUserInfo = serverpod_dto.UserInfo(
-          userIdentifier: serverpod_dto.UuidValue.fromString('00000000-0000-0000-0000-000000000001'),
+        final serverpod_dto.UserInfo serverpodUserInfo = serverpod_dto.UserInfo(
+          userIdentifier: userId,
           email: 'invalid-email',
-          username: '',
-          firstName: '',
-          lastName: '',
+          firstName: 'John',
+          lastName: 'Doe',
+          username: 'johndoe',
+          gender: serverpod_dto.Gender.male,
+          mobileNumber: '+1234567890',
         );
-        when(endpointProfile.getProfile()).thenAnswer((_) async => invalidUserInfo);
+
+        when(endpointProfile.getProfile()).thenAnswer((_) async => serverpodUserInfo);
+
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
 
         final Either<Failure, Profile> result = await accountRepository.getProfile().run();
 
@@ -101,10 +141,14 @@ void main() {
           (Failure failure) => expect(failure, isA<Failure>()),
           (_) => fail('Expected Left'),
         );
+
+        verify(endpointProfile.getProfile()).called(1);
       });
 
       test('should return Left(Failure.server) when client returns null profile', () async {
         when(endpointProfile.getProfile()).thenAnswer((_) async => null);
+
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
 
         final Either<Failure, Profile> result = await accountRepository.getProfile().run();
 
@@ -113,12 +157,24 @@ void main() {
               expect(failure, equals(const Failure.server(StatusCode.serverpod, 'FormatException: Profile is null'))),
           (_) => fail('Expected Left'),
         );
+
+        verify(endpointProfile.getProfile()).called(1);
       });
     });
 
     group('addAddress', () {
       test('should return Left(Failure.unexpected) as unimplemented', () async {
-        final Address dummyAddress = Address(id: UniqueId(), street: '123 Main St');
+        final Address dummyAddress = Address(
+          id: UniqueId.fromUniqueString('1'),
+          label: ValueName('Home'),
+          street: '123 Main St',
+          locality: 'New York',
+          administrativeArea: 'NY',
+          postalCode: '10001',
+          country: 'USA',
+        );
+
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
 
         final Either<Failure, Unit> result = await accountRepository.addAddress(dummyAddress).run();
 
@@ -130,7 +186,9 @@ void main() {
     });
 
     group('getDefaultAddress', () {
-      test('should return Right(null)', () async {
+      test('should return Right(null) as unimplemented', () async {
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
+
         final Either<Failure, Address?> result = await accountRepository.getDefaultAddress().run();
 
         result.fold((_) => fail('Expected Right'), (Address? address) => expect(address, isNull));
@@ -138,18 +196,23 @@ void main() {
     });
 
     group('deleteAccount', () {
-      test('should return Right(unit) when deleteAccount endpoint succeeds', () async {
-        when(endpointAccount.deleteAccount()).thenAnswer((_) async => true);
+      test('should return Right(unit) when successful', () async {
+        when(endpointAccount.deleteAccount()).thenAnswer((_) async => unit);
+
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
 
         final Either<Failure, Unit> result = await accountRepository.deleteAccount().run();
 
         result.fold((_) => fail('Expected Right'), (Unit val) => expect(val, equals(unit)));
+
         verify(endpointAccount.deleteAccount()).called(1);
       });
 
       test('should return Left(Failure.server) when deleteAccount endpoint throws', () async {
         final Exception exception = Exception('Account deletion failed');
         when(endpointAccount.deleteAccount()).thenThrow(exception);
+
+        final AccountRepository accountRepository = AccountRepository(serverpod, const RetryOptions(maxAttempts: 1), talker);
 
         final Either<Failure, Unit> result = await accountRepository.deleteAccount().run();
 
@@ -158,6 +221,7 @@ void main() {
               expect(failure, equals(const Failure.server(StatusCode.serverpod, 'Exception: Account deletion failed'))),
           (_) => fail('Expected Left'),
         );
+
         verify(talker.handle(exception, any)).called(1);
       });
     });

@@ -2,13 +2,16 @@
 
 import 'dart:async';
 
+import 'package:baktaz_flutter/app/config/serverpod_config.dart';
 import 'package:baktaz_flutter/app/constants/constant.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
+import 'package:baktaz_flutter/core/domain/interface/i_remote_localization_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_service_core/features/analytics/i_analytics_service.dart';
 import 'package:mobile_service_core/features/crashlytics/i_crashlytics_service.dart';
 import 'package:mobile_service_core/features/remote_config/i_remote_config_service.dart';
+import 'package:mockito/mockito.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -49,6 +52,15 @@ Future<void> setupInjection() async {
     await getIt.unregister<ICrashlyticsService>();
   }
   getIt.registerLazySingleton<ICrashlyticsService>(MockICrashlyticsService.new);
+  if (getIt.isRegistered<IRemoteLocalizationRepository>()) {
+    await getIt.unregister<IRemoteLocalizationRepository>();
+  }
+  final MockIRemoteLocalizationRepository mockRemoteLocRepo = MockIRemoteLocalizationRepository();
+  when(mockRemoteLocRepo.syncRemoteLocalization()).thenAnswer((_) => TaskResult<bool>.right(false));
+  getIt.registerLazySingleton<IRemoteLocalizationRepository>(() => mockRemoteLocRepo);
+  if (!getIt.isRegistered<Serverpod>()) {
+    getIt.registerLazySingleton<Serverpod>(MockServerpod.new);
+  }
 }
 
 void _mockPackageInfo() {

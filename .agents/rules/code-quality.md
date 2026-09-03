@@ -17,6 +17,8 @@ description: Code analysis, linting, formatting, coding style, and audit exclusi
 
 - Ternary or switch for simple if-else
 - Early returns, destructuring, lookup maps
+- Prefer rewriting simple `if` statements into conditional (ternary) expressions
+- Avoid `.substring()` — it operates on UTF-16 code units, not grapheme clusters. Use `string.characters.getRange(start, end).toString()` instead (handles emojis, composed characters correctly)
 
 ## Immutability
 
@@ -42,6 +44,10 @@ description: Code analysis, linting, formatting, coding style, and audit exclusi
 
 - Primary constructors (`class Name(final Type field)`) for plain classes, Value Objects, DTOs, Serverpod endpoints
 - Standard constructors for `@injectable`/`@lazySingleton` annotated classes, `@freezed` states, Flutter StatelessWidget (see flutter-architecture.md)
+
+## Widgets
+
+- Prefer `const BorderRadius.all(Radius.circular(x))` over `BorderRadius.circular(x)` and other non-const `BorderRadius` constructors — enables compile-time const propagation
 
 ## Constraints
 

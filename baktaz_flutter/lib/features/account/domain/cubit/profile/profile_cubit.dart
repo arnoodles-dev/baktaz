@@ -11,8 +11,10 @@ import 'package:injectable/injectable.dart';
 part 'profile_cubit.freezed.dart';
 part 'profile_state.dart';
 
+/// Manages state and logic for user profile display, app metadata, and account operations.
 @injectable
 final class ProfileCubit extends CubitSignal<ProfileState> {
+  /// Constructs a [ProfileCubit] instance with dependencies.
   ProfileCubit(this._accountRepository, this._deviceRepository, this._failureHandler)
     : super(initialState: ProfileState.initial());
 
@@ -20,6 +22,7 @@ final class ProfileCubit extends CubitSignal<ProfileState> {
   final IDeviceInfoRepository _deviceRepository;
   final FailureHandler _failureHandler;
 
+  /// Initializes profile data by fetching app build info and user profile.
   Future<void> initialize() async {
     await safeRun(
       onException: _failureHandler.handleException,
@@ -52,6 +55,7 @@ final class ProfileCubit extends CubitSignal<ProfileState> {
     );
   }
 
+  /// Triggers account deletion for the current user.
   Future<void> deleteAccount() async {
     await safeRun(
       onException: _failureHandler.handleException,

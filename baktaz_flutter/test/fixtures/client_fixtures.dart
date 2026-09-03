@@ -29,6 +29,11 @@ final serverpod.AccountSummary mockServerAccountSummary = serverpod.AccountSumma
   challengesJoined: 10,
   challengesWon: 5,
   winRatePercentage: 50,
+  isHostTier: true,
+  isStepsSyncActive: false,
+  memberSince: DateTime(2024, 1, 15),
+  avgStepsPerDay: 350,
+  rank: serverpod.Rank.gold,
 );
 
 final AccountSummary mockAccountSummary = AccountSummary.fromServer(mockServerAccountSummary);
@@ -43,6 +48,10 @@ final serverpod.AccountSummary mockServerAccountSummaryNonPremium = serverpod.Ac
   challengesJoined: 0,
   challengesWon: 0,
   winRatePercentage: 0,
+  isHostTier: false,
+  isStepsSyncActive: false,
+  avgStepsPerDay: 0,
+  rank: serverpod.Rank.unknown,
 );
 
 final AccountSummary mockAccountSummaryNonPremium = AccountSummary.fromServer(mockServerAccountSummaryNonPremium);

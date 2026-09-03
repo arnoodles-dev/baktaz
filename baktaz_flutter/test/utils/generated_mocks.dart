@@ -11,7 +11,6 @@ import 'package:baktaz_flutter/core/domain/cubit/hidable/hidable_cubit.dart';
 import 'package:baktaz_flutter/core/domain/interface/i_device_info_repository.dart';
 import 'package:baktaz_flutter/core/domain/interface/i_local_storage_repository.dart';
 import 'package:baktaz_flutter/core/domain/interface/i_remote_localization_repository.dart';
-import 'package:baktaz_flutter/features/account/domain/cubit/account_cubit.dart';
 import 'package:baktaz_flutter/features/account/domain/interface/i_account_repository.dart';
 import 'package:baktaz_flutter/features/auth/domain/cubit/auth/auth_cubit.dart';
 import 'package:baktaz_flutter/features/auth/domain/interface/i_auth_repository.dart';
@@ -36,6 +35,7 @@ export 'generated_mocks.mocks.dart';
 @GenerateNiceMocks(<MockSpec<dynamic>>[
   MockSpec<Client>(),
   MockSpec<EndpointAccount>(),
+  MockSpec<EndpointProfile>(),
   MockSpec<EndpointAuth>(),
   MockSpec<EndpointOtp>(),
   MockSpec<EndpointRemoteConfig>(),
@@ -56,7 +56,6 @@ export 'generated_mocks.mocks.dart';
   MockSpec<PackageInfo>(),
   MockSpec<GoRouter>(),
   MockSpec<AuthCubit>(),
-  MockSpec<AccountCubit>(),
   MockSpec<IDeviceInfoRepository>(),
   MockSpec<DeviceInfoPlugin>(),
   MockSpec<StreamSubscription<dynamic>>(),

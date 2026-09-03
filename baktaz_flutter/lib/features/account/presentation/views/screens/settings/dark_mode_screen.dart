@@ -1,7 +1,6 @@
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/core/domain/cubit/theme/theme_cubit.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
-import 'package:baktaz_flutter/features/account/domain/entity/enum/settings_option.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +13,7 @@ class DarkModeScreen extends StatelessWidget {
   Widget build(BuildContext context) => Scaffold(
     backgroundColor: context.colorScheme.surface,
     appBar: BaktazAppBar(
-      title: SettingsOption.darkMode.name.camelToSentence(),
+      title: 'Dark Mode',
       leading: BackButton(color: context.colorScheme.onSurface, onPressed: () => GoRouter.of(context).pop()),
     ),
     body: Padding(

@@ -6,6 +6,7 @@ sealed class AccountState with _$AccountState {
     required QueryStatus queryStatus,
     required Map<AccountHeader, List<String>> groupedOptions,
     AccountSummary? accountSummary,
+    @Default(false) bool isStepsSyncActive,
   }) = _AccountState;
 
   factory AccountState.initial() =>

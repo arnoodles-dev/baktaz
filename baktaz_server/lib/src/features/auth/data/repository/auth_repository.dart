@@ -1,4 +1,5 @@
 import 'package:baktaz_server/src/app/config/app_config.dart';
+import 'package:baktaz_server/src/app/utils/username_utils.dart';
 import 'package:baktaz_server/src/features/auth/domain/interface/i_auth_repository.dart';
 import 'package:baktaz_server/src/features/security/data/service/security_logger.dart';
 import 'package:baktaz_server/src/generated/protocol.dart';
@@ -56,10 +57,14 @@ final class AuthRepository implements IAuthRepository {
           transaction: transaction,
         );
         final UserInfo? userInfo = account?.userInfo;
+        final String generatedHandle = UsernameUtils.generateUniqueHandle(form.name, normalizedEmail);
         if (userInfo != null) {
           await UserInfo.db.updateRow(
             session,
             userInfo.copyWith(
+              email: normalizedEmail,
+              username: generatedHandle,
+              firstName: form.name,
               gender: Gender.values.asNameMap()[form.gender] ?? Gender.unknown,
               birthday: form.birthday,
             ),

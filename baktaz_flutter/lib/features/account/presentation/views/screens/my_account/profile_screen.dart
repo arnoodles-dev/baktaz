@@ -1,3 +1,4 @@
+import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/app/helpers/injection/service_locator.dart';
 import 'package:baktaz_flutter/app/utils/dialog_utils.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
@@ -61,7 +62,7 @@ class ProfileScreen extends StatelessWidget {
             builder: (BuildContext context, ProfileState state) => Column(
               children: <Widget>[
                 BaktazAppBar(
-                  title: 'Profile',
+                  title: context.i18n.account.profile_title,
                   titleStyle: context.textTheme.titleLarge?.copyWith(fontWeight: AppFontWeight.medium),
                   centerTitle: true,
                   leading: const BackButton(),
@@ -77,21 +78,21 @@ class ProfileScreen extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: AppSizes.x3Large),
                         child: AccountDetailsContent(
-                          title: 'Personal Information',
+                          title: context.i18n.account.personal_information,
                           onEdit: () {
                             //TODO: add onEdit function
                           },
                           children: <Widget>[
-                            AccountDetailsTile(label: 'Name', value: state.profile?.fullName.getValue()),
+                            AccountDetailsTile(label: context.i18n.account.name, value: state.profile?.fullName.getValue()),
                             Gap.medium(),
-                            AccountDetailsTile(label: 'Gender', value: state.profile?.gender.toString().capitalize()),
+                            AccountDetailsTile(label: context.i18n.account.gender, value: state.profile?.gender.toString().capitalize()),
                             Gap.medium(),
                             AccountDetailsTile(
-                              label: 'Date of Birth',
+                              label: context.i18n.account.date_of_birth,
                               value: state.profile?.birthday?.value.formatMonthDayYear(),
                             ),
                             Gap.medium(),
-                            AccountDetailsTile(label: 'Age', value: state.profile?.birthday?.value.age),
+                            AccountDetailsTile(label: context.i18n.account.age, value: state.profile?.birthday?.value.age),
                           ],
                         ),
                       ),
@@ -110,29 +111,57 @@ class ProfileScreen extends StatelessWidget {
                 AccountDetailsContainer(
                   isLoading: isLoading(state.queryStatus, left(state.profile)),
                   child: AccountDetailsContent(
-                    title: 'Contact Information',
+                    title: context.i18n.account.contact_information,
                     children: <Widget>[
                       AccountDetailsTile(
-                        label: 'Mobile Number',
+                        label: context.i18n.account.mobile_number,
                         value: state.profile?.mobileNumber?.getValue(),
-                        onValueEmptyText: _AddContactInformation(
-                          title: 'Add a mobile number',
-                          subtitle: 'Share your mobile number to get updates straight to your inbox',
-                          onPressed: () {
-                            //TODO: add on mobile number pressed
-                          },
+                        onValueEmptyText: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Gap.small(),
+                            GestureDetector(
+                              onTap: () {
+                                //TODO: add on mobile number pressed
+                              },
+                              child: BaktazText(
+                                text: context.i18n.account.add_mobile_number,
+                                style: context.textTheme.bodyLarge?.copyWith(fontWeight: AppFontWeight.semiBold),
+                              ),
+                            ),
+                            Gap.x2Small(),
+                            BaktazText(
+                              text: context.i18n.account.add_mobile_number_desc,
+                              style: context.textTheme.bodySmall,
+                            ),
+                            Gap.small(),
+                          ],
                         ),
                       ),
                       const BaktazDivider(padding: Paddings.verticalMedium),
                       AccountDetailsTile(
-                        label: 'Email Address',
+                        label: context.i18n.account.email_address,
                         value: state.profile?.email?.getValue(),
-                        onValueEmptyText: _AddContactInformation(
-                          title: 'Add an e-mail address',
-                          subtitle: 'Share your email to get updates straight to your inbox',
-                          onPressed: () {
-                            //TODO: add on email pressed
-                          },
+                        onValueEmptyText: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Gap.small(),
+                            GestureDetector(
+                              onTap: () {
+                                //TODO: add on email pressed
+                              },
+                              child: BaktazText(
+                                text: context.i18n.account.add_email,
+                                style: context.textTheme.bodyLarge?.copyWith(fontWeight: AppFontWeight.semiBold),
+                              ),
+                            ),
+                            Gap.x2Small(),
+                            BaktazText(
+                              text: context.i18n.account.add_email_desc,
+                              style: context.textTheme.bodySmall,
+                            ),
+                            Gap.small(),
+                          ],
                         ),
                       ),
                     ],
@@ -141,12 +170,12 @@ class ProfileScreen extends StatelessWidget {
                 Gap.medium(),
                 AccountDetailsContainer(
                   child: AccountDetailsContent(
-                    title: 'Account Settings',
+                    title: context.i18n.account.account_settings,
                     children: <Widget>[
                       GestureDetector(
                         onTap: () => _showDeleteAccountDialog(context),
                         child: BaktazText(
-                          text: 'Request for Account Deletion',
+                          text: context.i18n.account.request_account_deletion,
                           style: context.textTheme.titleMedium?.copyWith(color: context.colorScheme.error),
                         ),
                       ),
@@ -154,7 +183,7 @@ class ProfileScreen extends StatelessWidget {
                       GestureDetector(
                         onTap: () => _showLogoutDialog(context),
                         child: BaktazText(
-                          text: 'Logout',
+                          text: context.i18n.account.button.logout,
                           style: context.textTheme.titleMedium?.copyWith(color: context.colorScheme.error),
                         ),
                       ),
@@ -165,7 +194,7 @@ class ProfileScreen extends StatelessWidget {
                 Skeletonizer(
                   enabled: isLoading(state.queryStatus, right((state.appVersion, state.buildNumber))),
                   child: BaktazText(
-                    text: 'Version ${state.appVersion}+${state.buildNumber}',
+                    text: context.i18n.account.version(version: '${state.appVersion}+${state.buildNumber}'),
                     style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
                   ),
                 ),
@@ -176,31 +205,5 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
     ),
-  );
-}
-
-class _AddContactInformation extends StatelessWidget {
-  const _AddContactInformation({required this.title, required this.subtitle, required this.onPressed});
-
-  final String title;
-  final String subtitle;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: <Widget>[
-      Gap.small(),
-      GestureDetector(
-        onTap: onPressed,
-        child: BaktazText(
-          text: title,
-          style: context.textTheme.bodyLarge?.copyWith(fontWeight: AppFontWeight.semiBold),
-        ),
-      ),
-      Gap.x2Small(),
-      BaktazText(text: subtitle, style: context.textTheme.bodySmall),
-      Gap.small(),
-    ],
   );
 }

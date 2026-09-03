@@ -1,8 +1,5 @@
 import 'package:baktaz_flutter/features/account/domain/cubit/account_cubit.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/enum/account_header.dart';
-import 'package:baktaz_flutter/features/account/domain/entity/enum/my_account_option.dart';
-import 'package:baktaz_flutter/features/account/domain/entity/enum/settings_option.dart';
-import 'package:baktaz_flutter/features/account/domain/entity/enum/support_option.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/model/account_summary.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:bloc_signals_test/bloc_signals_test.dart';
@@ -18,9 +15,9 @@ void main() {
     late MockFailureHandler failureHandler;
 
     final Map<AccountHeader, List<String>> expectedGroupedOptions = <AccountHeader, List<String>>{
-      AccountHeader.myAccount: MyAccountOption.values.map((MyAccountOption option) => option.name).toList(),
-      AccountHeader.support: SupportOption.values.map((SupportOption option) => option.name).toList(),
-      AccountHeader.settings: SettingsOption.values.map((SettingsOption option) => option.name).toList(),
+      AccountHeader.accountMonetization: AccountHeader.accountMonetization.options,
+      AccountHeader.preferencesSettings: AccountHeader.preferencesSettings.options,
+      AccountHeader.supportLegal: AccountHeader.supportLegal.options,
     };
 
     setUp(() {

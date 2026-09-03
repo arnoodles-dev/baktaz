@@ -22,6 +22,10 @@ abstract final class ServerFixtures {
   // UserInfos
   static final UserInfo sampleUserInfo = UserInfo(
     id: testUserInfoId,
+    userIdentifier: testAuthUserId,
+    email: 'john@example.com',
+    username: 'johnw',
+    firstName: 'John',
     gender: Gender.male,
     birthday: DateTime(1995, 5, 15),
     mobileNumber: '+1234567890',

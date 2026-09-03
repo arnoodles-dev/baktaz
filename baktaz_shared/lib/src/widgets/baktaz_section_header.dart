@@ -28,9 +28,12 @@ class BaktazSectionHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          BaktazText(
-            text: title,
-            style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onSurface),
+          Expanded(
+            child: BaktazText(
+              text: title,
+              style: theme.textTheme.titleLarge?.copyWith(color: theme.colorScheme.onSurface),
+              overflow: TextOverflow.ellipsis,
+            ),
           ),
           if (linkLabel != null && onLinkPressed != null)
             GestureDetector(

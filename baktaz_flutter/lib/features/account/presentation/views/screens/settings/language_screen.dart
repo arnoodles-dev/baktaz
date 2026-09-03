@@ -1,3 +1,4 @@
+import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/core/presentation/widgets/baktaz_app_bar.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class LanguageScreen extends StatelessWidget {
     ),
     body: ColoredBox(
       color: context.colorScheme.primary,
-      child: const Center(child: BaktazText(text: 'LANGUAGE SCREEN')), // TODO: Localize hardcoded string
+      child: Center(child: BaktazText(text: context.i18n.account.language_screen)),
     ),
   );
 }

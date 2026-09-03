@@ -1,105 +1,38 @@
-import 'package:baktaz_server/src/app/config/app_config.dart';
 import 'package:baktaz_server/src/app/injection/service_locator.dart';
-import 'package:baktaz_server/src/features/security/data/service/security_logger.dart';
+import 'package:baktaz_server/src/features/account/domain/interface/i_account_repository.dart';
 import 'package:baktaz_server/src/generated/protocol.dart';
 import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
+/// Endpoint for account management operations such as summary fetching and account deletion.
 final class AccountEndpoint extends Endpoint {
-  AccountEndpoint([SecurityLogger? securityLogger])
-    : _securityLogger =
-          securityLogger ?? (getIt.isRegistered<SecurityLogger>() ? getIt<SecurityLogger>() : SecurityLogger());
+  /// Creates an [AccountEndpoint] instance with optional repository override.
+  AccountEndpoint([IAccountRepository? accountRepository])
+    : _accountRepository = accountRepository ?? getIt<IAccountRepository>();
 
-  final SecurityLogger _securityLogger;
+  final IAccountRepository _accountRepository;
 
   @override
   bool get requireLogin => true;
 
+  /// Retrieves summary information ([AccountSummary]) for the currently authenticated user.
+  Future<AccountSummary> getSummary(Session session) async {
+    final UuidValue userId = session.authenticated!.authUserId;
+    session.log('Fetching account summary for user $userId');
+    return _accountRepository.getAccountSummary(session, userId);
+  }
+
+  /// Retrieves the full [Account] entity for the currently authenticated user.
   Future<Account?> getCurrentAccount(Session session) async {
-    final UuidValue? authUserId = session.authenticated?.authUserId;
-    if (authUserId == null) return null;
-    return Account.db.findFirstRow(
-      session,
-      where: (AccountTable t) => t.authUserId.equals(authUserId),
-      include: Account.include(
-        userProfile: UserProfile.include(),
-        userInfo: UserInfo.include(),
-        wallet: Wallet.include(),
-      ),
-    );
+    final UuidValue userId = session.authenticated!.authUserId;
+    session.log('Fetching current account for user $userId');
+    return _accountRepository.getCurrentAccount(session, userId);
   }
 
-  Future<AccountSummary?> getAccountSummary(Session session) async {
-    final Account? account = await getCurrentAccount(session);
-    if (account == null) return null;
-
-    return AccountSummary(
-      name: account.userProfile?.fullName ?? 'Baktaz Walker',
-      cashBalance: account.wallet?.cashBalance ?? 0,
-      connectBalance: account.wallet?.connectBalance ?? 0,
-    );
-  }
-
-  Future<Profile?> getProfile(Session session) async {
-    final Account? account = await getCurrentAccount(session);
-    if (account == null) return null;
-
-    return Profile(
-      fullName: account.userProfile?.fullName ?? 'Baktaz Walker',
-      gender: account.userInfo?.gender ?? Gender.unknown,
-      email: account.userProfile?.email,
-      mobileNumber: account.userInfo?.mobileNumber,
-      birthday: account.userInfo?.birthday,
-      updatedAt: account.userInfo?.updatedAt,
-    );
-  }
-
+  /// Deletes the account of the currently authenticated user.
   Future<void> deleteAccount(Session session) async {
-    final UuidValue? authUserId = session.authenticated?.authUserId;
-    if (authUserId == null) {
-      throw ApiException(message: 'User not authenticated', code: ApiExceptionCode.unauthenticated);
-    }
-
-    if (!AppConfig.accountDeletionEnabled) {
-      throw ApiException(message: 'Account deletion is disabled', code: ApiExceptionCode.badRequest);
-    }
-
-    await session.db.transaction((Transaction transaction) async {
-      final Account? account = await Account.db.findFirstRow(
-        session,
-        where: (AccountTable t) => t.authUserId.equals(authUserId),
-        include: Account.include(
-          userProfile: UserProfile.include(),
-          userInfo: UserInfo.include(),
-          wallet: Wallet.include(),
-        ),
-        transaction: transaction,
-      );
-
-      if (account != null) {
-        await Account.db.deleteRow(session, account, transaction: transaction);
-        if (account.wallet != null) {
-          await Wallet.db.deleteRow(session, account.wallet!, transaction: transaction);
-        }
-        if (account.userInfo != null) {
-          await UserInfo.db.deleteRow(session, account.userInfo!, transaction: transaction);
-        }
-        if (account.userProfile != null) {
-          await UserProfile.db.deleteRow(session, account.userProfile!, transaction: transaction);
-        }
-      }
-
-      final EmailAccount? emailAccount = await EmailAccount.db.findFirstRow(
-        session,
-        where: (EmailAccountTable t) => t.authUserId.equals(authUserId),
-        transaction: transaction,
-      );
-      if (emailAccount != null) {
-        await EmailAccount.db.deleteRow(session, emailAccount, transaction: transaction);
-      }
-
-      await AuthServices.instance.authUsers.delete(session, authUserId: authUserId, transaction: transaction);
-      await _securityLogger.log(session, 'account_delete', authUserId: authUserId, transaction: transaction);
-    });
+    final UuidValue userId = session.authenticated!.authUserId;
+    session.log('Deleting account for user $userId');
+    return _accountRepository.deleteAccount(session, userId);
   }
 }

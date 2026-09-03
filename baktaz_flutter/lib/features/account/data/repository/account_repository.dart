@@ -2,14 +2,12 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:baktaz_client/baktaz_client.dart' as serverpod;
-import 'package:baktaz_flutter/app/config/app_config.dart';
 import 'package:baktaz_flutter/app/config/serverpod_config.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/model/account_summary.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/model/address.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/model/profile.dart';
 import 'package:baktaz_flutter/features/account/domain/interface/i_account_repository.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
-import 'package:flutter/foundation.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:injectable/injectable.dart';
 import 'package:retry/retry.dart';
@@ -26,27 +24,12 @@ final class AccountRepository implements IAccountRepository {
   @override
   TaskResult<AccountSummary> getAccountSummary() => TaskResult<AccountSummary>.tryCatch(
     () async {
-      final serverpod.AccountSummary? result = await _retry.retry(
-        () => _serverpod.client.account.getAccountSummary(),
+      final serverpod.AccountSummary result = await _retry.retry(
+        () => _serverpod.client.account.getSummary(),
         retryIf: (Exception exception) => exception is SocketException || exception is TimeoutException,
       );
 
-      if (result == null) {
-        throw const FormatException('Account summary is null');
-      }
-
-      if (AppConfig.environment == Env.development && TargetPlatform.android == defaultTargetPlatform) {
-        result.imageUrl = result.imageUrl.let(
-          (Uri uri) => Uri.parse(uri.toString().replaceAll('http://localhost:8080/', 'http://10.0.2.2:8080/')),
-        );
-      }
-
-      final AccountSummary possibleFailure = AccountSummary.fromServer(result);
-      if (possibleFailure.validate.isSome()) {
-        throw possibleFailure.validate.asSome();
-      }
-
-      return possibleFailure;
+      return AccountSummary.fromServer(result);
     },
     (Object error, StackTrace stackTrace) {
       _talker.handle(error, stackTrace);
@@ -57,19 +40,13 @@ final class AccountRepository implements IAccountRepository {
   @override
   TaskResult<Profile> getProfile() => TaskResult<Profile>.tryCatch(
     () async {
-      final serverpod.Profile? result = await _retry.retry(
-        () => _serverpod.client.account.getProfile(),
+      final serverpod.UserInfo? result = await _retry.retry(
+        () => _serverpod.client.profile.getProfile(),
         retryIf: (Exception exception) => exception is SocketException || exception is TimeoutException,
       );
 
       if (result == null) {
         throw const FormatException('Profile is null');
-      }
-
-      if (AppConfig.environment == Env.development && TargetPlatform.android == defaultTargetPlatform) {
-        result.imageUrl = result.imageUrl.let(
-          (Uri uri) => Uri.parse(uri.toString().replaceAll('http://localhost:8080/', 'http://10.0.2.2:8080/')),
-        );
       }
 
       final Profile possibleFailure = Profile.fromServer(result);
