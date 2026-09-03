@@ -54,6 +54,7 @@ See `.agents/rules/operations.md` for verification commands.
 - `.agents/rules/state-management-architecture.md` — Signals/Cubit/Bloc decisions
 - `.agents/rules/error-handling-architecture.md` — Failure taxonomy, Pattern B
 - `.agents/rules/design-system.md` — UI wrappers, typography, colors
+- `.agents/rules/localization.md` — Slang i18n, JSON structure, AppLocalizationCubit
 - `.agents/rules/optimization.md` — Flutter performance rules
 - `.agents/reference/flutter-feature-structure.md` — directory tree
 - `.agents/reference/flutter-feature-workflow.md` — step-by-step feature creation

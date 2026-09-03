@@ -11,7 +11,7 @@
 - **Dependency Injection**: `getIt` + `injectable` annotations registered in `lib/app/helpers/injection/service_locator.dart`.
 - **Routing**: `go_router` declaratively managed in `lib/app/routes/app_router.dart`.
 - **Design System**: Consumes `baktaz_shared` UI components (`BaktazText`, `BaktazButton`, `BaktazTextField`, `BaktazCard`, `BaktazAppBar`, `Paddings`, `AppSizes`).
-- **Localization**: Powered by `slang` (`lib/gen/strings.g.dart`). User-facing strings must not be hardcoded.
+- **Localization**: Powered by `slang` (`lib/app/generated/localization.g.dart`). User-facing strings must not be hardcoded (see `.agents/rules/localization.md`).
 
 ---
 
@@ -27,6 +27,17 @@
 ## Verification
 
 See `.agents/rules/operations.md` for verification commands and MCP tools.
+
+---
+
+## Child DOX Index
+
+- `.agents/rules/flutter-architecture.md` — structure, layers, routing
+- `.agents/rules/state-management-architecture.md` — Signals/Cubit/Bloc decisions
+- `.agents/rules/error-handling-architecture.md` — Failure taxonomy, Pattern B
+- `.agents/rules/design-system.md` — UI wrappers, typography, colors
+- `.agents/rules/localization.md` — Slang i18n, JSON structure, AppLocalizationCubit
+- `.agents/rules/optimization.md` — Flutter performance rules
 
 ---
 

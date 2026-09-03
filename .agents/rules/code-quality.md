@@ -10,7 +10,7 @@ description: Code analysis, linting, formatting, coding style, and audit exclusi
 - Deletions over additions, boring over clever
 - `very_good_analysis` + `dart_code_metrics` with `--fatal-infos`
 - Width 120 chars
-- No hardcoded user-facing strings (use localization). **Exception: `*_server`**
+- No hardcoded user-facing strings (use localization — see `.agents/rules/localization.md`). **Exception: `*_server`**
 - Prioritize `*_shared` components
 
 ## Expressions

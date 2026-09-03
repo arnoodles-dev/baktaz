@@ -100,7 +100,7 @@ Use existing shared widgets from `*_shared` before building new:
 
 ## Rules
 
-- No hardcoded user-facing strings — use localization keys (`context.l10n.*`)
+- No hardcoded user-facing strings — use localization keys (`context.i18n.*`). See `.agents/rules/localization.md` for full i18n conventions.
 - No hardcoded colors — use `scheme.*` or `BaktazCustomColors.*`
 - No magic numbers — use `BaktazSpacing.*`, `BaktazRadius.*`
 - Dark mode: surface lightening, no shadows, dynamic SVG tinting
