@@ -17,9 +17,9 @@ void main() {
             child: const SizedBox(
               width: 350,
               child: BaktazListRow(
-                label: 'Account Settings',
+                title: 'Account Settings',
                 leadingIcon: Icons.person_outline,
-                trailingIcon: Icons.chevron_right,
+                trailing: Icon(Icons.chevron_right),
               ),
             ),
           ),
@@ -28,10 +28,10 @@ void main() {
             child: const SizedBox(
               width: 350,
               child: BaktazListRow(
-                label: 'Notifications',
+                title: 'Notifications',
                 subtitle: 'Manage app notifications and alerts',
                 leadingIcon: Icons.notifications_none,
-                trailingIcon: Icons.chevron_right,
+                trailing: Icon(Icons.chevron_right),
               ),
             ),
           ),
@@ -40,10 +40,9 @@ void main() {
             child: const SizedBox(
               width: 350,
               child: BaktazListRow(
-                label: 'Delete Account',
+                title: 'Delete Account',
                 subtitle: 'Permanently remove your data',
-                leadingIcon: Icons.delete_outline,
-                isDestructive: true,
+                leadingIcon: Icons.delete_outline, trailing: Icon(Icons.delete_outline),
               ),
             ),
           ),
@@ -56,7 +55,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: BaktazListRow(label: 'Privacy Settings', onTap: () => wasTapped = true),
+            body: BaktazListRow(title: 'Privacy Settings', onTap: () => wasTapped = true),
           ),
         ),
       );

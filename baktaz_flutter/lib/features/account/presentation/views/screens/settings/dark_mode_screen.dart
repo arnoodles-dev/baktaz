@@ -19,7 +19,7 @@ class DarkModeScreen extends StatelessWidget {
     body: Padding(
       padding: Paddings.horizontalLarge,
       child: BaktazListRow(
-        label: context.i18n.settings.follow_system,
+        title: context.i18n.settings.follow_system,
         subtitle: context.i18n.settings.dark_mode_subtitle,
         trailing: Transform.scale(
           scale: 0.8,

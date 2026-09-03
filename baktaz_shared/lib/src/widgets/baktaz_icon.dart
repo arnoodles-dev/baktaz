@@ -1,5 +1,4 @@
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
-import 'package:baktaz_shared/src/theme/app_spacing.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fpdart/fpdart.dart';
@@ -31,7 +30,7 @@ final class BaktazIcon extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               _Icon(icon: icon, size: size, alignment: alignment, color: color),
-              Gap.large(),
+              const SizedBox(height: BaktazSpacing.lg),
               child,
             ],
           )
@@ -58,7 +57,7 @@ class _Icon extends StatelessWidget {
         alignment: alignment,
         colorFilter: color != null ? ColorFilter.mode(color, BlendMode.srcIn) : null,
       ),
-      (IconData iconData) => Icon(iconData, color: color, size: size ?? AppSizes.large),
+      (IconData iconData) => Icon(iconData, color: color, size: size ?? BaktazSpacing.iconLarge),
     );
   }
 }

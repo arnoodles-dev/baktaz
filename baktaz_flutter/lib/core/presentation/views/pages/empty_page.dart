@@ -24,7 +24,7 @@ class EmptyPage extends StatelessWidget {
               maxLines: 1,
               style: context.textTheme.headlineLarge?.copyWith(
                 color: context.colorScheme.onSurface,
-                fontWeight: AppFontWeight.semiBold,
+                fontWeight: FontWeight.w600,
               ),
             ),
             Gap.small(),
@@ -36,7 +36,7 @@ class EmptyPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: context.textTheme.titleMedium?.copyWith(
                     color: context.colorScheme.onSurface,
-                    fontWeight: AppFontWeight.light,
+                    fontWeight: FontWeight.w300,
                   ),
                 ),
               ),

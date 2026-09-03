@@ -25,7 +25,7 @@ class LocalizationTableFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
     child: Row(
       children: <Widget>[
         BaktazText(
@@ -42,12 +42,12 @@ class LocalizationTableFooter extends StatelessWidget {
                         end: endIndex,
                         total: totalItems,
                       )),
-          style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
         ),
         const Spacer(),
         if (totalPages > 1) ...<Widget>[
           IconButton(
-            icon: BaktazIcon(icon: Either<String, IconData>.right(Icons.chevron_left), size: AppSizes.iconSmall),
+            icon: BaktazIcon(icon: Either<String, IconData>.right(Icons.chevron_left), size: BaktazSpacing.iconSmall),
             onPressed: currentPage > 1 ? () => onPageChanged(currentPage - 1) : null,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -59,17 +59,17 @@ class LocalizationTableFooter extends StatelessWidget {
             return GestureDetector(
               onTap: () => onPageChanged(pageNumber),
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: AppSizes.x2Small),
-                padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall, vertical: 5),
+                margin: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs2),
+                padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs, vertical: 5),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.colorPrimary : AppColors.transparent,
-                  borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusX2Small)),
+                  color: isSelected ? context.colorScheme.primary : Colors.transparent,
+                  borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
                 ),
                 child: BaktazText(
                   text: pageNumber.toString(),
-                  style: AppTextStyle.bodySmall.copyWith(
-                    fontWeight: AppFontWeight.semiBold,
-                    color: isSelected ? AppColors.white : AppColors.colorTextSecondary,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? Colors.white : context.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -77,7 +77,7 @@ class LocalizationTableFooter extends StatelessWidget {
           }),
           Gap.xSmall(),
           IconButton(
-            icon: BaktazIcon(icon: Either<String, IconData>.right(Icons.chevron_right), size: AppSizes.iconSmall),
+            icon: BaktazIcon(icon: Either<String, IconData>.right(Icons.chevron_right), size: BaktazSpacing.iconSmall),
             onPressed: currentPage < totalPages ? () => onPageChanged(currentPage + 1) : null,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),

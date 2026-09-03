@@ -1,14 +1,13 @@
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
-import 'package:baktaz_shared/src/theme/app_spacing.dart';
+import 'package:baktaz_shared/src/theme/baktaz_radius.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 
-/// ProgressBar — DESIGN.md §12.6
+/// ProgressBar — DESIGN.md §1.7
 ///
-/// Used for availability percentages, booking completion, upload progress.
-/// Always teal for positive progress, colorError for critical/overdue states.
+/// Determinate linear progress bar with brand color fill.
 class BaktazProgressBar extends StatelessWidget {
-  const BaktazProgressBar({required this.progress, this.label, this.isCritical = false, this.height = 5, super.key});
+  const BaktazProgressBar({required this.progress, this.label, this.isCritical = false, this.height = 8, super.key});
 
   final double progress;
   final String? label;
@@ -18,45 +17,28 @@ class BaktazProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final Color fillColor = isCritical ? theme.colorScheme.error : theme.colorScheme.secondary;
-    final Color trackColor = isCritical ? theme.colorScheme.errorContainer : theme.colorScheme.outline;
+    final ColorScheme scheme = theme.colorScheme;
+    final Color fillColor = isCritical ? scheme.error : scheme.primary;
+    final Color trackColor = isCritical ? scheme.errorContainer : scheme.outlineVariant;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         ClipRRect(
-          borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
-          child: Stack(
-            children: <Widget>[
-              Container(
-                height: height,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: trackColor,
-                  borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
-                ),
-              ),
-              FractionallySizedBox(
-                widthFactor: progress.clamp(0.0, 1.0),
-                child: Container(
-                  height: height,
-                  decoration: BoxDecoration(
-                    color: fillColor,
-                    borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
-                  ),
-                ),
-              ),
-            ],
+          borderRadius: BaktazRadius.pill,
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: height,
+            backgroundColor: trackColor,
+            valueColor: AlwaysStoppedAnimation<Color>(fillColor),
           ),
         ),
         if (label case final String effectiveLabel) ...<Widget>[
-          const Gap(AppSizes.x2Small),
+          const SizedBox(height: BaktazSpacing.xs2),
           BaktazText(
             text: effectiveLabel,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: isCritical ? theme.colorScheme.error : theme.colorScheme.secondary,
-            ),
+            style: theme.textTheme.labelSmall?.copyWith(color: isCritical ? scheme.error : scheme.onSurfaceVariant),
           ),
         ],
       ],

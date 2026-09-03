@@ -32,7 +32,7 @@ class EditParameterDialog extends HookWidget {
     return AlertDialog(
       title: BaktazText(
         text: context.i18n.remote_config.edit_dialog.title(key: parameterKey),
-        style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
       content: Form(
         key: formKey,
@@ -126,11 +126,11 @@ class EditParameterDialog extends HookWidget {
             }
           },
           text: context.i18n.remote_config.edit_dialog.save,
-          textStyle: AppTextStyle.labelLarge.copyWith(color: AppColors.white),
+          textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white),
           buttonType: ButtonType.elevated,
           buttonStyle: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.colorPrimary,
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusXLarge))),
+            backgroundColor: context.colorScheme.primary,
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.xl))),
           ),
         ),
       ],

@@ -1,8 +1,7 @@
 // ignore_for_file: avoid-returning-widgets,
 
 import 'package:baktaz_shared/src/entity/enum/button_type.dart';
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
-import 'package:baktaz_shared/src/theme/app_spacing.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_event_limiter/flutter_event_limiter.dart';
@@ -54,8 +53,7 @@ final class BaktazButton extends StatelessWidget {
     if (icon == null) return null;
 
     return Padding(
-      padding:
-          iconPadding ?? const EdgeInsets.fromLTRB(AppSizes.medium, AppSizes.medium, AppSizes.zero, AppSizes.medium),
+      padding: iconPadding ?? const EdgeInsets.fromLTRB(BaktazSpacing.medium, BaktazSpacing.medium, BaktazSpacing.zero, BaktazSpacing.medium),
       child: icon,
     );
   }
@@ -69,7 +67,7 @@ final class BaktazButton extends StatelessWidget {
       button: true,
       label: text,
       child: SizedBox(
-        width: isExpanded ? AppSizes.infinity : null,
+        width: isExpanded ? double.infinity : null,
         child: Padding(
           padding: padding ?? EdgeInsets.zero,
           child: ThrottledBuilder(
@@ -173,11 +171,11 @@ class _ButtonContent extends StatelessWidget {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final EdgeInsets defaultPadding = hasIcon
-        ? const EdgeInsets.fromLTRB(AppSizes.zero, AppSizes.medium, AppSizes.medium, AppSizes.medium)
-        : Paddings.allMedium;
+        ? const EdgeInsets.fromLTRB(0, BaktazSpacing.medium, BaktazSpacing.medium, BaktazSpacing.medium)
+        : const EdgeInsets.all(BaktazSpacing.medium);
 
     return SizedBox(
-      width: isExpanded ? AppSizes.infinity : null,
+      width: isExpanded ? double.infinity : null,
       child: Padding(
         padding: contentPadding ?? defaultPadding,
         child: !isLoading

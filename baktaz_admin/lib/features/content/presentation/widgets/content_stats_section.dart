@@ -20,11 +20,11 @@ class ContentStatsSection extends StatelessWidget {
       Expanded(
         child: _StatCard(label: context.i18n.content.stats.active, value: '$activeCount', icon: Icons.check_circle),
       ),
-      const Gap(AppSizes.small),
+      const Gap(BaktazSpacing.sm),
       Expanded(
         child: _StatCard(label: context.i18n.content.stats.scheduled, value: '$scheduledCount', icon: Icons.schedule),
       ),
-      const Gap(AppSizes.small),
+      const Gap(BaktazSpacing.sm),
       Expanded(
         child: _StatCard(label: context.i18n.content.stats.drafts, value: '$draftCount', icon: Icons.edit),
       ),
@@ -40,30 +40,26 @@ class _StatCard extends StatelessWidget {
   final IconData icon;
 
   @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    return BaktazCard(
+  Widget build(BuildContext context) => BaktazCard(
       body: Row(
         children: <Widget>[
-          Icon(icon, color: colorScheme.primary, size: AppSizes.iconMedium),
-          const Gap(AppSizes.small),
+          Icon(icon, color: context.colorScheme.primary, size: BaktazSpacing.iconMedium),
+          const Gap(BaktazSpacing.sm),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               BaktazText(
                 text: value,
-                style: AppTextStyle.headlineMedium.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700),
               ),
               BaktazText(
                 text: label,
-                style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
             ],
           ),
         ],
       ),
     );
-  }
 }

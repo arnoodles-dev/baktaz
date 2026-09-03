@@ -37,40 +37,40 @@ class EditTranslationDialog extends HookWidget {
     }, <Object?>[controller]);
 
     return AlertDialog(
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusMedium))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.lg))),
       title: BaktazText(
         text: '${context.i18n.localization.edit_dialog.title(key: localizationKey.key)} (${locale.toUpperCase()})',
-        style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
       content: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: AppSizes.dialogWidth),
+        constraints: const BoxConstraints(maxWidth: BaktazSpacing.dialogWidth),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             BaktazText(
               text: context.i18n.localization.edit_dialog.namespace_label,
-              style: AppTextStyle.labelMedium.copyWith(color: context.colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
             ),
             Gap.x2Small(),
             BaktazText(
               text: localizationKey.namespace,
-              style: AppTextStyle.bodyMedium.copyWith(color: context.colorScheme.onSurface),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurface),
             ),
             Gap.medium(),
             BaktazText(
               text: context.i18n.localization.edit_dialog.default_value_label,
-              style: AppTextStyle.labelMedium.copyWith(color: context.colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
             ),
             Gap.x2Small(),
             BaktazText(
               text: localizationKey.defaultValueEn,
-              style: AppTextStyle.bodyMedium.copyWith(color: context.colorScheme.onSurface),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurface),
             ),
             Gap.medium(),
             BaktazText(
               text: '${context.i18n.localization.edit_dialog.value_label.split('(').first}(${locale.toUpperCase()})',
-              style: AppTextStyle.labelMedium.copyWith(color: context.colorScheme.onSurfaceVariant),
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
             ),
             Gap.xSmall(),
             BaktazTextField(

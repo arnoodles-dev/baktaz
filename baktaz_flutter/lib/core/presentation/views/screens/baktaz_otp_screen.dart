@@ -28,9 +28,9 @@ class BaktazOtpScreen extends HookWidget {
           physics: const ClampingScrollPhysics(),
           shrinkWrap: true,
           padding: EdgeInsets.only(
-            top: context.padding.top + AppSizes.medium,
-            left: AppSizes.large,
-            right: AppSizes.large,
+            top: context.padding.top + BaktazSpacing.md,
+            left: BaktazSpacing.lg,
+            right: BaktazSpacing.lg,
           ),
           children: <Widget>[
             Align(
@@ -54,7 +54,7 @@ class BaktazOtpScreen extends HookWidget {
                 textAlign: TextAlign.center,
                 text: context.i18n.otp.email_description(email: email),
                 style: context.textTheme.titleMedium?.copyWith(
-                  fontWeight: AppFontWeight.regular,
+                  fontWeight: FontWeight.normal,
                   color: context.colorScheme.onSurface,
                 ),
               ),
@@ -95,12 +95,12 @@ class _OtpForm extends HookWidget {
   Widget build(BuildContext context) {
     final Color fillColor = context.colorScheme.surfaceContainerHighest;
     final PinTheme defaultPinTheme = PinTheme(
-      width: AppSizes.size56,
-      height: AppSizes.size60,
+      width: BaktazSpacing.xl3,
+      height: 60,
       textStyle: context.textTheme.titleLarge?.copyWith(color: context.colorScheme.secondary),
       decoration: BoxDecoration(
         color: fillColor,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.lg)),
         border: const Border.fromBorderSide(BorderSide.none),
       ),
     );
@@ -134,7 +134,7 @@ class _OtpForm extends HookWidget {
             child: BaktazText(
               text: otpError!,
               style: context.textTheme.bodyLarge?.copyWith(
-                fontWeight: AppFontWeight.semiBold,
+                fontWeight: FontWeight.w600,
                 color: context.colorScheme.error,
               ),
             ),

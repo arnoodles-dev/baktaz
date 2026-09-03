@@ -1,7 +1,7 @@
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/features/account/domain/entity/model/user_rank.dart';
 import 'package:baktaz_flutter/features/account/presentation/widgets/rank_badge.dart';
-import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:baktaz_shared/baktaz_shared.dart' hide RankBadge;
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -45,7 +45,7 @@ class AccountHeaderCard extends StatelessWidget {
               child: Row(
                 children: <Widget>[
                   BaktazAvatar(
-                    size: AppSizes.avatarLG,
+                    size: BaktazAvatar.sizeLG,
                     imageUrl: imageUrl,
                     initials: AccountHeaderCard.initialsFromFullName(fullName),
                   ),
@@ -57,7 +57,7 @@ class AccountHeaderCard extends StatelessWidget {
                         BaktazText(
                           text: username ?? '',
                           style: context.textTheme.titleMedium?.copyWith(
-                            fontWeight: AppFontWeight.semiBold,
+                            fontWeight: FontWeight.w600,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,

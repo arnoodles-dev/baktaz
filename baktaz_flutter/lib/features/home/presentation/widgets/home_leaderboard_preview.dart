@@ -23,9 +23,11 @@ class HomeLeaderboardPreview extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                BaktazText(text: context.i18n.home.leaderboard.title),
+                Expanded(
+                  child: BaktazText(text: context.i18n.home.leaderboard.title),
+                ),
                 BaktazButton(
-                  buttonType: BaktazButtonType.text,
+                  buttonType: ButtonType.text,
                   text: context.i18n.home.leaderboard.view_full,
                   onPressed: onViewFull,
                 ),

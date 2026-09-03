@@ -57,10 +57,10 @@ class _ContentTableHeaderState extends State<ContentTableHeader> {
         isActive: widget.selectedType == null,
         onTap: () => widget.onTypeFilterChanged(null),
       ),
-      const Gap(AppSizes.xSmall),
+      const Gap(BaktazSpacing.xs),
       ...ContentAssetType.values.map(
         (ContentAssetType type) => Padding(
-          padding: const EdgeInsets.only(right: AppSizes.xSmall),
+          padding: const EdgeInsets.only(right: BaktazSpacing.xs),
           child: BaktazFilterChip(
             label: type.displayName,
             isActive: widget.selectedType == type,
@@ -70,14 +70,14 @@ class _ContentTableHeaderState extends State<ContentTableHeader> {
       ),
       const Spacer(),
       _PlacementDropdown(selected: widget.selectedPlacement, onChanged: widget.onPlacementFilterChanged),
-      const Gap(AppSizes.small),
+      const Gap(BaktazSpacing.sm),
       SizedBox(
-        width: AppSizes.tableSearchWidth,
+        width: BaktazSpacing.tableSearchWidth,
         child: BaktazTextField(
           controller: _searchController,
           hintText: context.i18n.content.table.search_placeholder,
           onChanged: widget.onSearchChanged,
-          prefix: const Icon(Icons.search, size: AppSizes.iconSmall),
+          prefix: const Icon(Icons.search, size: BaktazSpacing.iconSmall),
         ),
       ),
     ],
@@ -91,32 +91,32 @@ class _PlacementDropdown extends StatelessWidget {
   final ValueChanged<ContentPlacementGroup?> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.small),
+  Widget build(BuildContext context) => Container(
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.sm),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-        border: Border.all(color: colorScheme.outline),
+        color: context.colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+        border: Border.all(color: context.colorScheme.outline),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<ContentPlacementGroup>(
           value: selected,
           hint: BaktazText(
             text: context.i18n.content.table.placement,
-            style: AppTextStyle.bodyMedium.copyWith(color: AppColors.colorTextSecondary),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
           ),
           isDense: true,
           items: <DropdownMenuItem<ContentPlacementGroup>>[
             DropdownMenuItem<ContentPlacementGroup>(
-              child: BaktazText(text: context.i18n.content.table.all_placements, style: AppTextStyle.bodyMedium),
+              child: BaktazText(
+                text: context.i18n.content.table.all_placements,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
             ...ContentPlacementGroup.values.map(
               (ContentPlacementGroup group) => DropdownMenuItem<ContentPlacementGroup>(
                 value: group,
-                child: BaktazText(text: group.displayName, style: AppTextStyle.bodyMedium),
+                child: BaktazText(text: group.displayName, style: Theme.of(context).textTheme.bodyMedium),
               ),
             ),
           ],
@@ -124,5 +124,4 @@ class _PlacementDropdown extends StatelessWidget {
         ),
       ),
     );
-  }
 }

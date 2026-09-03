@@ -19,10 +19,10 @@ class ChallengeAppBar extends StatelessWidget {
       BaktazButton(
         text: context.i18n.common.history.capitalize(),
         textStyle: context.textTheme.titleMedium,
-        contentPadding: const EdgeInsets.symmetric(vertical: AppSizes.xSmall, horizontal: AppSizes.medium),
-        padding: const EdgeInsets.only(right: AppSizes.large),
+        contentPadding: const EdgeInsets.symmetric(vertical: BaktazSpacing.xs, horizontal: BaktazSpacing.md),
+        padding: const EdgeInsets.only(right: BaktazSpacing.lg),
         buttonType: ButtonType.tonal,
-        icon: BaktazIcon(icon: right(Icons.history), size: AppSizes.size20),
+        icon: BaktazIcon(icon: right(Icons.history), size: BaktazSpacing.lg),
         onPressed: () => const HistoryRoute().go(context),
       ),
     ],

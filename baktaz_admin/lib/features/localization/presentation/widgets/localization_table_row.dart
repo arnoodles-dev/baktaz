@@ -26,21 +26,21 @@ class LocalizationTableRow extends StatelessWidget {
   Widget build(BuildContext context) => InkWell(
     onTap: onToggle,
     child: Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.xSmall),
-      color: AppColors.colorSurfaceVariant.withValues(alpha: 0.3),
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.xs),
+      color: context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       child: Row(
         children: <Widget>[
           BaktazIcon(
             icon: Either<String, IconData>.right(isCollapsed ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_down),
-            size: AppSizes.iconSmall,
-            color: AppColors.colorTextSecondary,
+            size: BaktazSpacing.iconSmall,
+            color: context.colorScheme.onSurfaceVariant,
           ),
           Gap.xSmall(),
           BaktazText(
             text: '$namespace ($count keys)'.toUpperCase(),
-            style: AppTextStyle.labelMedium.copyWith(
-              color: AppColors.colorTextSecondary,
-              fontWeight: AppFontWeight.bold,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: context.colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.bold,
               letterSpacing: 0.5,
             ),
           ),
@@ -71,23 +71,23 @@ class NestedGroupHeaderRow extends StatelessWidget {
     onTap: onToggle,
     child: Container(
       padding: EdgeInsets.fromLTRB(
-        AppSizes.large + (depth * AppSizes.large),
-        AppSizes.small,
-        AppSizes.large,
-        AppSizes.small,
+        BaktazSpacing.lg + (depth * BaktazSpacing.lg),
+        BaktazSpacing.sm,
+        BaktazSpacing.lg,
+        BaktazSpacing.sm,
       ),
-      color: AppColors.colorSurfaceVariant.withValues(alpha: 0.15),
+      color: context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.15),
       child: Row(
         children: <Widget>[
           BaktazIcon(
             icon: Either<String, IconData>.right(isCollapsed ? Icons.keyboard_arrow_right : Icons.keyboard_arrow_down),
-            size: AppSizes.iconXSmall,
-            color: AppColors.colorTextSecondary,
+            size: BaktazSpacing.iconXSmall,
+            color: context.colorScheme.onSurfaceVariant,
           ),
           Gap.xSmall(),
           BaktazText(
             text: name,
-            style: AppTextStyle.bodyMedium.copyWith(color: AppColors.colorTextPrimary, fontWeight: AppFontWeight.bold),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurface, fontWeight: FontWeight.bold),
           ),
         ],
       ),
@@ -125,10 +125,10 @@ class LocalizationRow extends StatelessWidget {
     return RepaintBoundary(
       child: Padding(
         padding: EdgeInsets.fromLTRB(
-          AppSizes.large + (depth * AppSizes.large),
-          AppSizes.medium,
-          AppSizes.large,
-          AppSizes.medium,
+          BaktazSpacing.lg + (depth * BaktazSpacing.lg),
+          BaktazSpacing.md,
+          BaktazSpacing.lg,
+          BaktazSpacing.md,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -140,16 +140,16 @@ class LocalizationRow extends StatelessWidget {
                 children: <Widget>[
                   BaktazText(
                     text: displayName,
-                    style: AppTextStyle.bodyMedium.copyWith(
-                      fontWeight: AppFontWeight.semiBold,
-                      color: AppColors.colorTextPrimary,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: context.colorScheme.onSurface,
                     ),
                   ),
                   if (localizationKey.description != null && localizationKey.description!.isNotEmpty) ...<Widget>[
                     Gap.x2Small(),
                     BaktazText(
                       text: localizationKey.description!,
-                      style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextDisabled),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
                     ),
                   ],
                 ],
@@ -163,28 +163,28 @@ class LocalizationRow extends StatelessWidget {
                 children: <Widget>[
                   BaktazText(
                     text: displayValue,
-                    style: AppTextStyle.bodyMedium.copyWith(
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                       color: (isModified || isNew)
-                          ? (isNew ? AppColors.successText : AppColors.warningText)
-                          : AppColors.colorTextPrimary,
-                      fontWeight: (isModified || isNew) ? AppFontWeight.semiBold : AppFontWeight.regular,
+                          ? (isNew ? context.colorScheme.primary : context.baktazColors.warning)
+                          : context.colorScheme.onSurface,
+                      fontWeight: (isModified || isNew) ? FontWeight.w600 : FontWeight.normal,
                     ),
                   ),
                   if (isModified || isNew) ...<Widget>[
                     Gap.x2Small(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall, vertical: AppSizes.x3Small),
+                      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs, vertical: BaktazSpacing.xs2),
                       decoration: BoxDecoration(
-                        color: isNew ? AppColors.colorAccentSubtle : AppColors.pendingSubtle,
-                        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
+                        color: isNew ? context.colorScheme.primaryContainer : context.colorScheme.surfaceContainerHigh,
+                        borderRadius: BaktazRadius.pill,
                       ),
                       child: BaktazText(
                         text: isNew
                             ? context.i18n.localization.table.new_label
                             : context.i18n.localization.table.modified_label,
-                        style: AppTextStyle.labelSmall.copyWith(
-                          color: isNew ? AppColors.successText : AppColors.warningText,
-                          fontWeight: AppFontWeight.bold,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: isNew ? context.colorScheme.primary : context.baktazColors.warning,
+                          fontWeight: FontWeight.bold,
                           letterSpacing: 0.4,
                         ),
                       ),
@@ -201,16 +201,16 @@ class LocalizationRow extends StatelessWidget {
                   onPressed: onEdit,
                   buttonType: ButtonType.text,
                   contentPadding: Paddings.allX2Small,
-                  iconPadding: const EdgeInsets.only(left: AppSizes.x2Small),
+                  iconPadding: const EdgeInsets.only(left: BaktazSpacing.xs2),
                   icon: BaktazIcon(
                     icon: Either<String, IconData>.right(Icons.edit_outlined),
                     size: 14,
-                    color: AppColors.colorPrimary,
+                    color: context.colorScheme.primary,
                   ),
                   text: context.i18n.localization.table.edit,
-                  textStyle: AppTextStyle.labelLarge.copyWith(color: AppColors.colorPrimary),
+                  textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(color: context.colorScheme.primary),
                   buttonStyle: TextButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSizes.x2Small),
+                    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs2),
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
@@ -260,7 +260,7 @@ class TreeRenderer extends StatelessWidget {
             isCollapsed: isCollapsed,
             onToggle: () => context.read<LocalizationCubit>().toggleNamespace(node.fullPath),
           ),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
         ]);
 
         if (!isCollapsed) {
@@ -295,7 +295,7 @@ class TreeRenderer extends StatelessWidget {
             onEdit: () =>
                 onEdit(locKey, pendingTranslation?.value ?? (selectedLocale == 'en' ? locKey.defaultValueEn : null)),
           ),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
         ]);
       }
     }

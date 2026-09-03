@@ -1,10 +1,11 @@
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
-import 'package:baktaz_shared/src/theme/app_spacing.dart';
+import 'package:baktaz_shared/src/theme/baktaz_elevation.dart';
+import 'package:baktaz_shared/src/theme/baktaz_radius.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_divider.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 
-/// StandardCard — DESIGN.md §12.1
+/// StandardCard — DESIGN.md §3.1
 ///
 /// The base card used throughout the app.
 /// Slots: header row (icon + title + action) · divider · body · footer row.
@@ -26,13 +27,11 @@ final class BaktazCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-        border: Border.all(color: theme.colorScheme.outline),
-        boxShadow: <BoxShadow>[
-          BoxShadow(color: theme.colorScheme.shadow.withValues(alpha: 0.08), offset: const Offset(0, 1), blurRadius: 3),
-        ],
+        borderRadius: BaktazRadius.card,
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+        boxShadow: BaktazElevation.surface(theme.brightness),
       ),
-      padding: Paddings.allMedium,
+      padding: const EdgeInsets.all(BaktazSpacing.cardPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
@@ -61,13 +60,13 @@ class _CardHeader extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
 
     return Padding(
-      padding: Paddings.bottomXSmall,
+      padding: const EdgeInsets.only(bottom: BaktazSpacing.xs),
       child: Row(
         children: <Widget>[
           if (icon case final IconData effectiveIcon)
             Padding(
-              padding: Paddings.rightXSmall,
-              child: Icon(effectiveIcon, size: AppSizes.iconSmall, color: theme.colorScheme.primary),
+              padding: const EdgeInsets.only(right: BaktazSpacing.xs),
+              child: Icon(effectiveIcon, size: BaktazSpacing.iconSmall, color: theme.colorScheme.primary),
             ),
           if (title case final String effectiveTitle)
             Expanded(

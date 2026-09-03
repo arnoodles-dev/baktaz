@@ -26,10 +26,10 @@ class ActivitiesReportsChart extends StatelessWidget {
     final num total = data.hero.getValue() + data.express.getValue() + data.shop.getValue() + data.buy.getValue();
 
     return Container(
-      padding: Paddings.allLarge,
+      padding: const EdgeInsets.all(BaktazSpacing.lg),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.md)),
         border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
         boxShadow: <BoxShadow>[
           BoxShadow(color: colorScheme.shadow.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2)),
@@ -41,9 +41,11 @@ class ActivitiesReportsChart extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              BaktazText(
-                text: context.i18n.dashboard.reports.title,
-                style: textTheme.titleLarge?.copyWith(fontWeight: AppFontWeight.bold),
+              Expanded(
+                child: BaktazText(
+                  text: context.i18n.dashboard.reports.title,
+                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                ),
               ),
               DropdownButton<ActivityStatusFilter>(
                 value: selectedStatusFilter,
@@ -68,7 +70,7 @@ class ActivitiesReportsChart extends StatelessWidget {
           Gap.xLarge(),
           RepaintBoundary(
             child: SizedBox(
-              height: AppSizes.chartHeightMedium,
+              height: BaktazSpacing.chartHeightMedium,
               child: Stack(
                 children: <Widget>[
                   PieChart(
@@ -85,14 +87,14 @@ class ActivitiesReportsChart extends StatelessWidget {
                         BaktazText(
                           text: total.toInt().toString(),
                           style: textTheme.displayMedium?.copyWith(
-                            fontWeight: AppFontWeight.bold,
+                            fontWeight: FontWeight.bold,
                             color: colorScheme.onSurface,
                           ),
                         ),
                         BaktazText(
                           text: context.i18n.dashboard.reports.activities.toUpperCase(),
                           style: textTheme.labelSmall?.copyWith(
-                            fontWeight: AppFontWeight.bold,
+                            fontWeight: FontWeight.bold,
                             color: colorScheme.onSurfaceVariant,
                             letterSpacing: 1.2,
                           ),
@@ -200,7 +202,7 @@ class _LegendItem extends StatelessWidget {
       ),
       BaktazText(
         text: value,
-        style: context.textTheme.labelMedium?.copyWith(fontWeight: AppFontWeight.bold),
+        style: context.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
       ),
     ],
   );

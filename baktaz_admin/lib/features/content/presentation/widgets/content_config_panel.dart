@@ -102,7 +102,7 @@ class ContentConfigPanel extends HookWidget {
             hintText: context.i18n.content.panel.title_hint,
             onChanged: (_) => emitChanges(),
           ),
-          const Gap(AppSizes.small),
+          const Gap(BaktazSpacing.sm),
           _TypeAndPlacementRow(
             selectedType: selectedType.value,
             selectedPlacement: selectedPlacement.value,
@@ -115,14 +115,14 @@ class ContentConfigPanel extends HookWidget {
               emitChanges();
             },
           ),
-          const Gap(AppSizes.small),
+          const Gap(BaktazSpacing.sm),
           BaktazTextField(
             controller: orderIndexController,
             labelText: context.i18n.content.panel.order_index,
             keyboardType: TextInputType.number,
             onChanged: (_) => emitChanges(),
           ),
-          const Gap(AppSizes.small),
+          const Gap(BaktazSpacing.sm),
           _StatusTogglesRow(
             isActive: isActive.value,
             hasSchedule: hasSchedule.value,
@@ -135,21 +135,21 @@ class ContentConfigPanel extends HookWidget {
               emitChanges();
             },
           ),
-          const Gap(AppSizes.small),
+          const Gap(BaktazSpacing.sm),
           BaktazTextField(
             controller: routeUrlController,
             labelText: context.i18n.content.panel.route_url_label,
             hintText: context.i18n.content.panel.route_url_hint,
             onChanged: (_) => emitChanges(),
           ),
-          const Gap(AppSizes.small),
+          const Gap(BaktazSpacing.sm),
           BaktazTextField(
             controller: imageUrlController,
             labelText: context.i18n.content.panel.image_url_label,
             hintText: context.i18n.content.panel.image_url_hint,
             onChanged: (_) => emitChanges(),
           ),
-          const Gap(AppSizes.small),
+          const Gap(BaktazSpacing.sm),
           BaktazTextField(
             controller: metadataController,
             labelText: context.i18n.content.panel.metadata_label,
@@ -157,7 +157,7 @@ class ContentConfigPanel extends HookWidget {
             maxLines: 3,
             onChanged: (_) => emitChanges(),
           ),
-          const Gap(AppSizes.medium),
+          const Gap(BaktazSpacing.md),
           _PanelActionButtons(isEditing: asset != null, onCancel: onCancel, onSubmit: emitChanges),
         ],
       ),
@@ -188,7 +188,7 @@ class _TypeAndPlacementRow extends StatelessWidget {
               .map(
                 (ContentAssetType t) => DropdownMenuItem<ContentAssetType>(
                   value: t,
-                  child: BaktazText(text: t.displayName, style: AppTextStyle.bodyMedium),
+                  child: BaktazText(text: t.displayName, style: Theme.of(context).textTheme.bodyMedium),
                 ),
               )
               .toList(),
@@ -197,7 +197,7 @@ class _TypeAndPlacementRow extends StatelessWidget {
           },
         ),
       ),
-      const Gap(AppSizes.small),
+      const Gap(BaktazSpacing.sm),
       Expanded(
         child: _BaktazDropdown<ContentPlacementGroup>(
           value: selectedPlacement,
@@ -205,7 +205,7 @@ class _TypeAndPlacementRow extends StatelessWidget {
               .map(
                 (ContentPlacementGroup g) => DropdownMenuItem<ContentPlacementGroup>(
                   value: g,
-                  child: BaktazText(text: g.displayName, style: AppTextStyle.bodyMedium),
+                  child: BaktazText(text: g.displayName, style: Theme.of(context).textTheme.bodyMedium),
                 ),
               )
               .toList(),
@@ -226,21 +226,17 @@ class _BaktazDropdown<T> extends StatelessWidget {
   final ValueChanged<T?> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.small),
+  Widget build(BuildContext context) => Container(
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.sm),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-        border: Border.all(color: colorScheme.outline),
+        color: context.colorScheme.surfaceContainer,
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+        border: Border.all(color: context.colorScheme.outline),
       ),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<T>(value: value, isExpanded: true, isDense: true, items: items, onChanged: onChanged),
       ),
     );
-  }
 }
 
 class _StatusTogglesRow extends StatelessWidget {
@@ -259,12 +255,12 @@ class _StatusTogglesRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Row(
     children: <Widget>[
-      BaktazText(text: context.i18n.content.panel.active, style: AppTextStyle.bodyMedium),
-      const Gap(AppSizes.xSmall),
+      BaktazText(text: context.i18n.content.panel.active, style: Theme.of(context).textTheme.bodyMedium),
+      const Gap(BaktazSpacing.xs),
       BaktazToggle(value: isActive, onChanged: onActiveChanged),
-      const Gap(AppSizes.large),
-      BaktazText(text: context.i18n.content.panel.scheduled, style: AppTextStyle.bodyMedium),
-      const Gap(AppSizes.xSmall),
+      const Gap(BaktazSpacing.lg),
+      BaktazText(text: context.i18n.content.panel.scheduled, style: Theme.of(context).textTheme.bodyMedium),
+      const Gap(BaktazSpacing.xs),
       BaktazToggle(value: hasSchedule, onChanged: onScheduleChanged),
     ],
   );
@@ -282,7 +278,7 @@ class _PanelActionButtons extends StatelessWidget {
     mainAxisAlignment: MainAxisAlignment.end,
     children: <Widget>[
       BaktazButton(text: context.i18n.content.panel.cancel, buttonType: ButtonType.text, onPressed: onCancel),
-      const Gap(AppSizes.small),
+      const Gap(BaktazSpacing.sm),
       BaktazButton(
         text: isEditing ? context.i18n.content.panel.update : context.i18n.content.panel.add,
         onPressed: onSubmit,

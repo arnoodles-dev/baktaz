@@ -1,4 +1,4 @@
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_icon.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -13,7 +13,7 @@ class BaktazAvatar extends StatelessWidget {
     this.imageUrl,
     this.initials,
     this.padding,
-    this.borderSize = AppSizes.x2Small,
+    this.borderSize = BaktazSpacing.xs2,
     this.isCachedSize = true,
     this.isLoading = false,
     this.borderColor,
@@ -37,7 +37,7 @@ class BaktazAvatar extends StatelessWidget {
   final Either<String, IconData>? defaultIcon;
   final Color? initialsBackgroundColor;
 
-  // DESIGN.md §12.8 size constants
+  // DESIGN.md §1.4 size constants
   static const double sizeXS = 24;
   static const double sizeSM = 36;
   static const double sizeMD = 44;
@@ -135,7 +135,7 @@ class _InitialsAvatar extends StatelessWidget {
       child: Center(
         child: BaktazText(
           text: label,
-          style: theme.textTheme.labelLarge?.copyWith(color: theme.colorScheme.onPrimaryContainer),
+          style: theme.textTheme.headlineLarge?.copyWith(color: theme.colorScheme.onPrimaryContainer),
         ),
       ),
     );

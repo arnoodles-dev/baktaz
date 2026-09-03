@@ -13,25 +13,25 @@ class PendingChangesBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     margin: Paddings.bottomXLarge,
-    padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.medium),
-    decoration: const BoxDecoration(
-      color: AppColors.colorPrimarySubtle,
-      borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusXSmall)),
-      border: Border.fromBorderSide(BorderSide(color: AppColors.colorPrimaryLight)),
+    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.md),
+    decoration: BoxDecoration(
+      color: context.colorScheme.primaryContainer,
+      borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+      border: Border.fromBorderSide(BorderSide(color: context.colorScheme.primaryContainer)),
     ),
     child: Row(
       children: <Widget>[
         Container(
-          width: AppSizes.size36,
-          height: AppSizes.size36,
-          decoration: const BoxDecoration(
-            color: AppColors.colorPrimary,
-            borderRadius: BorderRadius.all(Radius.circular(AppSizes.size20)),
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: context.colorScheme.primary,
+            borderRadius: const BorderRadius.all(Radius.circular(BaktazSpacing.lg)),
           ),
           child: BaktazIcon(
             icon: Either<String, IconData>.right(Icons.sync),
-            size: AppSizes.iconSmall,
-            color: AppColors.white,
+            size: BaktazSpacing.iconSmall,
+            color: Colors.white,
           ),
         ),
         Gap.medium(),
@@ -41,15 +41,15 @@ class PendingChangesBanner extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.remote_config.pending_changes.title,
-                style: AppTextStyle.labelLarge.copyWith(
-                  fontWeight: AppFontWeight.bold,
-                  color: AppColors.colorTextPrimary,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: context.colorScheme.onSurface,
                 ),
               ),
               Gap.x2Small(),
               BaktazText(
                 text: context.i18n.remote_config.pending_changes.description(changeCount: changeCount),
-                style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -58,22 +58,22 @@ class PendingChangesBanner extends StatelessWidget {
         BaktazButton(
           onPressed: () => _showDiscardConfirmation(context),
           text: context.i18n.remote_config.pending_changes.discard,
-          textStyle: AppTextStyle.labelLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+          textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
           buttonType: ButtonType.text,
-          buttonStyle: TextButton.styleFrom(foregroundColor: AppColors.colorPrimary),
+          buttonStyle: TextButton.styleFrom(foregroundColor: context.colorScheme.primary),
         ),
         Gap.xSmall(),
         BaktazButton(
           onPressed: onPublish,
           text: context.i18n.remote_config.pending_changes.publish,
-          textStyle: AppTextStyle.labelLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+          textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
           buttonType: ButtonType.elevated,
           buttonStyle: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.colorPrimary,
-            foregroundColor: AppColors.white,
+            backgroundColor: context.colorScheme.primary,
+            foregroundColor: Colors.white,
             elevation: 0,
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusFull))),
-            padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+            shape: RoundedRectangleBorder(borderRadius: BaktazRadius.pill),
+            padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
           ),
         ),
       ],
@@ -84,10 +84,10 @@ class PendingChangesBanner extends StatelessWidget {
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall))),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.sm))),
         title: BaktazText(
           text: context.i18n.remote_config.pending_changes.discard_title,
-          style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
         content: BaktazText(text: context.i18n.remote_config.pending_changes.discard_message),
         actions: <Widget>[
@@ -101,10 +101,10 @@ class PendingChangesBanner extends StatelessWidget {
             text: context.i18n.remote_config.pending_changes.discard,
             buttonType: ButtonType.elevated,
             buttonStyle: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.colorError,
-              foregroundColor: AppColors.white,
+              backgroundColor: context.colorScheme.error,
+              foregroundColor: Colors.white,
               shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusXLarge)),
+                borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.xl)),
               ),
             ),
           ),

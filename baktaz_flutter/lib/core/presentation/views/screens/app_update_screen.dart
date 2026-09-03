@@ -50,7 +50,7 @@ class AppUpdateScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: context.textTheme.displaySmall?.copyWith(
                       color: context.colorScheme.primary,
-                      fontWeight: AppFontWeight.medium,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),

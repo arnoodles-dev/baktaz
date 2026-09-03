@@ -55,7 +55,7 @@ class BaktazAppBar extends StatelessWidget implements PreferredSizeWidget {
     actions: actions,
     scrolledUnderElevation: scrolledUnderElevation,
     backgroundColor: backgroundColor ?? context.colorScheme.surface,
-    surfaceTintColor: AppColors.transparent,
+    surfaceTintColor: Colors.transparent,
     centerTitle: centerTitle,
     bottom: bottom,
   );

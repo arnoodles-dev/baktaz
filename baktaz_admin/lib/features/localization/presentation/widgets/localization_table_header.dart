@@ -60,7 +60,7 @@ class LocalizationTableHeader extends HookWidget {
     }, <Object>[searchQuery]);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSizes.large, AppSizes.medium, AppSizes.large, AppSizes.small),
+      padding: const EdgeInsets.fromLTRB(BaktazSpacing.lg, BaktazSpacing.md, BaktazSpacing.lg, BaktazSpacing.sm),
       child: Row(
         children: <Widget>[
           Expanded(
@@ -70,16 +70,16 @@ class LocalizationTableHeader extends HookWidget {
                 children: locales.map((String locale) {
                   final bool isSelected = locale == selectedLocale;
                   return Padding(
-                    padding: const EdgeInsets.only(right: AppSizes.xSmall),
+                    padding: const EdgeInsets.only(right: BaktazSpacing.xs),
                     child: InkWell(
                       onTap: () => onLocaleSelected(locale),
-                      borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
+                      borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSizes.medium, vertical: AppSizes.small),
+                        padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.md, vertical: BaktazSpacing.sm),
                         decoration: BoxDecoration(
                           border: isSelected
-                              ? const Border(
-                                  bottom: BorderSide(color: AppColors.colorPrimary, width: _borderBottomWidth),
+                              ? Border(
+                                  bottom: BorderSide(color: context.colorScheme.primary, width: _borderBottomWidth),
                                 )
                               : null,
                         ),
@@ -88,9 +88,9 @@ class LocalizationTableHeader extends HookWidget {
                           children: <Widget>[
                             BaktazText(
                               text: _getLocaleName(context, locale),
-                              style: AppTextStyle.titleMedium.copyWith(
-                                color: isSelected ? AppColors.colorPrimary : AppColors.colorTextSecondary,
-                                fontWeight: isSelected ? AppFontWeight.semiBold : AppFontWeight.regular,
+                              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: isSelected ? context.colorScheme.primary : context.colorScheme.onSurfaceVariant,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                               ),
                             ),
                             if (pendingChanges.values
@@ -99,16 +99,16 @@ class LocalizationTableHeader extends HookWidget {
                               Gap.xSmall(),
                               Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                decoration: const BoxDecoration(
-                                  color: AppColors.colorPrimarySubtle,
-                                  borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
+                                decoration: BoxDecoration(
+                                  color: context.colorScheme.primaryContainer,
+                                  borderRadius: BaktazRadius.pill,
                                 ),
                                 child: BaktazText(
                                   text:
                                       '${pendingChanges.values.where((LocalizationTranslation t) => t.locale == locale).length}',
-                                  style: AppTextStyle.bodySmall.copyWith(
-                                    color: AppColors.colorPrimary,
-                                    fontWeight: AppFontWeight.bold,
+                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    color: context.colorScheme.primary,
+                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
                               ),
@@ -126,35 +126,35 @@ class LocalizationTableHeader extends HookWidget {
           Container(
             width: _searchBarWidth,
             height: _searchBarHeight,
-            decoration: const BoxDecoration(
-              color: AppColors.colorSurface,
-              borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-              border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+            decoration: BoxDecoration(
+              color: context.colorScheme.surface,
+              borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+              border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
             ),
             child: BaktazTextField(
               onChanged: onSearchChanged,
               controller: controller,
               decoration: InputDecoration(
                 isDense: true,
-                contentPadding: const EdgeInsets.symmetric(horizontal: AppSizes.small, vertical: AppSizes.xSmall),
+                contentPadding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.sm, vertical: BaktazSpacing.xs),
                 border: InputBorder.none,
                 hintText: context.i18n.localization.table.search_placeholder,
-                hintStyle: AppTextStyle.bodyMedium.copyWith(color: AppColors.colorTextDisabled),
+                hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
                 prefixIcon: BaktazIcon(
                   icon: right(Icons.search),
                   size: _searchIconSize,
-                  color: AppColors.colorTextDisabled,
+                  color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
                 ),
                 prefixIconConstraints: const BoxConstraints(minWidth: _searchIconMinWidth, minHeight: _searchIconSize),
               ),
             ),
           ),
           Gap.small(),
-          Container(width: _borderThickness, height: _dividerHeight, color: AppColors.colorBorder),
+          Container(width: _borderThickness, height: _dividerHeight, color: context.colorScheme.outline),
           Gap.small(),
           IconButton(
             onPressed: onDownload,
-            icon: BaktazIcon(icon: right(Icons.download_outlined), color: AppColors.colorTextPrimary),
+            icon: BaktazIcon(icon: right(Icons.download_outlined), color: context.colorScheme.onSurface),
             tooltip: context.i18n.localization.table.download,
           ),
         ],
@@ -172,16 +172,16 @@ class TableColumnHeaders extends StatelessWidget {
   Widget build(BuildContext context) {
     final String valueText = context.i18n.localization.table.value_en.split('(').first;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
       child: Row(
         children: <Widget>[
           Expanded(
             flex: 5,
             child: BaktazText(
               text: context.i18n.localization.table.key,
-              style: AppTextStyle.labelMedium.copyWith(
-                color: AppColors.colorTextDisabled,
-                fontWeight: AppFontWeight.semiBold,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -190,18 +190,18 @@ class TableColumnHeaders extends StatelessWidget {
             flex: 4,
             child: BaktazText(
               text: '$valueText(${selectedLocale.toUpperCase()})',
-              style: AppTextStyle.labelMedium.copyWith(
-                color: AppColors.colorTextDisabled,
-                fontWeight: AppFontWeight.semiBold,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+                fontWeight: FontWeight.w600,
               ),
             ),
           ),
           Expanded(
             child: BaktazText(
               text: context.i18n.localization.table.actions,
-              style: AppTextStyle.labelMedium.copyWith(
-                color: AppColors.colorTextDisabled,
-                fontWeight: AppFontWeight.semiBold,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+                fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.right,
             ),

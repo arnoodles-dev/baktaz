@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Toggle (Switch) — DESIGN.md §12.11
+/// Toggle (Switch) — DESIGN.md §1.6
 ///
 /// Wrapper around Material Switch with DESIGN.md tokens.
-/// Track on: colorPrimary · Track off: colorBorder · Thumb: white
+/// Track on: primary · Track off: outline · Thumb: onPrimary
 class BaktazToggle extends StatelessWidget {
   const BaktazToggle({required this.value, required this.onChanged, super.key});
 

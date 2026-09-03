@@ -45,12 +45,12 @@ class LocalizationTableWidget extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.localization.table.no_keys_title,
-                style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const Gap(AppSizes.xSmall),
+              const Gap(BaktazSpacing.xs),
               BaktazText(
                 text: context.i18n.localization.table.no_keys_desc,
-                style: AppTextStyle.bodyMedium.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -77,7 +77,7 @@ class LocalizationTableWidget extends StatelessWidget {
             isCollapsed: isCollapsed,
             onToggle: () => context.read<LocalizationCubit>().toggleNamespace(nsNode.namespace),
           ),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
         ]);
 
         if (!isCollapsed) {
@@ -113,16 +113,16 @@ class LocalizationTableWidget extends StatelessWidget {
             onEdit: () =>
                 onEdit(locKey, pendingTranslation?.value ?? (selectedLocale == 'en' ? locKey.defaultValueEn : null)),
           ),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
         ]);
       }
     }
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.colorSurface,
-        borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-        border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+        border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -137,9 +137,9 @@ class LocalizationTableWidget extends StatelessWidget {
             onDownload: () {},
             pendingChanges: pendingChanges,
           ),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
           TableColumnHeaders(selectedLocale: selectedLocale),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
           ...rowWidgets,
           LocalizationTableFooter(
             startIndex: state.startIndex,

@@ -32,7 +32,7 @@ class HostSubscriptionBanner extends StatelessWidget {
                   BaktazIcon(
                     icon: right(Icons.workspace_premium),
                     color: isHostTier ? context.baktazColors.successOnContainer : context.colorScheme.primary,
-                    size: AppSizes.iconMedium,
+                    size: BaktazSpacing.iconMedium,
                   ),
                   Gap.medium(),
                   Expanded(
@@ -41,7 +41,7 @@ class HostSubscriptionBanner extends StatelessWidget {
                           ? context.i18n.account.host_subscription_banner.premium_host
                           : context.i18n.account.host_subscription_banner.regular_user,
                       style: context.textTheme.titleMedium?.copyWith(
-                        fontWeight: AppFontWeight.semiBold,
+                        fontWeight: FontWeight.w600,
                         color: context.colorScheme.onSurface,
                       ),
                     ),

@@ -47,7 +47,7 @@ class _LocalizationScreenView extends StatelessWidget {
       final int pendingCount = state.pendingChanges.length;
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(AppSizes.medium, AppSizes.medium, AppSizes.medium, AppSizes.xLarge),
+        padding: const EdgeInsets.fromLTRB(BaktazSpacing.md, BaktazSpacing.md, BaktazSpacing.md, BaktazSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -123,12 +123,12 @@ class _PageHeader extends StatelessWidget {
         children: <Widget>[
           BaktazText(
             text: context.i18n.localization.title,
-            style: AppTextStyle.headlineLarge.copyWith(fontWeight: AppFontWeight.bold),
+            style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
           ),
-          const Gap(AppSizes.x2Small),
+          const Gap(BaktazSpacing.xs2),
           BaktazText(
             text: context.i18n.localization.description,
-            style: AppTextStyle.bodyLarge.copyWith(color: AppColors.colorTextSecondary),
+            style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: context.colorScheme.onSurfaceVariant),
           ),
         ],
       ),

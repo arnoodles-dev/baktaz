@@ -87,7 +87,7 @@ Future<void> testExecutable(FutureOr<void> Function() testMain) async {
         backgroundColor: Colors.white,
         borderColor: Colors.black,
         padding: const EdgeInsets.all(16),
-        nameTextStyle: AppTextStyle.baseTextStyle,
+        nameTextStyle: BaseTheme.textTheme.labelMedium,
       ) as GoldenTestTheme,
       theme: AppTheme.light,
       platformGoldensConfig: const PlatformGoldensConfig(enabled: !bool.fromEnvironment('CI', defaultValue: false)),

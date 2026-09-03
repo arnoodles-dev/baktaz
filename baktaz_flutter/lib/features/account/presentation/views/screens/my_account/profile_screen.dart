@@ -63,11 +63,11 @@ class ProfileScreen extends StatelessWidget {
               children: <Widget>[
                 BaktazAppBar(
                   title: context.i18n.account.profile_title,
-                  titleStyle: context.textTheme.titleLarge?.copyWith(fontWeight: AppFontWeight.medium),
+                  titleStyle: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w500),
                   centerTitle: true,
                   leading: const BackButton(),
                 ),
-                Gap.custom(AppSizes.size80),
+                Gap.custom(80),
                 AccountDetailsContainer(
                   isLoading: isLoading(state.queryStatus, left(state.profile)),
                   child: Stack(
@@ -76,7 +76,7 @@ class ProfileScreen extends StatelessWidget {
                     alignment: Alignment.topCenter,
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.only(top: AppSizes.x3Large),
+                        padding: const EdgeInsets.only(top: BaktazSpacing.xl3),
                         child: AccountDetailsContent(
                           title: context.i18n.account.personal_information,
                           onEdit: () {
@@ -97,9 +97,9 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       Positioned(
-                        top: -AppSizes.size80,
+                        top: -80,
                         child: BaktazAvatar(
-                          size: AppSizes.size128,
+                          size: 128,
                           imageUrl: state.profile?.imageUrl?.getValue(),
                           isLoading: isLoading(state.queryStatus, left(state.profile)),
                         ),
@@ -126,7 +126,7 @@ class ProfileScreen extends StatelessWidget {
                               },
                               child: BaktazText(
                                 text: context.i18n.account.add_mobile_number,
-                                style: context.textTheme.bodyLarge?.copyWith(fontWeight: AppFontWeight.semiBold),
+                                style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                               ),
                             ),
                             Gap.x2Small(),
@@ -152,7 +152,7 @@ class ProfileScreen extends StatelessWidget {
                               },
                               child: BaktazText(
                                 text: context.i18n.account.add_email,
-                                style: context.textTheme.bodyLarge?.copyWith(fontWeight: AppFontWeight.semiBold),
+                                style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
                               ),
                             ),
                             Gap.x2Small(),

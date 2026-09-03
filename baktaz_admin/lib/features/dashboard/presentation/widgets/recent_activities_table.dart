@@ -14,15 +14,18 @@ class RecentActivitiesTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = context.textTheme;
-    final ColorScheme colorScheme = context.colorScheme;
 
     return Container(
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
-        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
+        color: context.colorScheme.surface,
+        borderRadius: BaktazRadius.chip,
+        border: Border.all(color: context.colorScheme.outlineVariant.withValues(alpha: 0.5)),
         boxShadow: <BoxShadow>[
-          BoxShadow(color: colorScheme.shadow.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(
+            color: context.colorScheme.shadow.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
         ],
       ),
       child: Column(
@@ -35,13 +38,13 @@ class RecentActivitiesTable extends StatelessWidget {
               children: <Widget>[
                 BaktazText(
                   text: context.i18n.dashboard.recent.title,
-                  style: textTheme.titleLarge?.copyWith(fontWeight: AppFontWeight.bold),
+                  style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 BaktazButton(
                   onPressed: () {},
                   text: context.i18n.dashboard.recent.see_all,
                   buttonType: ButtonType.text,
-                  textStyle: textTheme.labelLarge?.copyWith(color: colorScheme.primary),
+                  textStyle: textTheme.labelLarge?.copyWith(color: context.colorScheme.primary),
                 ),
               ],
             ),
@@ -55,7 +58,7 @@ class RecentActivitiesTable extends StatelessWidget {
                   constraints: BoxConstraints(minWidth: constraints.maxWidth),
                   child: DataTable(
                     headingRowColor: WidgetStateProperty.all(
-                      colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                      context.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
                     ),
                     columns: <DataColumn>[
                       DataColumn(label: BaktazText(text: context.i18n.dashboard.recent.columns.no)),
@@ -77,17 +80,15 @@ class RecentActivitiesTable extends StatelessWidget {
                           DataCell(
                             BaktazText(
                               text: activity.id.getValue(),
-                              style: AppTextStyle.labelLarge.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: AppFontWeight.bold,
-                              ),
+                              style: Theme.of(context).textTheme.labelLarge
+                                  ?.copyWith(color: context.colorScheme.primary, fontWeight: FontWeight.bold),
                             ),
                           ),
                           DataCell(BaktazText(text: DateFormat('MMM dd, yyyy').format(activity.date))),
                           DataCell(
                             BaktazText(
                               text: activity.name.getValue(),
-                              style: AppTextStyle.bodyMedium.copyWith(fontWeight: AppFontWeight.semiBold),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
                             ),
                           ),
                           DataCell(
@@ -96,18 +97,16 @@ class RecentActivitiesTable extends StatelessWidget {
                                 for (final Url avatarUrl in activity.customerAvatars)
                                   Padding(
                                     padding: Paddings.rightX2Small,
-                                    child: BaktazAvatar(size: AppSizes.avatarSM, imageUrl: avatarUrl.getValue()),
+                                    child: BaktazAvatar(size: BaktazAvatar.sizeSM, imageUrl: avatarUrl.getValue()),
                                   ),
                                 if (activity.customers.getValue() > activity.customerAvatars.length)
                                   CircleAvatar(
-                                    radius: AppSizes.small,
-                                    backgroundColor: colorScheme.primary,
+                                    radius: BaktazSpacing.sm,
+                                    backgroundColor: context.colorScheme.primary,
                                     child: BaktazText(
                                       text: '+${activity.customers.getValue() - activity.customerAvatars.length}',
-                                      style: AppTextStyle.labelSmall.copyWith(
-                                        color: colorScheme.onPrimary,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                      style: Theme.of(context).textTheme.labelSmall
+                                          ?.copyWith(color: context.colorScheme.onPrimary, fontWeight: FontWeight.bold),
                                     ),
                                   ),
                               ],
@@ -116,7 +115,7 @@ class RecentActivitiesTable extends StatelessWidget {
                           DataCell(
                             BaktazText(
                               text: '\$${activity.totalAmount.getValue().toStringAsFixed(2)}',
-                              style: AppTextStyle.bodyMedium.copyWith(fontWeight: AppFontWeight.bold),
+                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                             ),
                           ),
                           DataCell(
@@ -152,7 +151,6 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = context.colorScheme;
     Color backgroundColor;
     Color textColor;
     String label;
@@ -160,28 +158,25 @@ class _StatusBadge extends StatelessWidget {
 
     switch (status) {
       case ActivityStatus.completed:
-        backgroundColor = colorScheme.secondaryContainer;
-        textColor = colorScheme.onSecondaryContainer;
+        backgroundColor = context.colorScheme.secondaryContainer;
+        textColor = context.colorScheme.onSecondaryContainer;
         label = 'Completed';
         icon = Icons.check_circle;
       case ActivityStatus.processing:
-        backgroundColor = colorScheme.primaryContainer;
-        textColor = colorScheme.onPrimaryContainer;
+        backgroundColor = context.colorScheme.primaryContainer;
+        textColor = context.colorScheme.onPrimaryContainer;
         label = 'Processing';
         icon = Icons.sync;
       case ActivityStatus.pending:
-        backgroundColor = colorScheme.tertiaryContainer;
-        textColor = colorScheme.onTertiaryContainer;
+        backgroundColor = context.colorScheme.tertiaryContainer;
+        textColor = context.colorScheme.onTertiaryContainer;
         label = 'Pending';
         icon = Icons.schedule;
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall, vertical: AppSizes.x2Small),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs, vertical: BaktazSpacing.xs2),
+      decoration: BoxDecoration(color: backgroundColor, borderRadius: BaktazRadius.chip),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -189,7 +184,7 @@ class _StatusBadge extends StatelessWidget {
           Gap.x2Small(),
           BaktazText(
             text: label,
-            style: AppTextStyle.labelMedium.copyWith(color: textColor, fontWeight: AppFontWeight.bold),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: textColor, fontWeight: FontWeight.bold),
           ),
         ],
       ),

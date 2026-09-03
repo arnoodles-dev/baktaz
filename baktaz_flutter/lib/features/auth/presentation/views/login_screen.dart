@@ -47,7 +47,7 @@ class LoginScreen extends HookWidget {
           listener: _onStateChangedListener,
           child: ConnectivityChecker.scaffold(
             offlineMessage: context.i18n.common.error.no_internet_connection,
-            appBar: AppBar(backgroundColor: AppColors.transparent, elevation: 0),
+            appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
             body: SafeArea(
               child: LayoutBuilder(
                 builder: (BuildContext context, BoxConstraints viewportConstraints) => SingleChildScrollView(
@@ -63,7 +63,7 @@ class LoginScreen extends HookWidget {
                             BaktazText(
                               text: Constant.appName.toUpperCase(),
                               style: context.textTheme.displayLarge?.copyWith(
-                                fontSize: AppSizes.size80,
+                                fontSize: 80,
                                 color: context.colorScheme.primary,
                               ),
                               textAlign: TextAlign.center,
@@ -76,7 +76,7 @@ class LoginScreen extends HookWidget {
                                 BaktazButton(
                                   buttonType: ButtonType.outlined,
                                   isExpanded: true,
-                                  icon: BaktazIcon(icon: left(Assets.icons.facebook.path), size: AppSizes.size26),
+                                  icon: BaktazIcon(icon: left(Assets.icons.facebook.path), size: 26),
                                   text: context.i18n.login.button.facebook,
                                   onPressed: () => context.read<LoginCubit>().loginWithProvider(LoginProvider.facebook),
                                 ),
@@ -84,12 +84,12 @@ class LoginScreen extends HookWidget {
                                 BaktazButton(
                                   buttonType: ButtonType.outlined,
                                   isExpanded: true,
-                                  icon: BaktazIcon(icon: left(Assets.icons.google.path), size: AppSizes.size26),
+                                  icon: BaktazIcon(icon: left(Assets.icons.google.path), size: 26),
                                   text: context.i18n.login.button.google,
                                   onPressed: () => context.read<LoginCubit>().loginWithProvider(LoginProvider.google),
                                 ),
                                 Gap.medium(),
-                                const BaktazDivider(text: 'or'),
+                                const BaktazDivider(),
                                 Gap.medium(),
 
                                 BaktazButton(

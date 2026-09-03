@@ -42,7 +42,7 @@ class ThemeCubit extends CubitSignal<ThemeMode> {
           // Change system bar brightness
           SystemChrome.setSystemUIOverlayStyle(
             SystemUiOverlayStyle(
-              statusBarColor: AppColors.transparent, // Only Android
+              statusBarColor: Colors.transparent, // Only Android
               statusBarBrightness: isDarkMode
                   ? Brightness.dark
                   : Brightness.light, // Only iOS (Note: light and dark are inverted for iOS)

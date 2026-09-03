@@ -24,7 +24,7 @@ class DeleteAccountConfirmationDialog extends StatelessWidget {
               child: BaktazIcon(
                 icon: const Right<String, IconData>(Icons.delete_forever_rounded),
                 color: context.colorScheme.onErrorContainer,
-                size: AppSizes.iconXLarge,
+                size: BaktazSpacing.iconXLarge,
               ),
             ),
           ),
@@ -32,12 +32,12 @@ class DeleteAccountConfirmationDialog extends StatelessWidget {
         Gap.x2Large(),
         BaktazText(
           text: context.i18n.account.delete_dialog.title,
-          style: context.textTheme.titleLarge?.copyWith(fontWeight: AppFontWeight.semiBold),
+          style: context.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
         Gap.xSmall(),
         BaktazText(
           text: context.i18n.account.delete_dialog.subtitle,
-          style: context.textTheme.titleMedium?.copyWith(fontWeight: AppFontWeight.regular),
+          style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.normal),
         ),
         Gap.large(),
         BaktazButton(text: context.i18n.account.button.delete_account, isExpanded: true, onPressed: onConfirm),

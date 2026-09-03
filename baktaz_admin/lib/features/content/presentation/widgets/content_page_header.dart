@@ -26,12 +26,12 @@ class ContentPageHeader extends StatelessWidget {
           children: <Widget>[
             BaktazText(
               text: context.i18n.content.title,
-              style: AppTextStyle.headlineLarge.copyWith(fontWeight: AppFontWeight.bold),
+              style: Theme.of(context).textTheme.headlineLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
-            const Gap(AppSizes.x2Small),
+            const Gap(BaktazSpacing.xs2),
             BaktazText(
               text: context.i18n.content.description,
-              style: AppTextStyle.bodyLarge.copyWith(color: AppColors.colorTextSecondary),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: context.colorScheme.onSurfaceVariant),
             ),
           ],
         ),
@@ -43,7 +43,7 @@ class ContentPageHeader extends StatelessWidget {
             buttonType: ButtonType.outlined,
             onPressed: isPublishing ? null : onSaveDraft,
           ),
-          const Gap(AppSizes.small),
+          const Gap(BaktazSpacing.sm),
           BaktazButton(
             text: context.i18n.content.header.publish,
             isLoading: isPublishing,

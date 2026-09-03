@@ -8,10 +8,10 @@ class LocalizationTableShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Shimmer(
     child: Container(
-      decoration: const BoxDecoration(
-        color: AppColors.colorSurface,
-        borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-        border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+        border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -20,37 +20,37 @@ class LocalizationTableShimmer extends StatelessWidget {
             padding: Paddings.allLarge,
             child: Row(
               children: <Widget>[
-                BaktazText(text: 'All Keys', style: AppTextStyle.labelMedium),
+                BaktazText(text: 'All Keys', style: Theme.of(context).textTheme.labelMedium),
                 const Spacer(),
-                BaktazText(text: 'Search keys...', style: AppTextStyle.labelMedium),
+                BaktazText(text: 'Search keys...', style: Theme.of(context).textTheme.labelMedium),
               ],
             ),
           ),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
           const TableColumnHeaders(selectedLocale: 'en'),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
           ...List<Widget>.generate(
             5,
             (int index) => Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.medium),
+                  padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.md),
                   child: Row(
                     children: <Widget>[
                       Expanded(
                         flex: 5,
-                        child: BaktazText(text: 'home.title', style: AppTextStyle.bodyMedium),
+                        child: BaktazText(text: 'home.title', style: Theme.of(context).textTheme.bodyMedium),
                       ),
                       Gap.small(),
                       Expanded(
                         flex: 4,
-                        child: BaktazText(text: 'This is a long english translation', style: AppTextStyle.bodyMedium),
+                        child: BaktazText(text: 'This is a long english translation', style: Theme.of(context).textTheme.bodyMedium),
                       ),
                       const Expanded(child: SizedBox.shrink()),
                     ],
                   ),
                 ),
-                const Divider(height: 1, color: AppColors.colorBorder),
+                Divider(height: 1, color: context.colorScheme.outline),
               ],
             ),
           ),

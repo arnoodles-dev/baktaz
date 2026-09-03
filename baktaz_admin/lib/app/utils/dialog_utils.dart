@@ -60,7 +60,7 @@ final class DialogUtils {
   }) => toastification.show(
     title: BaktazText(text: message, overflow: TextOverflow.ellipsis, maxLines: 3),
     icon: Padding(
-      padding: const EdgeInsets.only(left: AppSizes.small, right: AppSizes.xSmall),
+      padding: const EdgeInsets.only(left: BaktazSpacing.sm, right: BaktazSpacing.xs),
       child: icon ?? BaktazIcon(icon: right(Icons.error_outline)),
     ),
     autoCloseDuration: isDismissable ? duration ?? Constant.longDelay : null,

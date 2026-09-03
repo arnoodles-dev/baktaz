@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 
 /// App Theme wired to DESIGN.md tokens.
 abstract final class AppTheme extends BaseTheme {
-  static final ThemeData light = _buildThemeData(AppColors.lightColorScheme);
-  static final ThemeData dark = _buildThemeData(AppColors.darkColorScheme);
+  static final ThemeData light = _buildThemeData(BaktazTheme.light);
+  static final ThemeData dark = _buildThemeData(BaktazTheme.dark);
 
   // ── Proxy BaseTheme Constants ────────────────────────────────────────────────
   static const double defaultRadius = ThemeConstants.defaultRadius;

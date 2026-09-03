@@ -17,13 +17,13 @@ class AddTranslationDialog extends HookWidget {
     final TextEditingController valueController = useTextEditingController();
 
     return AlertDialog(
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusMedium))),
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.lg))),
       title: BaktazText(
         text: context.i18n.localization.add_dialog.title,
-        style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
       ),
       content: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: AppSizes.dialogWidth),
+        constraints: const BoxConstraints(maxWidth: BaktazSpacing.dialogWidth),
         child: Form(
           key: formKey,
           child: Column(
@@ -32,7 +32,7 @@ class AddTranslationDialog extends HookWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.localization.add_dialog.key_label,
-                style: AppTextStyle.labelMedium.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
               Gap.xSmall(),
               TextFormField(
@@ -41,7 +41,7 @@ class AddTranslationDialog extends HookWidget {
                   border: const OutlineInputBorder(),
                   hintText: context.i18n.localization.add_dialog.key_hint,
                   helperText: 'Use dot notation for nested keys, e.g. login.title',
-                  helperStyle: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+                  helperStyle: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
                 ),
                 validator: (String? value) {
                   if (value == null || value.trim().isEmpty) {
@@ -58,7 +58,7 @@ class AddTranslationDialog extends HookWidget {
               Gap.medium(),
               BaktazText(
                 text: context.i18n.localization.add_dialog.namespace_label,
-                style: AppTextStyle.labelMedium.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
               Gap.xSmall(),
               TextFormField(
@@ -77,7 +77,7 @@ class AddTranslationDialog extends HookWidget {
               Gap.medium(),
               BaktazText(
                 text: context.i18n.localization.add_dialog.value_label,
-                style: AppTextStyle.labelMedium.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
               Gap.xSmall(),
               TextFormField(

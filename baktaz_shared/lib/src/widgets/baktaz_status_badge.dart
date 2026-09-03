@@ -1,14 +1,12 @@
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
-import 'package:baktaz_shared/src/theme/app_spacing.dart';
-import 'package:baktaz_shared/src/theme/app_text_style.dart';
-import 'package:baktaz_shared/src/theme/baktaz_custom_colors.dart';
+import 'package:baktaz_shared/src/theme/baktaz_radius.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 
-/// StatusBadge — DESIGN.md §12.5
+/// StatusBadge — DESIGN.md §1.5 / §2.4
 ///
 /// Always combines background + icon + label. Never color alone.
-/// Colors resolve from `context.baktazColors` (ThemeExtension) — light/dark aware.
+/// Uses ColorScheme roles directly — no ThemeExtension for primary variants.
 class BaktazStatusBadge extends StatelessWidget {
   const BaktazStatusBadge({required this.label, required this.variant, super.key});
 
@@ -20,16 +18,16 @@ class BaktazStatusBadge extends StatelessWidget {
     final (Color bg, Color textColor, IconData icon) = _resolveTokens(context);
 
     return Container(
-      decoration: BoxDecoration(color: bg, borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull))),
-      padding: const EdgeInsets.symmetric(vertical: AppSizes.x2Small, horizontal: AppSizes.xSmall),
+      decoration: BoxDecoration(color: bg, borderRadius: BaktazRadius.pill),
+      padding: const EdgeInsets.symmetric(vertical: BaktazSpacing.xs2, horizontal: BaktazSpacing.xs),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Icon(icon, size: 12, color: textColor),
-          const Gap(AppSizes.x2Small),
+          const SizedBox(width: BaktazSpacing.xs2),
           BaktazText(
             text: label,
-            style: AppTextStyle.labelSmall.copyWith(color: textColor, fontWeight: FontWeight.w600),
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: textColor, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -37,21 +35,15 @@ class BaktazStatusBadge extends StatelessWidget {
   }
 
   (Color, Color, IconData) _resolveTokens(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final BaktazCustomColors customColors =
-        Theme.of(context).extension<BaktazCustomColors>() ?? BaktazCustomColors.light;
+    final ColorScheme scheme = Theme.of(context).colorScheme;
 
     return switch (variant) {
-      StatusBadgeVariant.available => (colorScheme.secondaryContainer, customColors.successOnContainer, Icons.verified),
-      StatusBadgeVariant.confirmed => (
-        colorScheme.secondaryContainer,
-        customColors.successOnContainer,
-        Icons.check_circle,
-      ),
-      StatusBadgeVariant.active => (colorScheme.primaryContainer, colorScheme.onPrimaryContainer, Icons.refresh),
-      StatusBadgeVariant.pending => (customColors.badgePendingBg, customColors.badgePendingText, Icons.access_time),
-      StatusBadgeVariant.failed => (colorScheme.errorContainer, colorScheme.onErrorContainer, Icons.cancel),
-      StatusBadgeVariant.neutral => (customColors.badgeNeutralBg, customColors.badgeNeutralText, Icons.pause),
+      StatusBadgeVariant.available => (scheme.secondaryContainer, scheme.onSecondaryContainer, Icons.verified),
+      StatusBadgeVariant.confirmed => (scheme.secondaryContainer, scheme.onSecondaryContainer, Icons.check_circle),
+      StatusBadgeVariant.active => (scheme.primaryContainer, scheme.onPrimaryContainer, Icons.refresh),
+      StatusBadgeVariant.pending => (scheme.surfaceContainerHigh, scheme.onSurfaceVariant, Icons.access_time),
+      StatusBadgeVariant.failed => (scheme.errorContainer, scheme.onErrorContainer, Icons.cancel),
+      StatusBadgeVariant.neutral => (scheme.surfaceContainerHigh, scheme.onSurfaceVariant, Icons.pause),
     };
   }
 }

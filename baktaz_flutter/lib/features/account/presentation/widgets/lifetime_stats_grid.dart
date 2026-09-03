@@ -83,7 +83,7 @@ class _StatCard extends StatelessWidget {
               BaktazText(
                 text: value,
                 style: context.textTheme.headlineMedium?.copyWith(
-                  fontWeight: AppFontWeight.bold,
+                  fontWeight: FontWeight.bold,
                   color: context.colorScheme.onSurface,
                 ),
               ),

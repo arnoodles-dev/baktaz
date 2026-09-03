@@ -64,7 +64,7 @@ class OnboardingScreen extends HookWidget {
   Widget build(BuildContext context) {
     final PageController pageController = usePageController();
     final ValueNotifier<int> index = useState<int>(0);
-    const double indicatorSize = AppSizes.xSmall;
+    const double indicatorSize = BaktazSpacing.xs;
 
     return Scaffold(
       backgroundColor: context.colorScheme.surface,

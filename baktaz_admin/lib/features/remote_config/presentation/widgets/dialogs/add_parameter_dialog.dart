@@ -21,7 +21,7 @@ class AddParameterDialog extends HookWidget {
     final ValueNotifier<ConfigValueType> selectedType = useState<ConfigValueType>(ConfigValueType.string);
 
     return AlertDialog(
-      title: BaktazText(text: context.i18n.remote_config.add_dialog.title, style: AppTextStyle.headlineMedium),
+      title: BaktazText(text: context.i18n.remote_config.add_dialog.title, style: Theme.of(context).textTheme.headlineMedium),
       content: Form(
         key: formKey,
         child: SingleChildScrollView(
@@ -161,11 +161,11 @@ class AddParameterDialog extends HookWidget {
             }
           },
           text: context.i18n.remote_config.add_dialog.title,
-          textStyle: AppTextStyle.labelLarge.copyWith(color: AppColors.white),
+          textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white),
           buttonType: ButtonType.elevated,
           buttonStyle: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.colorPrimary,
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusXLarge))),
+            backgroundColor: context.colorScheme.primary,
+            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.xl))),
           ),
         ),
       ],

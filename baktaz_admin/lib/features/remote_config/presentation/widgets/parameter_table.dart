@@ -33,12 +33,12 @@ class ParameterTable extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.remote_config.table.no_parameters_title,
-                style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const Gap(AppSizes.xSmall),
+              const Gap(BaktazSpacing.xs),
               BaktazText(
                 text: context.i18n.remote_config.table.no_parameters_desc,
-                style: AppTextStyle.bodyMedium.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -49,10 +49,10 @@ class ParameterTable extends StatelessWidget {
     final List<MapEntry<String, RemoteConfigValue>> paginatedEntries = state.paginatedParameters;
 
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.colorSurface,
-        borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-        border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surface,
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+        border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -67,9 +67,9 @@ class ParameterTable extends StatelessWidget {
             isAscending: state.isAscending,
             onToggleSort: cubit.toggleSortOrder,
           ),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
           const _TableColumnHeaders(),
-          const Divider(height: 1, color: AppColors.colorBorder),
+          Divider(height: 1, color: context.colorScheme.outline),
           ...paginatedEntries.map((MapEntry<String, RemoteConfigValue> entry) {
             final String key = entry.key;
             final RemoteConfigValue baseValue = entry.value;
@@ -87,7 +87,7 @@ class ParameterTable extends StatelessWidget {
                   isModified: isModified,
                   onEdit: () => onEdit(key, baseValue, resolvedDescription),
                 ),
-                const Divider(height: 1, color: AppColors.colorBorder),
+                Divider(height: 1, color: context.colorScheme.outline),
               ],
             );
           }),
@@ -135,12 +135,12 @@ class _TableHeaderState extends State<_TableHeader> {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.fromLTRB(AppSizes.large, AppSizes.medium, AppSizes.large, AppSizes.small),
+    padding: const EdgeInsets.fromLTRB(BaktazSpacing.lg, BaktazSpacing.md, BaktazSpacing.lg, BaktazSpacing.sm),
     child: Row(
       children: <Widget>[
         BaktazText(
           text: context.i18n.remote_config.table.global_parameters,
-          style: AppTextStyle.titleMedium.copyWith(color: AppColors.colorTextPrimary),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: context.colorScheme.onSurface),
         ),
         Gap.xSmall(),
         Expanded(
@@ -156,7 +156,7 @@ class _TableHeaderState extends State<_TableHeader> {
                 Gap.xSmall(),
                 ...widget.availableTypes.map(
                   (ConfigValueType type) => Padding(
-                    padding: const EdgeInsets.only(right: AppSizes.xSmall),
+                    padding: const EdgeInsets.only(right: BaktazSpacing.xs),
                     child: _FilterChip(
                       label: type.label,
                       isSelected: widget.selectedType == type,
@@ -172,7 +172,7 @@ class _TableHeaderState extends State<_TableHeader> {
         MenuAnchor(
           controller: _menuController,
           style: const MenuStyle(
-            padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(vertical: AppSizes.xSmall)),
+            padding: WidgetStatePropertyAll<EdgeInsets>(EdgeInsets.symmetric(vertical: BaktazSpacing.xs)),
           ),
           menuChildren: <Widget>[
             _SortMenuItem(
@@ -210,8 +210,8 @@ class _TableHeaderState extends State<_TableHeader> {
             onPressed: () => controller.open(),
             icon: BaktazIcon(
               icon: Either<String, IconData>.right(Icons.filter_list),
-              size: AppSizes.iconSmall,
-              color: AppColors.colorTextSecondary,
+              size: BaktazSpacing.iconSmall,
+              color: context.colorScheme.onSurfaceVariant,
             ),
           ),
         ),
@@ -219,8 +219,8 @@ class _TableHeaderState extends State<_TableHeader> {
         IconButton(
           icon: BaktazIcon(
             icon: Either<String, IconData>.right(widget.isAscending ? Icons.arrow_upward : Icons.arrow_downward),
-            size: AppSizes.iconSmall,
-            color: AppColors.colorTextSecondary,
+            size: BaktazSpacing.iconSmall,
+            color: context.colorScheme.onSurfaceVariant,
           ),
           onPressed: widget.onToggleSort,
           tooltip: widget.isAscending
@@ -233,8 +233,8 @@ class _TableHeaderState extends State<_TableHeader> {
         IconButton(
           icon: BaktazIcon(
             icon: Either<String, IconData>.right(Icons.download_outlined),
-            size: AppSizes.iconSmall,
-            color: AppColors.colorTextSecondary,
+            size: BaktazSpacing.iconSmall,
+            color: context.colorScheme.onSurfaceVariant,
           ),
           onPressed: () {},
           tooltip: context.i18n.remote_config.table.export,
@@ -258,16 +258,16 @@ class _FilterChip extends StatelessWidget {
     onTap: onTap,
     child: AnimatedContainer(
       duration: const Duration(milliseconds: 150),
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.small, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.sm, vertical: 5),
       decoration: BoxDecoration(
-        color: isSelected ? AppColors.colorPrimarySubtle : AppColors.colorSurfaceVariant,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
+        color: isSelected ? context.colorScheme.primaryContainer : context.colorScheme.surfaceContainerHighest,
+        borderRadius: BaktazRadius.pill,
       ),
       child: BaktazText(
         text: label,
-        style: AppTextStyle.labelSmall.copyWith(
-          fontWeight: isSelected ? AppFontWeight.semiBold : AppFontWeight.medium,
-          color: isSelected ? AppColors.black : AppColors.colorTextSecondary,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+          color: isSelected ? Colors.black : context.colorScheme.onSurfaceVariant,
         ),
       ),
     ),
@@ -279,16 +279,16 @@ class _TableColumnHeaders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
     child: Row(
       children: <Widget>[
         Expanded(
           flex: 3,
           child: BaktazText(
             text: context.i18n.remote_config.table.parameter_key,
-            style: AppTextStyle.labelMedium.copyWith(
-              color: AppColors.colorTextDisabled,
-              fontWeight: AppFontWeight.semiBold,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -296,9 +296,9 @@ class _TableColumnHeaders extends StatelessWidget {
           flex: 3,
           child: BaktazText(
             text: context.i18n.remote_config.table.value,
-            style: AppTextStyle.labelMedium.copyWith(
-              color: AppColors.colorTextDisabled,
-              fontWeight: AppFontWeight.semiBold,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -306,9 +306,9 @@ class _TableColumnHeaders extends StatelessWidget {
           flex: 2,
           child: BaktazText(
             text: context.i18n.remote_config.table.type,
-            style: AppTextStyle.labelMedium.copyWith(
-              color: AppColors.colorTextDisabled,
-              fontWeight: AppFontWeight.semiBold,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
@@ -316,18 +316,18 @@ class _TableColumnHeaders extends StatelessWidget {
           flex: 2,
           child: BaktazText(
             text: context.i18n.remote_config.table.last_modified,
-            style: AppTextStyle.labelMedium.copyWith(
-              color: AppColors.colorTextDisabled,
-              fontWeight: AppFontWeight.semiBold,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+              fontWeight: FontWeight.w600,
             ),
           ),
         ),
         Expanded(
           child: BaktazText(
             text: context.i18n.remote_config.table.actions,
-            style: AppTextStyle.labelMedium.copyWith(
-              color: AppColors.colorTextDisabled,
-              fontWeight: AppFontWeight.semiBold,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: context.colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+              fontWeight: FontWeight.w600,
             ),
             textAlign: TextAlign.right,
           ),
@@ -358,7 +358,7 @@ class _ParameterRow extends StatelessWidget {
 
     return RepaintBoundary(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.medium),
+        padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.md),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -368,29 +368,29 @@ class _ParameterRow extends StatelessWidget {
                 children: <Widget>[
                   BaktazText(
                     text: paramKey,
-                    style: AppTextStyle.bodyMedium.copyWith(
-                      fontWeight: AppFontWeight.semiBold,
-                      color: AppColors.colorTextPrimary,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: context.colorScheme.onSurface,
                     ),
                   ),
                   if (description.isNotEmpty) ...<Widget>[
                     Gap.x2Small(),
                     BaktazText(
                       text: description,
-                      style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
                     ),
                   ],
                   if (isNew) ...<Widget>[
                     Gap.x2Small(),
                     // ponytail: mapped to AppColors tokens
-                    const _StatusBadge(
+                    _StatusBadge(
                       label: 'PENDING',
-                      bg: AppColors.colorPrimarySubtle,
-                      fg: AppColors.colorPrimaryDark,
+                      bg: context.colorScheme.primaryContainer,
+                      fg: context.colorScheme.primaryContainer,
                     ),
                   ] else if (isModified) ...<Widget>[
                     Gap.x2Small(),
-                    const _StatusBadge(label: 'MODIFIED', bg: AppColors.pendingSubtle, fg: AppColors.warningText),
+                    _StatusBadge(label: 'MODIFIED', bg: context.colorScheme.surfaceContainerHigh, fg: context.baktazColors.warning),
                   ],
                 ],
               ),
@@ -413,7 +413,7 @@ class _ParameterRow extends StatelessWidget {
               flex: 2,
               child: BaktazText(
                 text: _getLastModifiedDisplay(displayValue.lastModified),
-                style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
             ),
             Expanded(
@@ -425,10 +425,10 @@ class _ParameterRow extends StatelessWidget {
                   icon: BaktazIcon(
                     icon: Either<String, IconData>.right(Icons.edit_outlined),
                     size: 14,
-                    color: AppColors.colorPrimary,
+                    color: context.colorScheme.primary,
                   ),
                   text: context.i18n.remote_config.table.edit,
-                  textStyle: AppTextStyle.labelLarge.copyWith(color: AppColors.colorPrimary),
+                  textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(color: context.colorScheme.primary),
                   buttonStyle: TextButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 4),
                     minimumSize: Size.zero,
@@ -465,8 +465,8 @@ class _SortMenuItem extends StatelessWidget {
   Widget build(BuildContext context) => MenuItemButton(
     leadingIcon: BaktazIcon(
       icon: Either<String, IconData>.right(icon),
-      size: AppSizes.iconSmall,
-      color: selected ? AppColors.colorPrimary : AppColors.colorTextSecondary,
+      size: BaktazSpacing.iconSmall,
+      color: selected ? context.colorScheme.primary : context.colorScheme.onSurfaceVariant,
     ),
     onPressed: onTap,
     child: BaktazText(text: label),
@@ -482,20 +482,20 @@ class _ValueDisplay extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color textColor = switch (type) {
-      ConfigValueType.boolean => value.toLowerCase() == 'true' ? AppColors.colorAccent : AppColors.colorTextPrimary,
-      _ => AppColors.colorTextPrimary,
+      ConfigValueType.boolean => value.toLowerCase() == 'true' ? context.colorScheme.primary : context.colorScheme.onSurface,
+      _ => context.colorScheme.onSurface,
     };
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall, vertical: 5),
-      decoration: const BoxDecoration(
-        color: AppColors.colorSurfaceVariant,
-        borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusX2Small)),
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs, vertical: 5),
+      decoration: BoxDecoration(
+        color: context.colorScheme.surfaceContainerHighest,
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
       ),
       child: BaktazText(
         text: value,
-        style: AppTextStyle.bodySmall.copyWith(
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
           fontFamily: type == ConfigValueType.json ? 'RobotoMono' : null,
-          fontWeight: AppFontWeight.medium,
+          fontWeight: FontWeight.w500,
           color: textColor,
         ),
         maxLines: 1,
@@ -513,18 +513,18 @@ class _TypeBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final (Color bg, Color fg) = switch (type) {
-      ConfigValueType.string => (AppColors.colorPrimarySubtle, AppColors.colorPrimaryDark),
-      ConfigValueType.boolean => (AppColors.colorAccentSubtle, AppColors.successText),
-      ConfigValueType.number => (AppColors.pendingSubtle, AppColors.warningText),
-      ConfigValueType.json => (AppColors.purpleSubtle, AppColors.purpleText),
+      ConfigValueType.string => (context.colorScheme.primaryContainer, context.colorScheme.primaryContainer),
+      ConfigValueType.boolean => (context.colorScheme.primaryContainer, context.colorScheme.primary),
+      ConfigValueType.number => (context.colorScheme.surfaceContainerHigh, context.baktazColors.warning),
+      ConfigValueType.json => (context.colorScheme.tertiaryContainer, context.colorScheme.tertiary),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall, vertical: AppSizes.x2Small),
-      decoration: BoxDecoration(color: bg, borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull))),
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs, vertical: BaktazSpacing.xs2),
+      decoration: BoxDecoration(color: bg, borderRadius: BaktazRadius.pill),
       child: BaktazText(
         text: type.name.toUpperCase(),
-        style: AppTextStyle.labelSmall.copyWith(color: fg, letterSpacing: 0.3),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: fg, letterSpacing: 0.3),
       ),
     );
   }
@@ -539,11 +539,11 @@ class _StatusBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall, vertical: AppSizes.x3Small),
-    decoration: BoxDecoration(color: bg, borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull))),
+    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs, vertical: BaktazSpacing.xs2),
+    decoration: BoxDecoration(color: bg, borderRadius: BaktazRadius.pill),
     child: BaktazText(
       text: label,
-      style: AppTextStyle.labelSmall.copyWith(color: fg, fontWeight: AppFontWeight.bold, letterSpacing: 0.4),
+      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: fg, fontWeight: FontWeight.bold, letterSpacing: 0.4),
     ),
   );
 }
@@ -567,7 +567,7 @@ class _TablePaginationFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
     child: Row(
       children: <Widget>[
         BaktazText(
@@ -578,12 +578,12 @@ class _TablePaginationFooter extends StatelessWidget {
                   end: endIndex,
                   total: totalItems,
                 ),
-          style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
         ),
         const Spacer(),
         if (totalPages > 1) ...<Widget>[
           IconButton(
-            icon: BaktazIcon(icon: Either<String, IconData>.right(Icons.chevron_left), size: AppSizes.iconSmall),
+            icon: BaktazIcon(icon: Either<String, IconData>.right(Icons.chevron_left), size: BaktazSpacing.iconSmall),
             onPressed: currentPage > 1 ? () => onPageChanged(currentPage - 1) : null,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -595,17 +595,17 @@ class _TablePaginationFooter extends StatelessWidget {
             return GestureDetector(
               onTap: () => onPageChanged(pageNumber),
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: AppSizes.x2Small),
-                padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall, vertical: 5),
+                margin: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs2),
+                padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs, vertical: 5),
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColors.colorPrimary : AppColors.transparent,
-                  borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusX2Small)),
+                  color: isSelected ? context.colorScheme.primary : Colors.transparent,
+                  borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
                 ),
                 child: BaktazText(
                   text: pageNumber.toString(),
-                  style: AppTextStyle.bodySmall.copyWith(
-                    fontWeight: AppFontWeight.semiBold,
-                    color: isSelected ? AppColors.white : AppColors.colorTextSecondary,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: isSelected ? Colors.white : context.colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -613,7 +613,7 @@ class _TablePaginationFooter extends StatelessWidget {
           }),
           Gap.xSmall(),
           IconButton(
-            icon: BaktazIcon(icon: Either<String, IconData>.right(Icons.chevron_right), size: AppSizes.iconSmall),
+            icon: BaktazIcon(icon: Either<String, IconData>.right(Icons.chevron_right), size: BaktazSpacing.iconSmall),
             onPressed: currentPage < totalPages ? () => onPageChanged(currentPage + 1) : null,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),

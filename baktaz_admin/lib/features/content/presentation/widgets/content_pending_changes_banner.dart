@@ -17,14 +17,13 @@ class ContentPendingChangesBanner extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final ValueNotifier<bool> isExpanded = useState<bool>(false);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.medium, vertical: AppSizes.small),
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.md, vertical: BaktazSpacing.sm),
       decoration: BoxDecoration(
-        color: colorScheme.tertiaryContainer,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
+        color: context.colorScheme.tertiaryContainer,
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -33,23 +32,25 @@ class ContentPendingChangesBanner extends HookWidget {
             onTap: () => isExpanded.value = !isExpanded.value,
             child: Row(
               children: <Widget>[
-                Icon(Icons.edit_note, color: colorScheme.onTertiaryContainer, size: AppSizes.iconMedium),
-                const Gap(AppSizes.small),
+                Icon(Icons.edit_note, color: context.colorScheme.onTertiaryContainer, size: BaktazSpacing.iconMedium),
+                const Gap(BaktazSpacing.sm),
                 Expanded(
                   child: BaktazText(
                     text: changeCount == 1
                         ? context.i18n.content.pending_changes.changes_one
                         : context.i18n.content.pending_changes.changes_other(count: changeCount),
-                    style: AppTextStyle.bodyMedium.copyWith(
-                      color: colorScheme.onTertiaryContainer,
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.bodyMedium
+                        ?.copyWith(color: context.colorScheme.onTertiaryContainer, fontWeight: FontWeight.w600),
                   ),
                 ),
                 AnimatedRotation(
                   turns: isExpanded.value ? 0.5 : 0,
                   duration: const Duration(milliseconds: 200),
-                  child: Icon(Icons.expand_more, color: colorScheme.onTertiaryContainer, size: AppSizes.iconSmall),
+                  child: Icon(
+                    Icons.expand_more,
+                    color: context.colorScheme.onTertiaryContainer,
+                    size: BaktazSpacing.iconSmall,
+                  ),
                 ),
               ],
             ),
@@ -57,7 +58,7 @@ class ContentPendingChangesBanner extends HookWidget {
           AnimatedCrossFade(
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
-              padding: const EdgeInsets.only(top: AppSizes.small),
+              padding: const EdgeInsets.only(top: BaktazSpacing.sm),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: <Widget>[
@@ -66,7 +67,7 @@ class ContentPendingChangesBanner extends HookWidget {
                     padding: EdgeInsets.zero,
                     onPressed: onPublish,
                   ),
-                  const Gap(AppSizes.small),
+                  const Gap(BaktazSpacing.sm),
                   BaktazButton(
                     text: context.i18n.content.pending_changes.discard,
                     buttonType: ButtonType.outlined,

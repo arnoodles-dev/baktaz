@@ -31,7 +31,7 @@ class _InfoCardContainer extends StatelessWidget {
     padding: Paddings.allX2Large,
     decoration: BoxDecoration(
       color: context.colorScheme.surface,
-      borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+      borderRadius: BaktazRadius.chip,
       border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outlineVariant)),
       boxShadow: <BoxShadow>[
         BoxShadow(color: context.colorScheme.shadow.withValues(alpha: 0.05), blurRadius: 4, offset: const Offset(0, 2)),
@@ -56,12 +56,12 @@ class _CoverageCard extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: context.baktazColors.warning.withValues(alpha: 0.1),
-                borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
+                borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
               ),
               child: Center(
                 child: BaktazIcon(
                   icon: Either<String, IconData>.right(Icons.bolt),
-                  size: AppSizes.size20,
+                  size: BaktazSpacing.lg,
                   color: context.baktazColors.warning,
                 ),
               ),
@@ -69,7 +69,7 @@ class _CoverageCard extends StatelessWidget {
             Gap.medium(),
             BaktazText(
               text: context.i18n.localization.info.coverage_title,
-              style: AppTextStyle.titleMedium.copyWith(fontWeight: AppFontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -96,7 +96,7 @@ class _CoverageCard extends StatelessWidget {
         Gap.medium(),
         BaktazText(
           text: context.i18n.localization.info.coverage_desc,
-          style: AppTextStyle.bodyMedium.copyWith(color: context.colorScheme.onSurfaceVariant),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
         ),
         const Spacer(),
         Gap.large(),
@@ -106,15 +106,15 @@ class _CoverageCard extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.localization.info.review_missing,
-                style: AppTextStyle.labelMedium.copyWith(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: context.baktazColors.warning,
-                  fontWeight: AppFontWeight.bold,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Gap.small(),
               BaktazIcon(
                 icon: Either<String, IconData>.right(Icons.arrow_forward),
-                size: AppSizes.iconXSmall,
+                size: BaktazSpacing.iconXSmall,
                 color: context.baktazColors.warning,
               ),
             ],
@@ -140,12 +140,12 @@ class _ManageLanguagesCard extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: context.colorScheme.primaryContainer,
-                borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
+                borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
               ),
               child: Center(
                 child: BaktazIcon(
                   icon: Either<String, IconData>.right(Icons.language),
-                  size: AppSizes.size20,
+                  size: BaktazSpacing.lg,
                   color: context.colorScheme.primary,
                 ),
               ),
@@ -153,21 +153,21 @@ class _ManageLanguagesCard extends StatelessWidget {
             Gap.medium(),
             BaktazText(
               text: context.i18n.localization.info.manage_languages_title,
-              style: AppTextStyle.titleMedium.copyWith(fontWeight: AppFontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),
         Gap.medium(),
         BaktazText(
           text: context.i18n.localization.info.manage_languages_desc,
-          style: AppTextStyle.bodyMedium.copyWith(color: context.colorScheme.onSurfaceVariant),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
         ),
         const Spacer(),
         Gap.large(),
         InkWell(
           onTap: () {},
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+            padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
             decoration: BoxDecoration(
               color: context.colorScheme.primary,
               borderRadius: const BorderRadius.all(Radius.circular(20)),
@@ -177,15 +177,15 @@ class _ManageLanguagesCard extends StatelessWidget {
               children: <Widget>[
                 BaktazIcon(
                   icon: Either<String, IconData>.right(Icons.add),
-                  size: AppSizes.iconXSmall,
+                  size: BaktazSpacing.iconXSmall,
                   color: context.colorScheme.onPrimary,
                 ),
                 Gap.small(),
                 BaktazText(
                   text: context.i18n.localization.info.add_locale,
-                  style: AppTextStyle.labelMedium.copyWith(
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
                     color: context.colorScheme.onPrimary,
-                    fontWeight: AppFontWeight.bold,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ],
@@ -199,15 +199,15 @@ class _ManageLanguagesCard extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.localization.info.locale_config,
-                style: AppTextStyle.labelMedium.copyWith(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: context.colorScheme.primary,
-                  fontWeight: AppFontWeight.bold,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Gap.small(),
               BaktazIcon(
                 icon: Either<String, IconData>.right(Icons.arrow_forward),
-                size: AppSizes.iconXSmall,
+                size: BaktazSpacing.iconXSmall,
                 color: context.colorScheme.primary,
               ),
             ],
@@ -233,12 +233,12 @@ class _VersionManagementCard extends StatelessWidget {
               height: 40,
               decoration: BoxDecoration(
                 color: context.colorScheme.outlineVariant.withValues(alpha: 0.5),
-                borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
+                borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
               ),
               child: Center(
                 child: BaktazIcon(
                   icon: Either<String, IconData>.right(Icons.history),
-                  size: AppSizes.size20,
+                  size: BaktazSpacing.lg,
                   color: context.colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -246,14 +246,14 @@ class _VersionManagementCard extends StatelessWidget {
             Gap.medium(),
             BaktazText(
               text: context.i18n.localization.info.version_management_title,
-              style: AppTextStyle.titleMedium.copyWith(fontWeight: AppFontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
             ),
           ],
         ),
         Gap.medium(),
         BaktazText(
           text: context.i18n.localization.info.version_management_desc,
-          style: AppTextStyle.bodyMedium.copyWith(color: context.colorScheme.onSurfaceVariant),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
         ),
         const Spacer(),
         Gap.large(),
@@ -263,15 +263,15 @@ class _VersionManagementCard extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.localization.info.manage_versions,
-                style: AppTextStyle.labelMedium.copyWith(
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
                   color: context.colorScheme.onSurfaceVariant,
-                  fontWeight: AppFontWeight.bold,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Gap.small(),
               BaktazIcon(
                 icon: Either<String, IconData>.right(Icons.arrow_forward),
-                size: AppSizes.iconXSmall,
+                size: BaktazSpacing.iconXSmall,
                 color: context.colorScheme.onSurfaceVariant,
               ),
             ],

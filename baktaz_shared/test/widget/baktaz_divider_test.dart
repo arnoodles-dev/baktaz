@@ -17,22 +17,22 @@ void main() {
             child: const SizedBox(width: 300, child: BaktazDivider()),
           ),
           GoldenTestScenario(
-            name: 'divider with text',
-            child: const SizedBox(width: 300, child: BaktazDivider(text: 'OR')),
+            name: 'divider with height',
+            child: const SizedBox(width: 300, child: BaktazDivider(height: 2)),
           ),
         ],
       ),
     );
 
-    testWidgets('displays label text when provided', (WidgetTester tester) async {
+    testWidgets('renders with given height', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(body: BaktazDivider(text: 'SECTION BREAK')),
+          home: Scaffold(body: BaktazDivider(height: 2)),
         ),
       );
 
-      expect(find.text('SECTION BREAK'), findsOneWidget);
-      expect(find.byType(Divider), findsNWidgets(2));
+      final Container divider = tester.widget<Container>(find.byType(Container));
+      expect(divider.constraints?.maxHeight, equals(2.0));
     });
   });
 }

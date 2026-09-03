@@ -30,10 +30,10 @@ class _RecentHistoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: Paddings.allLarge,
-    decoration: const BoxDecoration(
-      color: AppColors.colorSurface,
-      borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-      border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+    decoration: BoxDecoration(
+      color: context.colorScheme.surface,
+      borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+      border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,22 +41,22 @@ class _RecentHistoryCard extends StatelessWidget {
         Row(
           children: <Widget>[
             Container(
-              width: AppSizes.size36,
-              height: AppSizes.size36,
-              decoration: const BoxDecoration(
-                color: AppColors.colorPrimarySubtle,
-                borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusXSmall)),
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: context.colorScheme.primaryContainer,
+                borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
               ),
               child: BaktazIcon(
                 icon: Either<String, IconData>.right(Icons.history),
-                size: AppSizes.iconSmall,
-                color: AppColors.colorPrimary,
+                size: BaktazSpacing.iconSmall,
+                color: context.colorScheme.primary,
               ),
             ),
             Gap.small(),
             BaktazText(
               text: context.i18n.remote_config.history.title,
-              style: AppTextStyle.titleMedium.copyWith(color: AppColors.colorTextPrimary),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: context.colorScheme.onSurface),
             ),
           ],
         ),
@@ -73,11 +73,11 @@ class _RecentHistoryCard extends StatelessWidget {
           icon: BaktazIcon(
             icon: Either<String, IconData>.right(Icons.open_in_new),
             size: 14,
-            color: AppColors.colorPrimary,
+            color: context.colorScheme.primary,
           ),
           label: BaktazText(
             text: context.i18n.remote_config.history.view_audit_log,
-            style: AppTextStyle.labelLarge.copyWith(color: AppColors.colorPrimary),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: context.colorScheme.primary),
           ),
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,
@@ -118,10 +118,10 @@ class _HistoryEntry extends StatelessWidget {
       children: <Widget>[
         CircleAvatar(
           radius: 14,
-          backgroundColor: AppColors.colorPrimarySubtle,
+          backgroundColor: context.colorScheme.primaryContainer,
           child: BaktazText(
             text: displayName.isNotEmpty ? displayName[0].toUpperCase() : '?',
-            style: AppTextStyle.labelMedium.copyWith(color: AppColors.colorPrimary),
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(color: context.colorScheme.primary),
           ),
         ),
         Gap.xSmall(),
@@ -132,12 +132,12 @@ class _HistoryEntry extends StatelessWidget {
               BaktazText(
                 text: '<b>$displayName</b> $action <blueText>$detail</blueText>',
                 textType: TextType.styled,
-                style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextPrimary),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurface),
               ),
               Gap.x2Small(),
               BaktazText(
                 text: time,
-                style: AppTextStyle.labelSmall.copyWith(color: AppColors.colorTextSecondary),
+                style: Theme.of(context).textTheme.labelSmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -155,10 +155,10 @@ class _VersionManagementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     padding: Paddings.allLarge,
-    decoration: const BoxDecoration(
-      color: AppColors.colorSurface,
-      borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-      border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+    decoration: BoxDecoration(
+      color: context.colorScheme.surface,
+      borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+      border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
     ),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,22 +166,22 @@ class _VersionManagementCard extends StatelessWidget {
         Row(
           children: <Widget>[
             Container(
-              width: AppSizes.size36,
-              height: AppSizes.size36,
-              decoration: const BoxDecoration(
-                color: AppColors.colorPrimarySubtle,
-                borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusXSmall)),
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: context.colorScheme.primaryContainer,
+                borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
               ),
               child: BaktazIcon(
                 icon: Either<String, IconData>.right(Icons.manage_history_outlined),
-                size: AppSizes.iconSmall,
-                color: AppColors.colorPrimary,
+                size: BaktazSpacing.iconSmall,
+                color: context.colorScheme.primary,
               ),
             ),
             Gap.small(),
             BaktazText(
               text: context.i18n.remote_config.version.title,
-              style: AppTextStyle.titleMedium.copyWith(color: AppColors.colorTextPrimary),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(color: context.colorScheme.onSurface),
             ),
           ],
         ),
@@ -190,7 +190,7 @@ class _VersionManagementCard extends StatelessWidget {
           text:
               '<b>v${version.versionNumber.getValue()}</b> is currently live. Previous versions available for rollback.',
           textType: TextType.styled,
-          style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
         ),
         Gap.medium(),
         TextButton.icon(
@@ -198,11 +198,11 @@ class _VersionManagementCard extends StatelessWidget {
           icon: BaktazIcon(
             icon: Either<String, IconData>.right(Icons.settings_backup_restore),
             size: 14,
-            color: AppColors.colorPrimary,
+            color: context.colorScheme.primary,
           ),
           label: BaktazText(
             text: context.i18n.remote_config.version.manage_versions,
-            style: AppTextStyle.labelLarge.copyWith(color: AppColors.colorPrimary),
+            style: Theme.of(context).textTheme.labelLarge?.copyWith(color: context.colorScheme.primary),
           ),
           style: TextButton.styleFrom(
             padding: EdgeInsets.zero,

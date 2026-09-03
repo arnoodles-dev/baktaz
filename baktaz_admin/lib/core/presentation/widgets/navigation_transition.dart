@@ -18,24 +18,20 @@ class NavigationTransition extends StatelessWidget {
   final Widget navigationRail;
 
   @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+  Widget build(BuildContext context) => ConnectivityChecker.scaffold(
+    offlineMessage: context.i18n.common.error.no_internet_connection,
+    appBar: appBar,
 
-    return ConnectivityChecker.scaffold(
-      offlineMessage: context.i18n.common.error.no_internet_connection,
-      appBar: appBar,
-
-      body: Row(
-        children: <Widget>[
-          RailTransition(animation: railAnimation, backgroundColor: colorScheme.surface, child: navigationRail),
-          Expanded(
-            child: ColoredBox(
-              color: colorScheme.surfaceContainerLow,
-              child: Padding(padding: Paddings.allLarge, child: body),
-            ),
+    body: Row(
+      children: <Widget>[
+        RailTransition(animation: railAnimation, backgroundColor: context.colorScheme.surface, child: navigationRail),
+        Expanded(
+          child: ColoredBox(
+            color: context.colorScheme.surfaceContainerLow,
+            child: Padding(padding: Paddings.allLarge, child: body),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
 }

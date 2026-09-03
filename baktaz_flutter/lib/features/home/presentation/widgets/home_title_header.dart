@@ -8,7 +8,6 @@ class HomeTitleHeader extends StatelessWidget {
   final String title;
   final VoidCallback? onSeeAllPressed;
 
-  // ponytail: manual Row matches BaktazSectionHeader pattern; padding/fonts differ, migrate when layout is verified
   @override
   Widget build(BuildContext context) => Padding(
     padding: Paddings.allLarge,
@@ -17,16 +16,16 @@ class HomeTitleHeader extends StatelessWidget {
       children: <Widget>[
         BaktazText(
           text: title,
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(fontWeight: AppFontWeight.semiBold),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600) ?? const TextStyle(),
         ),
         if (onSeeAllPressed != null)
           GestureDetector(
             onTap: onSeeAllPressed,
             child: BaktazText(
               text: context.i18n.common.see_all,
-              style: AppTextStyle.bodyLarge.copyWith(
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: context.colorScheme.primary,
-                fontWeight: AppFontWeight.medium,
+                fontWeight: FontWeight.w500,
               ),
             ),
           ),

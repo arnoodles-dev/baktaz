@@ -51,7 +51,7 @@ class _RemoteConfigView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
-    backgroundColor: AppColors.colorBackground,
+    backgroundColor: context.colorScheme.surface,
     body: BlocSignalBuilder<RemoteConfigCubit, RemoteConfigState>(
       builder: (BuildContext context, RemoteConfigState state) {
         final QueryStatus status = state.status;
@@ -63,7 +63,7 @@ class _RemoteConfigView extends StatelessWidget {
         final ConfigSnapshotVersion? version = state.remoteConfig?.version;
 
         return SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(AppSizes.medium, AppSizes.medium, AppSizes.medium, AppSizes.xLarge),
+          padding: const EdgeInsets.fromLTRB(BaktazSpacing.md, BaktazSpacing.md, BaktazSpacing.md, BaktazSpacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -74,7 +74,7 @@ class _RemoteConfigView extends StatelessWidget {
                   onDiscard: () => context.read<RemoteConfigCubit>().discardChanges(),
                 ),
               _PageHeader(version: version),
-              const Gap(AppSizes.xLarge),
+              const Gap(BaktazSpacing.xl),
               ParameterTable(
                 onEdit: (String key, RemoteConfigValue currentValue, String resolvedDescription) {
                   unawaited(
@@ -92,7 +92,7 @@ class _RemoteConfigView extends StatelessWidget {
                   );
                 },
               ),
-              if (version != null) ...<Widget>[const Gap(AppSizes.xLarge), ConfigInfoSection(version: version)],
+              if (version != null) ...<Widget>[const Gap(BaktazSpacing.xl), ConfigInfoSection(version: version)],
             ],
           ),
         );
@@ -118,23 +118,23 @@ class _PageHeader extends StatelessWidget {
               children: <Widget>[
                 BaktazText(
                   text: context.i18n.remote_config.title,
-                  style: AppTextStyle.displayMedium.copyWith(color: AppColors.colorTextPrimary),
+                  style: Theme.of(context).textTheme.displayMedium?.copyWith(color: context.colorScheme.onSurface),
                 ),
                 if (version != null) ...<Widget>[
-                  const Gap(AppSizes.small),
+                  const Gap(BaktazSpacing.sm),
                   _VersionBadge(versionNumber: version?.versionNumber.getValue() ?? '0'),
                 ],
               ],
             ),
-            const Gap(AppSizes.xSmall),
+            const Gap(BaktazSpacing.xs),
             BaktazText(
               text: context.i18n.remote_config.description,
-              style: AppTextStyle.bodyMedium.copyWith(color: AppColors.colorTextSecondary),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
             ),
           ],
         ),
       ),
-      const Gap(AppSizes.medium),
+      const Gap(BaktazSpacing.md),
       BaktazButton(
         onPressed: () {
           unawaited(
@@ -150,17 +150,17 @@ class _PageHeader extends StatelessWidget {
         },
         icon: BaktazIcon(
           icon: Either<String, IconData>.right(Icons.add),
-          size: AppSizes.iconSmall,
-          color: AppColors.white,
+          size: BaktazSpacing.iconSmall,
+          color: Colors.white,
         ),
         text: context.i18n.remote_config.add_parameter,
-        textStyle: AppTextStyle.labelLarge.copyWith(color: AppColors.white),
+        textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(color: Colors.white),
         buttonType: ButtonType.elevated,
         buttonStyle: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.colorPrimary,
+          backgroundColor: context.colorScheme.primary,
           elevation: 0,
-          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusFull))),
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+          shape: RoundedRectangleBorder(borderRadius: BaktazRadius.pill),
+          padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
         ),
       ),
     ],
@@ -174,14 +174,14 @@ class _VersionBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: AppSizes.xSmall, vertical: AppSizes.x2Small),
-    decoration: const BoxDecoration(
-      color: AppColors.colorPrimarySubtle,
-      borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
+    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xs, vertical: BaktazSpacing.xs2),
+    decoration: BoxDecoration(
+      color: context.colorScheme.primaryContainer,
+      borderRadius: BaktazRadius.pill,
     ),
     child: BaktazText(
       text: 'v$versionNumber',
-      style: AppTextStyle.labelMedium.copyWith(color: AppColors.colorPrimaryDark),
+      style: Theme.of(context).textTheme.labelMedium?.copyWith(color: context.colorScheme.primaryContainer),
     ),
   );
 }
@@ -197,7 +197,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Shimmer(
     child: SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(AppSizes.medium, AppSizes.medium, AppSizes.medium, AppSizes.xLarge),
+      padding: const EdgeInsets.fromLTRB(BaktazSpacing.md, BaktazSpacing.md, BaktazSpacing.md, BaktazSpacing.xl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -209,14 +209,14 @@ class _RemoteConfigShimmer extends StatelessWidget {
                   children: <Widget>[
                     BaktazText(
                       text: context.i18n.remote_config.title,
-                      style: AppTextStyle.displayMedium.copyWith(fontWeight: AppFontWeight.bold),
+                      style: Theme.of(context).textTheme.displayMedium?.copyWith(fontWeight: FontWeight.bold),
                     ),
-                    const Gap(AppSizes.xSmall),
-                    BaktazText(text: context.i18n.remote_config.description, style: AppTextStyle.bodyMedium),
+                    const Gap(BaktazSpacing.xs),
+                    BaktazText(text: context.i18n.remote_config.description, style: Theme.of(context).textTheme.bodyMedium),
                   ],
                 ),
               ),
-              const Gap(AppSizes.medium),
+              const Gap(BaktazSpacing.md),
               BaktazButton(
                 onPressed: () {},
                 text: context.i18n.remote_config.add_parameter,
@@ -224,71 +224,71 @@ class _RemoteConfigShimmer extends StatelessWidget {
               ),
             ],
           ),
-          const Gap(AppSizes.xLarge),
+          const Gap(BaktazSpacing.xl),
           // ponytail: skeleton placeholders, not user-facing - raw primitives acceptable
           Container(
-            decoration: const BoxDecoration(
-              color: AppColors.colorSurface,
-              borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-              border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+            decoration: BoxDecoration(
+              color: context.colorScheme.surface,
+              borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+              border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
             ),
             child: Column(
               children: <Widget>[
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(AppSizes.large, AppSizes.medium, AppSizes.large, AppSizes.small),
+                  padding: const EdgeInsets.fromLTRB(BaktazSpacing.lg, BaktazSpacing.md, BaktazSpacing.lg, BaktazSpacing.sm),
                   child: Row(
                     children: <Widget>[
                       BaktazText(
                         text: context.i18n.remote_config.global_parameters,
-                        style: AppTextStyle.titleMedium.copyWith(fontWeight: AppFontWeight.semiBold),
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
                       ),
                       const Spacer(),
                       BaktazIcon(icon: right(Icons.filter_list), size: 20),
-                      const Gap(AppSizes.xSmall),
+                      const Gap(BaktazSpacing.xs),
                       BaktazIcon(icon: right(Icons.arrow_upward), size: 20),
-                      const Gap(AppSizes.xSmall),
+                      const Gap(BaktazSpacing.xs),
                       BaktazIcon(icon: right(Icons.download_outlined), size: 20),
                     ],
                   ),
                 ),
                 const Divider(height: 1),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+                  padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
                   child: Row(
                     children: <Widget>[
                       Expanded(
                         flex: 3,
                         child: BaktazText(
                           text: context.i18n.remote_config.table.parameter_key,
-                          style: AppTextStyle.labelMedium.copyWith(fontWeight: AppFontWeight.bold),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
                         flex: 3,
                         child: BaktazText(
                           text: context.i18n.remote_config.table.value,
-                          style: AppTextStyle.labelMedium.copyWith(fontWeight: AppFontWeight.bold),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
                         flex: 2,
                         child: BaktazText(
                           text: context.i18n.remote_config.table.type,
-                          style: AppTextStyle.labelMedium.copyWith(fontWeight: AppFontWeight.bold),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
                         flex: 2,
                         child: BaktazText(
                           text: context.i18n.remote_config.table.last_modified,
-                          style: AppTextStyle.labelMedium.copyWith(fontWeight: AppFontWeight.bold),
+                          style: Theme.of(context).textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                       Expanded(
                         child: BaktazText(
                           text: 'ACTIONS',
                           textAlign: TextAlign.right,
-                          style: AppTextStyle.labelSmall.copyWith(fontWeight: AppFontWeight.bold),
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
@@ -300,7 +300,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                   (int index) => Column(
                     children: <Widget>[
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: 14),
+                        padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: 14),
                         child: Row(
                           children: <Widget>[
                             Expanded(
@@ -310,18 +310,18 @@ class _RemoteConfigShimmer extends StatelessWidget {
                                 children: <Widget>[
                                   Container(
                                     width: _shimmerTitleWidth,
-                                    height: AppSizes.medium,
+                                    height: BaktazSpacing.md,
                                     decoration: const BoxDecoration(
-                                      color: AppColors.white,
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.all(Radius.circular(4)),
                                     ),
                                   ),
-                                  const Gap(AppSizes.x2Small),
+                                  const Gap(BaktazSpacing.xs2),
                                   Container(
                                     width: double.infinity,
-                                    height: AppSizes.small,
+                                    height: BaktazSpacing.sm,
                                     decoration: const BoxDecoration(
-                                      color: AppColors.white,
+                                      color: Colors.white,
                                       borderRadius: BorderRadius.all(Radius.circular(4)),
                                     ),
                                   ),
@@ -336,7 +336,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                                   width: 80,
                                   height: 24,
                                   decoration: const BoxDecoration(
-                                    color: AppColors.white,
+                                    color: Colors.white,
                                     borderRadius: BorderRadius.all(Radius.circular(6)),
                                   ),
                                 ),
@@ -350,8 +350,8 @@ class _RemoteConfigShimmer extends StatelessWidget {
                                   width: 60,
                                   height: 24,
                                   decoration: const BoxDecoration(
-                                    color: AppColors.white,
-                                    borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusXLarge)),
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.xl)),
                                   ),
                                 ),
                               ),
@@ -362,7 +362,7 @@ class _RemoteConfigShimmer extends StatelessWidget {
                                 width: 80,
                                 height: _shimmerBarHeight,
                                 decoration: const BoxDecoration(
-                                  color: AppColors.white,
+                                  color: Colors.white,
                                   borderRadius: BorderRadius.all(Radius.circular(4)),
                                 ),
                               ),
@@ -381,17 +381,17 @@ class _RemoteConfigShimmer extends StatelessWidget {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+                  padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
                   child: Row(
                     children: <Widget>[
                       BaktazText(text: context.i18n.remote_config.pagination.showing_summary),
                       const Spacer(),
                       BaktazIcon(icon: right(Icons.chevron_left)),
-                      const Gap(AppSizes.xSmall),
+                      const Gap(BaktazSpacing.xs),
                       BaktazText(text: 1.toString()),
-                      const Gap(AppSizes.xSmall),
+                      const Gap(BaktazSpacing.xs),
                       BaktazText(text: 2.toString()),
-                      const Gap(AppSizes.xSmall),
+                      const Gap(BaktazSpacing.xs),
                       BaktazIcon(icon: right(Icons.chevron_right)),
                     ],
                   ),
@@ -399,17 +399,17 @@ class _RemoteConfigShimmer extends StatelessWidget {
               ],
             ),
           ),
-          const Gap(AppSizes.xLarge),
+          const Gap(BaktazSpacing.xl),
           // ponytail: skeleton cards, not user-facing
           Row(
             children: <Widget>[
               Expanded(
                 child: Container(
                   padding: Paddings.allLarge,
-                  decoration: const BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-                    border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+                    border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -417,43 +417,43 @@ class _RemoteConfigShimmer extends StatelessWidget {
                       Row(
                         children: <Widget>[
                           BaktazIcon(icon: right(Icons.history)),
-                          const Gap(AppSizes.small),
+                          const Gap(BaktazSpacing.sm),
                           BaktazText(
                             text: context.i18n.remote_config.history.title,
-                            style: AppTextStyle.titleMedium.copyWith(fontWeight: AppFontWeight.bold),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
-                      const Gap(AppSizes.medium),
+                      const Gap(BaktazSpacing.md),
                       Container(
                         width: double.infinity,
                         height: _shimmerBarHeight,
-                        decoration: const BoxDecoration(
-                          color: AppColors.colorTextSecondary,
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                        decoration: BoxDecoration(
+                          color: context.colorScheme.onSurfaceVariant,
+                          borderRadius: const BorderRadius.all(Radius.circular(4)),
                         ),
                       ),
-                      const Gap(AppSizes.medium),
+                      const Gap(BaktazSpacing.md),
                       Container(
                         width: _shimmerChipWidth,
                         height: _shimmerBarHeight,
-                        decoration: const BoxDecoration(
-                          color: AppColors.colorTextSecondary,
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                        decoration: BoxDecoration(
+                          color: context.colorScheme.onSurfaceVariant,
+                          borderRadius: const BorderRadius.all(Radius.circular(4)),
                         ),
                       ),
                     ],
                   ),
                 ),
               ),
-              const Gap(AppSizes.medium),
+              const Gap(BaktazSpacing.md),
               Expanded(
                 child: Container(
                   padding: Paddings.allLarge,
-                  decoration: const BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
-                    border: Border.fromBorderSide(BorderSide(color: AppColors.colorBorder)),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
+                    border: Border.fromBorderSide(BorderSide(color: context.colorScheme.outline)),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -461,29 +461,29 @@ class _RemoteConfigShimmer extends StatelessWidget {
                       Row(
                         children: <Widget>[
                           BaktazIcon(icon: right(Icons.manage_history_outlined)),
-                          const Gap(AppSizes.small),
+                          const Gap(BaktazSpacing.sm),
                           BaktazText(
                             text: context.i18n.remote_config.version.title,
-                            style: AppTextStyle.titleMedium.copyWith(fontWeight: AppFontWeight.bold),
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                           ),
                         ],
                       ),
-                      const Gap(AppSizes.medium),
+                      const Gap(BaktazSpacing.md),
                       Container(
                         width: double.infinity,
                         height: _shimmerBarHeight,
-                        decoration: const BoxDecoration(
-                          color: AppColors.colorTextSecondary,
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                        decoration: BoxDecoration(
+                          color: context.colorScheme.onSurfaceVariant,
+                          borderRadius: const BorderRadius.all(Radius.circular(4)),
                         ),
                       ),
-                      const Gap(AppSizes.medium),
+                      const Gap(BaktazSpacing.md),
                       Container(
                         width: _shimmerChipWidth,
                         height: _shimmerBarHeight,
-                        decoration: const BoxDecoration(
-                          color: AppColors.colorTextSecondary,
-                          borderRadius: BorderRadius.all(Radius.circular(4)),
+                        decoration: BoxDecoration(
+                          color: context.colorScheme.onSurfaceVariant,
+                          borderRadius: const BorderRadius.all(Radius.circular(4)),
                         ),
                       ),
                     ],

@@ -36,8 +36,8 @@ class CountrySelectorBottomSheet extends StatelessWidget {
               color: context.colorScheme.surface,
               shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(AppSizes.radiusXLarge),
-                  topRight: Radius.circular(AppSizes.radiusXLarge),
+                  topLeft: Radius.circular(BaktazRadius.xl),
+                  topRight: Radius.circular(BaktazRadius.xl),
                 ),
               ),
             ),

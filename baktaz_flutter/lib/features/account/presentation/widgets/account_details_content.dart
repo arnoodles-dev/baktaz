@@ -34,7 +34,7 @@ class _AccountDetailsContentHeader extends StatelessWidget {
           text: title,
           style: context.textTheme.bodyLarge?.copyWith(
             color: context.colorScheme.onSurface,
-            fontWeight: AppFontWeight.bold,
+            fontWeight: FontWeight.bold,
           ),
         ),
       ),

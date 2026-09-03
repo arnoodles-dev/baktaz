@@ -28,15 +28,13 @@ class AccountPage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final ScrollController scrollController = useScrollController();
-    final ValueNotifier<double> avatarSize = useState(AppSizes.avatarXL);
+    final ValueNotifier<double> avatarSize = useState(BaktazAvatar.sizeXL);
 
     useEffect(() {
       scrollController.addListener(() {
-        if (AppUtils.isSliverAppBarExpanded(scrollController)) {
-          avatarSize.value = AppSizes.avatarXL;
-        } else {
-          avatarSize.value = AppSizes.avatarLG;
-        }
+        avatarSize.value = AppUtils.isSliverAppBarExpanded(scrollController)
+            ? BaktazAvatar.sizeXL
+            : BaktazAvatar.sizeLG;
       });
 
       return null;
@@ -54,7 +52,7 @@ class AccountPage extends HookWidget {
               SliverAppBar(
                 backgroundColor: context.colorScheme.surface,
                 shadowColor: context.colorScheme.shadow,
-                surfaceTintColor: AppColors.transparent,
+                surfaceTintColor: Colors.transparent,
                 pinned: true,
                 expandedHeight: AppTheme.defaultAppBarHeight * 2,
                 flexibleSpace: FlexibleSpaceBar(
@@ -165,7 +163,7 @@ class _AccountAppBar extends StatelessWidget {
                 BaktazText(
                   text: fullName ?? '',
                   style: context.textTheme.headlineMedium?.copyWith(
-                    fontWeight: AppFontWeight.bold,
+                    fontWeight: FontWeight.bold,
                     color: context.colorScheme.onSurface,
                   ),
                   maxLines: 1,
@@ -186,7 +184,7 @@ class _AccountAppBar extends StatelessWidget {
                         BaktazText(
                           text: rank!.label,
                           style: context.textTheme.bodyMedium?.copyWith(
-                            fontWeight: AppFontWeight.bold,
+                            fontWeight: FontWeight.bold,
                             color: rank!.color,
                           ),
                         ),

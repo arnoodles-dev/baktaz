@@ -8,7 +8,7 @@ class BlockedAccountScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => BaktazErrorScreen(
-    icon: Icon(Icons.block, size: AppSizes.avatarLG, color: context.colorScheme.error),
+    icon: Icon(Icons.block, size: BaktazAvatar.sizeLG, color: context.colorScheme.error),
     title: context.i18n.blocked.title,
     subtitle: context.i18n.blocked.subtitle,
     retryLabel: context.i18n.blocked.button,

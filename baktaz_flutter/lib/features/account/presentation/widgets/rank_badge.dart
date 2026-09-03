@@ -9,19 +9,19 @@ final class RankBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(vertical: AppSizes.x2Small, horizontal: AppSizes.xSmall),
+    padding: const EdgeInsets.symmetric(vertical: BaktazSpacing.xs2, horizontal: BaktazSpacing.xs),
     decoration: BoxDecoration(
       color: rank.color.withValues(alpha: 0.15),
-      borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
+      borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
     ),
     child: Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Icon(Icons.workspace_premium, size: 12, color: rank.color),
-        const Gap(AppSizes.x2Small),
+        const Gap(BaktazSpacing.xs2),
         BaktazText(
           text: rank.label,
-          style: AppTextStyle.labelSmall.copyWith(color: rank.color, fontWeight: FontWeight.w600),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: rank.color, fontWeight: FontWeight.w600) ?? const TextStyle(),
         ),
       ],
     ),

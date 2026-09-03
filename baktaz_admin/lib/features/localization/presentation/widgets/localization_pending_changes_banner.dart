@@ -18,24 +18,24 @@ class LocalizationPendingChangesBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
     margin: Paddings.bottomXLarge,
-    padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.medium),
+    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.md),
     decoration: BoxDecoration(
       color: context.colorScheme.primaryContainer,
-      borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusXSmall)),
+      borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
       border: Border.fromBorderSide(BorderSide(color: context.baktazColors.primaryLight)),
     ),
     child: Row(
       children: <Widget>[
         Container(
-          width: AppSizes.size36,
-          height: AppSizes.size36,
+          width: 36,
+          height: 36,
           decoration: BoxDecoration(
             color: context.colorScheme.primary,
-            borderRadius: const BorderRadius.all(Radius.circular(AppSizes.size20)),
+            borderRadius: const BorderRadius.all(Radius.circular(BaktazSpacing.lg)),
           ),
           child: BaktazIcon(
             icon: Either<String, IconData>.right(Icons.sync),
-            size: AppSizes.iconSmall,
+            size: BaktazSpacing.iconSmall,
             color: context.colorScheme.onPrimary,
           ),
         ),
@@ -46,15 +46,15 @@ class LocalizationPendingChangesBanner extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.localization.pending_changes.title,
-                style: AppTextStyle.labelLarge.copyWith(
-                  fontWeight: AppFontWeight.bold,
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
                   color: context.colorScheme.onSurface,
                 ),
               ),
               Gap.x2Small(),
               BaktazText(
                 text: context.i18n.localization.pending_changes.description(changeCount: changeCount),
-                style: AppTextStyle.bodySmall.copyWith(color: context.colorScheme.onSurfaceVariant),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -63,7 +63,7 @@ class LocalizationPendingChangesBanner extends StatelessWidget {
         BaktazButton(
           onPressed: () => _showDiscardConfirmation(context),
           text: context.i18n.localization.pending_changes.discard,
-          textStyle: AppTextStyle.labelLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+          textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
           buttonType: ButtonType.text,
           buttonStyle: TextButton.styleFrom(foregroundColor: context.colorScheme.primary),
         ),
@@ -71,14 +71,14 @@ class LocalizationPendingChangesBanner extends StatelessWidget {
         BaktazButton(
           onPressed: onPublish,
           text: context.i18n.localization.pending_changes.publish,
-          textStyle: AppTextStyle.labelLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+          textStyle: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
           buttonType: ButtonType.elevated,
           buttonStyle: ElevatedButton.styleFrom(
             backgroundColor: context.colorScheme.primary,
             foregroundColor: context.colorScheme.onPrimary,
             elevation: 0,
-            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusFull))),
-            padding: const EdgeInsets.symmetric(horizontal: AppSizes.large, vertical: AppSizes.small),
+            shape: RoundedRectangleBorder(borderRadius: BaktazRadius.pill),
+            padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.lg, vertical: BaktazSpacing.sm),
           ),
         ),
       ],
@@ -89,10 +89,10 @@ class LocalizationPendingChangesBanner extends StatelessWidget {
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext ctx) => AlertDialog(
-        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusSmall))),
+        shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.sm))),
         title: BaktazText(
           text: context.i18n.localization.pending_changes.discard_title,
-          style: AppTextStyle.titleLarge.copyWith(fontWeight: AppFontWeight.semiBold),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
         content: BaktazText(text: context.i18n.localization.pending_changes.discard_message),
         actions: <Widget>[
@@ -108,7 +108,7 @@ class LocalizationPendingChangesBanner extends StatelessWidget {
             buttonStyle: ElevatedButton.styleFrom(
               backgroundColor: context.colorScheme.error,
               foregroundColor: context.colorScheme.onError,
-              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusFull))),
+              shape: RoundedRectangleBorder(borderRadius: BaktazRadius.pill),
             ),
           ),
         ],

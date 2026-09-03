@@ -2,7 +2,6 @@ import 'package:baktaz_admin/core/presentation/widgets/baktaz_header_bar.dart';
 import 'package:baktaz_admin/core/presentation/widgets/baktaz_nav_item_data.dart';
 import 'package:baktaz_admin/core/presentation/widgets/navigation_transition.dart';
 import 'package:baktaz_admin/core/presentation/widgets/sidebar.dart';
-import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -114,7 +113,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           Positioned.fill(
             child: GestureDetector(
               onTap: () => setState(() => _sidebarOpen = false),
-              child: Container(color: AppColors.black.withValues(alpha: 0.26)),
+              child: Container(color: Colors.black.withValues(alpha: 0.26)),
             ),
           ),
         // Mobile sidebar drawer (on top of backdrop)

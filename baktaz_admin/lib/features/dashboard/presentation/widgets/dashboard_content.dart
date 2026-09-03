@@ -130,88 +130,58 @@ class _DashboardLayout extends StatelessWidget {
   final bool isFilterLoading;
 
   @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = context.colorScheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Row(
-          children: <Widget>[
-            Expanded(
-              child: StatCard(
-                title: context.i18n.dashboard.stats.total_activities,
-                value: NumberFormat.decimalPattern().format(stats.totalActivities.getValue()),
-                growth: stats.totalActivitiesGrowth,
-                icon: Icons.reorder,
-                color: colorScheme.primary,
-              ),
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: <Widget>[
+      Row(
+        children: <Widget>[
+          Expanded(
+            child: StatCard(
+              title: context.i18n.dashboard.stats.total_activities,
+              value: NumberFormat.decimalPattern().format(stats.totalActivities.getValue()),
+              growth: stats.totalActivitiesGrowth,
+              icon: Icons.reorder,
+              color: context.colorScheme.primary,
             ),
-            Gap.large(),
-            Expanded(
-              child: StatCard(
-                title: context.i18n.dashboard.stats.ongoing_activities,
-                value: NumberFormat.decimalPattern().format(stats.ongoingActivities.getValue()),
-                growth: stats.ongoingActivitiesGrowth,
-                icon: Icons.pending_actions,
-                color: colorScheme.error,
-              ),
+          ),
+          Gap.large(),
+          Expanded(
+            child: StatCard(
+              title: context.i18n.dashboard.stats.ongoing_activities,
+              value: NumberFormat.decimalPattern().format(stats.ongoingActivities.getValue()),
+              growth: stats.ongoingActivitiesGrowth,
+              icon: Icons.pending_actions,
+              color: context.colorScheme.error,
             ),
-            Gap.large(),
-            Expanded(
-              child: StatCard(
-                title: context.i18n.dashboard.stats.completed_activities,
-                value: NumberFormat.decimalPattern().format(stats.completedActivities.getValue()),
-                growth: stats.completedActivitiesGrowth,
-                icon: Icons.check_circle,
-                color: colorScheme.secondary,
-              ),
+          ),
+          Gap.large(),
+          Expanded(
+            child: StatCard(
+              title: context.i18n.dashboard.stats.completed_activities,
+              value: NumberFormat.decimalPattern().format(stats.completedActivities.getValue()),
+              growth: stats.completedActivitiesGrowth,
+              icon: Icons.check_circle,
+              color: context.colorScheme.secondary,
             ),
-            Gap.large(),
-            Expanded(
-              child: StatCard(
-                title: context.i18n.dashboard.stats.total_revenue,
-                value: '\$${NumberFormat.decimalPattern().format(stats.totalRevenue.getValue())}',
-                growth: stats.totalRevenueGrowth,
-                icon: Icons.payments,
-                color: colorScheme.primary,
-              ),
+          ),
+          Gap.large(),
+          Expanded(
+            child: StatCard(
+              title: context.i18n.dashboard.stats.total_revenue,
+              value: '\$${NumberFormat.decimalPattern().format(stats.totalRevenue.getValue())}',
+              growth: stats.totalRevenueGrowth,
+              icon: Icons.payments,
+              color: context.colorScheme.primary,
             ),
-          ],
-        ),
-        Gap.xLarge(),
+          ),
+        ],
+      ),
+      Gap.xLarge(),
 
-        // Charts Row
-        if (isFilterLoading)
-          Shimmer(
-            child: IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: <Widget>[
-                  Expanded(
-                    flex: 2,
-                    child: ActivitiesOverviewChart(
-                      data: overviewChart,
-                      isLoading: true,
-                      selectedFilter: selectedFilter,
-                      selectedTimeFilter: selectedTimeFilter,
-                      onFilterChanged: onFilterChanged,
-                      onTimeFilterChanged: onTimeFilterChanged,
-                    ),
-                  ),
-                  Gap.large(),
-                  Expanded(
-                    child: ActivitiesReportsChart(
-                      data: reportsChart,
-                      selectedStatusFilter: selectedReportStatusFilter,
-                      onStatusFilterChanged: onReportStatusFilterChanged,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          )
-        else
-          IntrinsicHeight(
+      // Charts Row
+      if (isFilterLoading)
+        Shimmer(
+          child: IntrinsicHeight(
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
@@ -219,6 +189,7 @@ class _DashboardLayout extends StatelessWidget {
                   flex: 2,
                   child: ActivitiesOverviewChart(
                     data: overviewChart,
+                    isLoading: true,
                     selectedFilter: selectedFilter,
                     selectedTimeFilter: selectedTimeFilter,
                     onFilterChanged: onFilterChanged,
@@ -236,11 +207,37 @@ class _DashboardLayout extends StatelessWidget {
               ],
             ),
           ),
-        Gap.xLarge(),
+        )
+      else
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: ActivitiesOverviewChart(
+                  data: overviewChart,
+                  selectedFilter: selectedFilter,
+                  selectedTimeFilter: selectedTimeFilter,
+                  onFilterChanged: onFilterChanged,
+                  onTimeFilterChanged: onTimeFilterChanged,
+                ),
+              ),
+              Gap.large(),
+              Expanded(
+                child: ActivitiesReportsChart(
+                  data: reportsChart,
+                  selectedStatusFilter: selectedReportStatusFilter,
+                  onStatusFilterChanged: onReportStatusFilterChanged,
+                ),
+              ),
+            ],
+          ),
+        ),
+      Gap.xLarge(),
 
-        // Recent Activities Table
-        RecentActivitiesTable(activities: activities),
-      ],
-    );
-  }
+      // Recent Activities Table
+      RecentActivitiesTable(activities: activities),
+    ],
+  );
 }

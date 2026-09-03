@@ -28,10 +28,10 @@ class ContentAssetTable extends StatelessWidget {
       return BaktazCard(
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(AppSizes.xLarge),
+            padding: const EdgeInsets.all(BaktazSpacing.xl),
             child: BaktazText(
               text: context.i18n.content.table.empty_title,
-              style: AppTextStyle.bodyLarge.copyWith(color: AppColors.colorTextSecondary),
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(color: context.colorScheme.onSurfaceVariant),
             ),
           ),
         ),
@@ -45,7 +45,7 @@ class ContentAssetTable extends StatelessWidget {
           byType.putIfAbsent(asset.type, () => <ContentAsset>[]).add(asset);
         }
         return Padding(
-          padding: const EdgeInsets.only(bottom: AppSizes.small),
+          padding: const EdgeInsets.only(bottom: BaktazSpacing.sm),
           child: _CarouselGroup(
             placementGroup: group.key,
             byType: byType,
@@ -78,17 +78,14 @@ class _CarouselGroup extends StatelessWidget {
   final ValueChanged<String> onToggleGroup;
 
   @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    return BaktazCard(
+  Widget build(BuildContext context) => BaktazCard(
       headerTitle: context.i18n.content.table.placement_group_header(placement: placementGroup.displayName),
       headerAction: GestureDetector(
         onTap: () => onToggleGroup(placementGroup.name),
         child: AnimatedRotation(
           turns: isExpanded ? 0.5 : 0,
           duration: const Duration(milliseconds: 200),
-          child: Icon(Icons.expand_more, color: colorScheme.onSurfaceVariant),
+          child: Icon(Icons.expand_more, color: context.colorScheme.onSurfaceVariant),
         ),
       ),
       body: AnimatedCrossFade(
@@ -99,9 +96,9 @@ class _CarouselGroup extends StatelessWidget {
             for (final MapEntry<ContentAssetType, List<ContentAsset>> typeEntry in byType.entries) ...<Widget>[
               BaktazText(
                 text: typeEntry.key.displayName,
-                style: AppTextStyle.labelLarge.copyWith(fontWeight: FontWeight.w600),
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
               ),
-              const Gap(AppSizes.xSmall),
+              const Gap(BaktazSpacing.xs),
               ...typeEntry.value.map(
                 (ContentAsset asset) => _ContentAssetRow(
                   asset: asset,
@@ -109,7 +106,7 @@ class _CarouselGroup extends StatelessWidget {
                   onTap: () => onAssetSelected(asset.id.getValue()),
                 ),
               ),
-              const Gap(AppSizes.small),
+              const Gap(BaktazSpacing.sm),
             ],
           ],
         ),
@@ -117,7 +114,6 @@ class _CarouselGroup extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
       ),
     );
-  }
 }
 
 class _ContentAssetRow extends StatelessWidget {
@@ -128,36 +124,33 @@ class _ContentAssetRow extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-
-    return Material(
-      color: isSelected ? colorScheme.primaryContainer.withValues(alpha: 0.3) : AppColors.transparent,
-      borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
+  Widget build(BuildContext context) => Material(
+      color: isSelected ? context.colorScheme.primaryContainer.withValues(alpha: 0.3) : Colors.transparent,
+      borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
       child: InkWell(
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSizes.small, vertical: AppSizes.xSmall),
+          padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.sm, vertical: BaktazSpacing.xs),
           child: Row(
             children: <Widget>[
               _StatusDot(status: asset.status),
-              const Gap(AppSizes.small),
+              const Gap(BaktazSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     BaktazText(
                       text: asset.title.value.fold((_) => context.i18n.content.table.untitled_asset, (String v) => v),
-                      style: AppTextStyle.bodyMedium.copyWith(
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium
+                          ?.copyWith(fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500),
                     ),
                     BaktazText(
                       text: context.i18n.content.table.order_label(
                         order: asset.orderIndex.value.fold((_) => 0, (num v) => v.toInt()),
                       ),
-                      style: AppTextStyle.bodySmall.copyWith(color: AppColors.colorTextSecondary),
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: context.colorScheme.onSurfaceVariant),
                     ),
                   ],
                 ),
@@ -168,7 +161,6 @@ class _ContentAssetRow extends StatelessWidget {
         ),
       ),
     );
-  }
 }
 
 class _StatusDot extends StatelessWidget {

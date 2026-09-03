@@ -1,4 +1,8 @@
-import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:baktaz_shared/src/entity/enum/button_type.dart';
+import 'package:baktaz_shared/src/theme/baktaz_radius.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
+import 'package:baktaz_shared/src/widgets/baktaz_button.dart';
+import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmationDialog extends StatelessWidget {
@@ -27,36 +31,37 @@ class ConfirmationDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
     final String? title = this.title;
     return AlertDialog(
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusMedium))),
-      title: title != null ? BaktazText(text: title, style: context.textTheme.titleMedium) : null,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.md))),
+      title: title != null ? BaktazText(text: title, style: theme.textTheme.titleMedium) : null,
       content: Padding(
-        padding: title != null ? EdgeInsets.zero : Paddings.topX3Small,
+        padding: title != null ? EdgeInsets.zero : const EdgeInsets.only(top: BaktazSpacing.xs),
         child: BaktazText(
           text: message,
-          style: context.textTheme.bodyMedium?.copyWith(color: titleColor),
+          style: theme.textTheme.bodyMedium?.copyWith(color: titleColor),
         ),
       ),
       actions: <Widget>[
         BaktazButton(
           text: negativeButtonText,
           buttonType: ButtonType.text,
-          onPressed: onNegativePressed ?? () => context.navigator.pop(),
+          onPressed: onNegativePressed ?? () => Navigator.of(context).pop(),
           padding: EdgeInsets.zero,
           contentPadding: EdgeInsets.zero,
-          textStyle: AppTextStyle.labelLarge.copyWith(color: negativeButtonTextColor ?? context.colorScheme.primary),
+          textStyle: theme.textTheme.labelLarge?.copyWith(color: negativeButtonTextColor ?? theme.colorScheme.primary),
         ),
         BaktazButton(
           text: positiveButtonText,
           buttonType: ButtonType.text,
-          onPressed: onPositivePressed ?? () => context.navigator.pop(),
+          onPressed: onPositivePressed ?? () => Navigator.of(context).pop(),
           padding: EdgeInsets.zero,
           contentPadding: EdgeInsets.zero,
-          textStyle: AppTextStyle.labelLarge.copyWith(color: positiveButtonTextColor ?? context.colorScheme.primary),
+          textStyle: theme.textTheme.labelLarge?.copyWith(color: positiveButtonTextColor ?? theme.colorScheme.primary),
         ),
       ],
-      actionsPadding: Paddings.horizontalMedium,
+      actionsPadding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.md),
       buttonPadding: EdgeInsets.zero,
     );
   }

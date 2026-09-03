@@ -1,5 +1,4 @@
-import 'package:baktaz_shared/src/entity/enum/text_field_type.dart';
-import 'package:baktaz_shared/src/widgets/baktaz_icon.dart';
+import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -70,9 +69,8 @@ final class BaktazTextField extends HookWidget {
   final Color? fillColor;
 
   InputDecoration? _getInputDecoration(BuildContext context, TextStyle? textStyle, {required bool isFocused}) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
-    final Color? enabledFillColor = isFocused ? colorScheme.surfaceTint : fillColor;
-    final Color? prefixColor = isFocused ? colorScheme.primary : null;
+    final Color? enabledFillColor = isFocused ? context.colorScheme.surfaceTint : fillColor;
+    final Color? prefixColor = isFocused ? context.colorScheme.primary : null;
 
     final Widget? effectivePrefix = switch (prefix) {
       final BaktazIcon icon => icon.copyWith(copyColor: prefixColor),
@@ -93,19 +91,19 @@ final class BaktazTextField extends HookWidget {
         border: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide.none),
         enabledBorder: OutlineInputBorder(
           borderRadius: radius,
-          borderSide: BorderSide(color: borderColor ?? colorScheme.outline),
+          borderSide: BorderSide(color: borderColor ?? context.colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: radius,
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+          borderSide: BorderSide(color: context.colorScheme.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: radius,
-          borderSide: BorderSide(color: colorScheme.error),
+          borderSide: BorderSide(color: context.colorScheme.error),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: radius,
-          borderSide: BorderSide(color: colorScheme.error, width: 2),
+          borderSide: BorderSide(color: context.colorScheme.error, width: 2),
         ),
       );
     }

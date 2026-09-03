@@ -1,10 +1,9 @@
-import 'package:baktaz_shared/src/theme/app_colors.dart';
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
-import 'package:baktaz_shared/src/theme/app_spacing.dart';
+import 'package:baktaz_shared/src/theme/baktaz_radius.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 
-/// IconTile — DESIGN.md §12.9
+/// IconTile — DESIGN.md §3.3
 ///
 /// Square tile for facility/amenity grids and feature highlights.
 class BaktazIconTile extends StatelessWidget {
@@ -12,7 +11,7 @@ class BaktazIconTile extends StatelessWidget {
     required this.icon,
     required this.label,
     this.onTap,
-    this.iconSize = AppSizes.iconMedium,
+    this.iconSize = BaktazSpacing.iconMedium,
     super.key,
   });
 
@@ -26,16 +25,16 @@ class BaktazIconTile extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final Widget tile = Container(
       constraints: const BoxConstraints(minWidth: 56),
-      padding: Paddings.allXSmall,
+      padding: const EdgeInsets.all(BaktazSpacing.xs),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainer,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusXSmall)),
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Icon(icon, size: iconSize, color: theme.colorScheme.primary),
-          const Gap(AppSizes.x2Small),
+          const SizedBox(height: BaktazSpacing.xs2),
           BaktazText(
             text: label,
             style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
@@ -49,10 +48,10 @@ class BaktazIconTile extends StatelessWidget {
 
     if (onTap != null) {
       return Material(
-        color: AppColors.transparent,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusXSmall)),
+        color: Colors.transparent,
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
         child: InkWell(
-          borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusXSmall)),
+          borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
           onTap: onTap,
           child: tile,
         ),

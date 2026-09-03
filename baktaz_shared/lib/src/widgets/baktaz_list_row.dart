@@ -1,93 +1,99 @@
-import 'package:baktaz_shared/src/theme/app_colors.dart';
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
-import 'package:baktaz_shared/src/theme/app_spacing.dart';
+import 'package:baktaz_shared/src/theme/baktaz_radius.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
+import 'package:baktaz_shared/src/widgets/baktaz_avatar.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 
-/// ListRow — DESIGN.md §12.10
-///
-/// Settings / Navigation list row with leading icon/avatar, label, and trailing variants.
 class BaktazListRow extends StatelessWidget {
   const BaktazListRow({
-    required this.label,
-    this.leading,
-    this.leadingIcon,
-    this.leadingIconColor,
-    this.trailing,
-    this.trailingIcon,
+    required this.title,
     this.subtitle,
-    this.isDestructive = false,
+    this.leadingAvatar,
+    this.leadingIcon,
+    this.trailing,
     this.onTap,
+    this.isThreeLine,
+    this.avatarSize = BaktazAvatar.sizeSM,
     super.key,
   });
 
-  final String label;
-  final Widget? leading;
-  final IconData? leadingIcon;
-  final Color? leadingIconColor;
-  final Widget? trailing;
-  final IconData? trailingIcon;
+  final String title;
   final String? subtitle;
-  final bool isDestructive;
+  final String? leadingAvatar;
+  final IconData? leadingIcon;
+  final Widget? trailing;
   final VoidCallback? onTap;
+  final bool? isThreeLine;
+  final double avatarSize;
 
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final Color effectiveColor = isDestructive ? theme.colorScheme.error : theme.colorScheme.onSurface;
-    final String? subtitle = this.subtitle;
+    final bool? threeLine = isThreeLine;
+    final String? effectiveSubtitle = subtitle;
+    final String? avatarInitials = leadingAvatar;
+    final IconData? leadingIconData = leadingIcon;
+    final Widget? trailingWidget = trailing;
+
+    Widget? leadingWidget;
+    if (avatarInitials != null) {
+      leadingWidget = BaktazAvatar(size: avatarSize, initials: avatarInitials);
+    } else if (leadingIconData != null) {
+      leadingWidget = Container(
+        width: BaktazAvatar.sizeSM,
+        height: BaktazAvatar.sizeSM,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(leadingIconData, size: BaktazSpacing.iconSmall, color: theme.colorScheme.primary),
+      );
+    }
 
     return Material(
-      color: AppColors.transparent,
+      color: Colors.transparent,
       child: InkWell(
+        borderRadius: BaktazRadius.row,
         onTap: onTap,
-        child: Container(
-          constraints: const BoxConstraints(minHeight: 56),
-          padding: Paddings.horizontalMedium,
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: theme.colorScheme.outline.withValues(alpha: 0.5), width: 0.5)),
-          ),
-          child: Row(
-            children: <Widget>[
-              if (leading case final Widget effectiveLeading)
-                Padding(padding: Paddings.rightMedium, child: effectiveLeading)
-              else if (leadingIcon case final IconData effectiveLeadingIcon)
-                Padding(
-                  padding: Paddings.rightMedium,
-                  child: Icon(
-                    effectiveLeadingIcon,
-                    size: AppSizes.iconMedium,
-                    color: leadingIconColor ?? effectiveColor,
+        child: SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.all(BaktazSpacing.md),
+            child: Row(
+              children: <Widget>[
+                if (leadingWidget != null) ...<Widget>[
+                  leadingWidget,
+                  const SizedBox(width: BaktazSpacing.md),
+                ],
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      BaktazText(
+                        text: title,
+                        style: theme.textTheme.headlineMedium?.copyWith(color: theme.colorScheme.onSurface),
+                        maxLines: threeLine == true ? 2 : 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      if (effectiveSubtitle != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: BaktazSpacing.xs2),
+                          child: BaktazText(
+                            text: effectiveSubtitle,
+                            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                            maxLines: threeLine == true ? 2 : 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    BaktazText(
-                      text: label,
-                      style: theme.textTheme.titleMedium?.copyWith(color: effectiveColor),
-                    ),
-                    if (subtitle != null)
-                      Padding(
-                        padding: Paddings.topX2Small,
-                        child: BaktazText(
-                          text: subtitle,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              if (trailing case final Widget effectiveTrailing)
-                Padding(padding: Paddings.leftSmall, child: effectiveTrailing)
-              else if (trailingIcon != null && !isDestructive)
-                Padding(
-                  padding: Paddings.leftSmall,
-                  child: Icon(trailingIcon, size: AppSizes.iconSmall, color: theme.colorScheme.onSurfaceVariant),
-                ),
-            ],
+                if (trailingWidget != null) ...<Widget>[
+                  const SizedBox(width: BaktazSpacing.sm),
+                  trailingWidget,
+                ],
+              ],
+            ),
           ),
         ),
       ),

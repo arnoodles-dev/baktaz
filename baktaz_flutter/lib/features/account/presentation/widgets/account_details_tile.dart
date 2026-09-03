@@ -23,7 +23,7 @@ final class AccountDetailsTile extends StatelessWidget {
         if (value != null)
           BaktazText(
             text: value,
-            style: context.textTheme.bodyLarge?.copyWith(fontWeight: AppFontWeight.medium),
+            style: context.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
           ),
         if (value == null && onValueEmptyText != null) onValueEmptyText,
       ],

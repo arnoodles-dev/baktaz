@@ -68,10 +68,10 @@ final class AccountContentWidget extends StatelessWidget {
                 children: <Widget>[
                   if (optionIndex > 0) Gap.small(),
                   BaktazListRow(
-                    label: optionKey.camelToSentence(),
+                    title: optionKey.camelToSentence(),
                     subtitle: subtitle.isNotEmpty ? subtitle : null,
                     leadingIcon: getIt<AccountOptionsMapper>().getIcon(options.key, optionKey),
-                    trailingIcon: Icons.chevron_right,
+                    trailing: const Icon(Icons.chevron_right),
                     onTap: () => onOptionsTap(optionKey),
                   ),
                   if (hasStatusBadge) Gap.xSmall(),

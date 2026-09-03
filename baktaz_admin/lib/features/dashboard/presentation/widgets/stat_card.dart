@@ -28,11 +28,11 @@ class StatCard extends StatelessWidget {
     return Container(
       padding: Paddings.allMedium,
       decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
-        border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
+        color: context.colorScheme.surface,
+        borderRadius: BaktazRadius.chip,
+        border: Border.all(color: context.colorScheme.outlineVariant.withValues(alpha: 0.5)),
         boxShadow: <BoxShadow>[
-          BoxShadow(color: colorScheme.shadow.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2)),
+          BoxShadow(color: context.colorScheme.shadow.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2)),
         ],
       ),
       child: Column(
@@ -50,7 +50,7 @@ class StatCard extends StatelessWidget {
                 Container(
                   width: 8,
                   height: 8,
-                  decoration: BoxDecoration(color: colorScheme.primary, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: context.colorScheme.primary, shape: BoxShape.circle),
                 )
               else
                 _GrowthBadge(growth: growth, colorScheme: colorScheme, textTheme: textTheme),
@@ -62,12 +62,12 @@ class StatCard extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: title,
-                style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurfaceVariant),
+                style: textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
               ),
               Gap.x2Small(),
               BaktazText(
                 text: value,
-                style: textTheme.headlineSmall?.copyWith(fontWeight: AppFontWeight.bold, color: colorScheme.onSurface),
+                style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold, color: context.colorScheme.onSurface),
               ),
             ],
           ),
@@ -90,18 +90,18 @@ class _GrowthBadge extends StatelessWidget {
     if (g == null) return const SizedBox.shrink();
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.small, vertical: AppSizes.x2Small),
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.sm, vertical: BaktazSpacing.xs2),
       decoration: BoxDecoration(
         color: g.startsWith('+')
-            ? colorScheme.secondary.withValues(alpha: 0.1)
-            : colorScheme.error.withValues(alpha: 0.1),
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+            ? context.colorScheme.secondary.withValues(alpha: 0.1)
+            : context.colorScheme.error.withValues(alpha: 0.1),
+        borderRadius: BaktazRadius.chip,
       ),
       child: BaktazText(
         text: g,
         style: textTheme.labelSmall?.copyWith(
-          color: g.startsWith('+') ? colorScheme.secondary : colorScheme.error,
-          fontWeight: AppFontWeight.bold,
+          color: g.startsWith('+') ? context.colorScheme.secondary : context.colorScheme.error,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );

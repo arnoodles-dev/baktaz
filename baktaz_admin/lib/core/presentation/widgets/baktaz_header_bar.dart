@@ -25,12 +25,11 @@ class BaktazHeaderBar extends HookWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     final TextEditingController searchController = useTextEditingController();
 
     return Container(
       height: _headerHeight,
-      color: colorScheme.surface,
+      color: context.colorScheme.surface,
       child: Row(
         children: <Widget>[
           if (onMenuTap != null)
@@ -42,12 +41,12 @@ class BaktazHeaderBar extends HookWidget implements PreferredSizeWidget {
               ),
             ),
           Padding(
-            padding: const EdgeInsets.only(left: AppSizes.medium),
+            padding: const EdgeInsets.only(left: BaktazSpacing.md),
             child: Semantics(
               label: 'PAXA',
               child: BaktazText(
                 text: 'PAXA',
-                style: AppTextStyle.displayLarge.copyWith(color: AppColors.colorPrimary),
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(color: context.colorScheme.primary),
               ),
             ),
           ),
@@ -62,9 +61,9 @@ class BaktazHeaderBar extends HookWidget implements PreferredSizeWidget {
                   controller: searchController,
                   hintText: 'Search...',
                   prefix: const BaktazIcon(icon: Right<String, IconData>(Icons.search)),
-                  fillColor: colorScheme.surfaceContainer,
-                  borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusFull)),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: AppSizes.medium, vertical: 14),
+                  fillColor: context.colorScheme.surfaceContainer,
+                  borderRadius: BaktazRadius.pill,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.md, vertical: 14),
                 ),
               ),
             ),
@@ -78,7 +77,7 @@ class BaktazHeaderBar extends HookWidget implements PreferredSizeWidget {
                 return IconButton(
                   icon: BaktazIcon(
                     icon: Right<String, IconData>(isDark ? Icons.light_mode : Icons.dark_mode),
-                    color: colorScheme.onSurfaceVariant,
+                    color: context.colorScheme.onSurfaceVariant,
                   ),
                   onPressed: () {
                     final Brightness current = Theme.of(context).brightness;
@@ -89,7 +88,7 @@ class BaktazHeaderBar extends HookWidget implements PreferredSizeWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(right: AppSizes.medium),
+            padding: const EdgeInsets.only(right: BaktazSpacing.md),
             child: Semantics(
               label: 'Notifications',
               child: Stack(
@@ -97,17 +96,17 @@ class BaktazHeaderBar extends HookWidget implements PreferredSizeWidget {
                   IconButton(
                     icon: BaktazIcon(
                       icon: const Right<String, IconData>(Icons.notifications_outlined),
-                      color: colorScheme.onSurfaceVariant,
+                      color: context.colorScheme.onSurfaceVariant,
                     ),
                     onPressed: () {},
                   ),
                   Positioned(
-                    top: AppSizes.xSmall,
-                    right: AppSizes.xSmall,
+                    top: BaktazSpacing.xs,
+                    right: BaktazSpacing.xs,
                     child: Container(
                       width: _notificationDotSize,
                       height: _notificationDotSize,
-                      decoration: const BoxDecoration(color: AppColors.colorError, shape: BoxShape.circle),
+                      decoration: BoxDecoration(color: context.colorScheme.error, shape: BoxShape.circle),
                     ),
                   ),
                 ],

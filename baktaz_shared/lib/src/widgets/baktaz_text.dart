@@ -98,7 +98,7 @@ class _StyledText extends StatelessWidget {
         'b': StyledTextTag(
           style: style.copyWith(fontWeight: FontWeight.bold, color: style.color),
         ),
-        'blueText': StyledTextTag(
+        'primary': StyledTextTag(
           style: style.copyWith(fontWeight: FontWeight.w400, color: theme.colorScheme.primary),
         ),
         'link': StyledTextActionTag(

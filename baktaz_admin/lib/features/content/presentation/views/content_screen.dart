@@ -50,7 +50,7 @@ class _ContentScreenView extends StatelessWidget {
       final ContentCubit cubit = context.read<ContentCubit>();
 
       return SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(AppSizes.medium, AppSizes.medium, AppSizes.medium, AppSizes.xLarge),
+        padding: const EdgeInsets.fromLTRB(BaktazSpacing.md, BaktazSpacing.md, BaktazSpacing.md, BaktazSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[

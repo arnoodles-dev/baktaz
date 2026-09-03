@@ -47,10 +47,10 @@ class ActivitiesOverviewChart extends StatelessWidget {
     final double horizontalInterval = gridInterval > 0 ? gridInterval : 10.0;
 
     return Container(
-      padding: Paddings.allLarge,
+      padding: const EdgeInsets.all(BaktazSpacing.lg),
       decoration: BoxDecoration(
         color: colorScheme.surface,
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.md)),
         border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
         boxShadow: <BoxShadow>[
           BoxShadow(color: colorScheme.shadow.withValues(alpha: 0.02), blurRadius: 8, offset: const Offset(0, 2)),
@@ -63,26 +63,26 @@ class ActivitiesOverviewChart extends StatelessWidget {
             children: <Widget>[
               BaktazText(
                 text: context.i18n.dashboard.overview.title,
-                style: textTheme.titleLarge?.copyWith(fontWeight: AppFontWeight.bold),
+                style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
               ),
               Gap.medium(),
               Expanded(
                 child: RepaintBoundary(
                   child: Wrap(
-                    spacing: AppSizes.small,
-                    runSpacing: AppSizes.small,
+                    spacing: BaktazSpacing.sm,
+                    runSpacing: BaktazSpacing.sm,
                     children: ActivityFilter.values.map((ActivityFilter filter) {
                       final bool isSelected = selectedFilter == filter;
                       return ActionChip(
                         label: BaktazText(text: filter.label),
                         labelStyle: textTheme.labelMedium?.copyWith(
                           color: isSelected ? colorScheme.onPrimary : colorScheme.onSurfaceVariant,
-                          fontWeight: isSelected ? AppFontWeight.bold : AppFontWeight.regular,
+                          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                         backgroundColor: isSelected ? colorScheme.primary : colorScheme.surface,
                         side: BorderSide(color: isSelected ? colorScheme.primary : colorScheme.outlineVariant),
                         shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusXLarge)),
+                          borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.xl)),
                         ),
                         onPressed: () => onFilterChanged(filter),
                       );
@@ -122,7 +122,7 @@ class ActivitiesOverviewChart extends StatelessWidget {
           Gap.large(),
           RepaintBoundary(
             child: SizedBox(
-              height: AppSizes.chartHeightLarge,
+              height: BaktazSpacing.chartHeightLarge,
               child: BarChart(
                 BarChartData(
                   alignment: BarChartAlignment.spaceAround,
@@ -204,13 +204,13 @@ class ActivitiesOverviewChart extends StatelessWidget {
             toY: val1,
             color: colorScheme.primary,
             width: 12,
-            borderRadius: const BorderRadius.all(Radius.circular(AppSizes.x3Small)),
+            borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
           ),
           BarChartRodData(
             toY: val2,
             color: colorScheme.secondary,
             width: 12,
-            borderRadius: const BorderRadius.all(Radius.circular(AppSizes.x3Small)),
+            borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
           ),
         ],
       );
@@ -230,7 +230,7 @@ class _LegendItem extends StatelessWidget {
         height: 12,
         decoration: BoxDecoration(
           color: color,
-          borderRadius: const BorderRadius.all(Radius.circular(AppSizes.x3Small)),
+          borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
         ),
       ),
       Gap.xSmall(),

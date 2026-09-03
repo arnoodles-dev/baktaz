@@ -27,25 +27,25 @@ class GenderSelector extends StatelessWidget {
       hintText: context.i18n.register.hint.gender,
       filled: true,
       fillColor: enabled ? context.colorScheme.surfaceContainerHighest : context.colorScheme.surfaceContainerHigh,
-      contentPadding: const EdgeInsets.symmetric(horizontal: AppSizes.medium, vertical: AppSizes.small),
+      contentPadding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.md, vertical: BaktazSpacing.sm),
       border: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+        borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.lg)),
         borderSide: BorderSide.none,
       ),
       enabledBorder: const OutlineInputBorder(
-        borderRadius: BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+        borderRadius: BorderRadius.all(Radius.circular(BaktazRadius.lg)),
         borderSide: BorderSide.none,
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.lg)),
         borderSide: BorderSide(color: context.colorScheme.primary, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.lg)),
         borderSide: BorderSide(color: context.colorScheme.error),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusMedium)),
+        borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.lg)),
         borderSide: BorderSide(color: context.colorScheme.error, width: 2),
       ),
     ),

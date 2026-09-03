@@ -1,11 +1,10 @@
-import 'package:baktaz_shared/src/theme/app_sizes.dart';
-import 'package:baktaz_shared/src/theme/app_spacing.dart';
+import 'package:baktaz_shared/src/theme/baktaz_spacing.dart';
 import 'package:baktaz_shared/src/widgets/baktaz_text.dart';
 import 'package:flutter/material.dart';
 
-/// SectionHeader — DESIGN.md §12.20
+/// SectionHeader — DESIGN.md §2.7
 ///
-/// Row with space-between layout, title, and optional "See All" link.
+/// Row with space-between layout, title, and optional "View All" link.
 class BaktazSectionHeader extends StatelessWidget {
   const BaktazSectionHeader({required this.title, this.linkLabel, this.onLinkPressed, super.key});
 
@@ -20,10 +19,10 @@ class BaktazSectionHeader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.only(
-        top: AppSizes.large,
-        bottom: AppSizes.small,
-        left: AppSizes.medium,
-        right: AppSizes.medium,
+        top: BaktazSpacing.lg,
+        bottom: BaktazSpacing.sm,
+        left: BaktazSpacing.md,
+        right: BaktazSpacing.md,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -39,7 +38,7 @@ class BaktazSectionHeader extends StatelessWidget {
             GestureDetector(
               onTap: onLinkPressed,
               child: Padding(
-                padding: Paddings.leftXSmall,
+                padding: const EdgeInsets.only(left: BaktazSpacing.xs),
                 child: BaktazText(
                   text: linkLabel,
                   style: theme.textTheme.labelMedium?.copyWith(color: theme.colorScheme.primary),

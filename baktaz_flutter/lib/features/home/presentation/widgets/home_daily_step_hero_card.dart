@@ -30,7 +30,7 @@ class HomeDailyStepHeroCard extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 300),
         decoration: BoxDecoration(
-          borderRadius: const BorderRadius.all(Radius.circular(AppSizes.radiusSmall)),
+          borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
           border: Border.all(color: isGoalAchieved ? context.colorScheme.secondary : Colors.transparent, width: 2),
         ),
         child: BaktazCard(
