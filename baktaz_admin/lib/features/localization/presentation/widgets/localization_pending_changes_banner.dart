@@ -22,7 +22,7 @@ class LocalizationPendingChangesBanner extends StatelessWidget {
     decoration: BoxDecoration(
       color: context.colorScheme.primaryContainer,
       borderRadius: const BorderRadius.all(Radius.circular(BaktazRadius.sm)),
-      border: Border.fromBorderSide(BorderSide(color: context.baktazColors.primaryLight)),
+      border: Border.fromBorderSide(BorderSide(color: context.colorScheme.primary)),
     ),
     child: Row(
       children: <Widget>[

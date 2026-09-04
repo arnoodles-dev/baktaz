@@ -28,6 +28,10 @@ final class BaktazTheme {
     surfaceContainerHighest: Color(0xFFEDEFEF),
     inverseSurface: Color(0xFF10141C),
     onInverseSurface: Color(0xFFFFFFFF),
+    tertiary: Color(0xFF059669),
+    onTertiary: Color(0xFFFFFFFF),
+    tertiaryContainer: Color(0xFFE9F9F1),
+    onTertiaryContainer: Color(0xFF059669),
   );
 
   static const ColorScheme dark = ColorScheme(
@@ -51,6 +55,10 @@ final class BaktazTheme {
     surfaceContainerHighest: Color(0xFF20242A),
     inverseSurface: Color(0xFF0A0C10),
     onInverseSurface: Color(0xFFF1F3F2),
+    tertiary: Color(0xFF10B981),
+    onTertiary: Color(0xFF052E22),
+    tertiaryContainer: Color(0xFF123326),
+    onTertiaryContainer: Color(0xFF10B981),
   );
 
   // Not part of ColorScheme — set directly on ThemeData.scaffoldBackgroundColor.

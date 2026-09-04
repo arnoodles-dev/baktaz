@@ -11,7 +11,7 @@ import 'package:baktaz_flutter/features/home/presentation/widgets/home_app_heade
 import 'package:baktaz_flutter/features/home/presentation/widgets/home_daily_step_hero_card.dart';
 import 'package:baktaz_flutter/features/home/presentation/widgets/home_leaderboard_preview.dart';
 import 'package:baktaz_flutter/features/home/presentation/widgets/home_weekly_steps_chart.dart';
-import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:baktaz_shared/baktaz_shared.dart' hide LeaderboardEntry;
 import 'package:bloc_signals_flutter/bloc_signals_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart' show ScrollDirection;

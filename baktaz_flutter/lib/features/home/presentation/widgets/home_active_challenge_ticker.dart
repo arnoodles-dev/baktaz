@@ -1,7 +1,4 @@
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
-import 'package:baktaz_flutter/core/presentation/widgets/baktaz_leaders_strip.dart';
-import 'package:baktaz_flutter/core/presentation/widgets/baktaz_rank_badge.dart';
-import 'package:baktaz_flutter/core/presentation/widgets/baktaz_stage_progress_bar.dart';
 import 'package:baktaz_flutter/features/home/presentation/widgets/home_challenge_discovery_banner.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
@@ -60,7 +57,7 @@ class HomeActiveChallengeTicker extends StatelessWidget {
             const BaktazDivider(),
             Row(
               children: <Widget>[
-                BaktazRankBadge(rank: rank ?? 0),
+                RankBadge(rank: rank ?? 0),
                 Gap.medium(),
                 Expanded(
                   child: Column(
@@ -68,7 +65,7 @@ class HomeActiveChallengeTicker extends StatelessWidget {
                     children: <Widget>[
                       if (gapText != null) BaktazText(text: gapText!),
                       Gap.small(),
-                      if (leaders != null) BaktazLeadersStrip(leaders: leaders!),
+                      if (leaders != null) LeadersStrip(participants: leaders!.map((String name) => LeaderParticipant(name: name, initials: name.isNotEmpty ? name[0] : null)).toList()),
                     ],
                   ),
                 ),

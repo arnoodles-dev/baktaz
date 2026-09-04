@@ -42,7 +42,7 @@ class BaktazStatusBadge extends StatelessWidget {
       StatusBadgeVariant.confirmed => (scheme.secondaryContainer, scheme.onSecondaryContainer, Icons.check_circle),
       StatusBadgeVariant.active => (scheme.primaryContainer, scheme.onPrimaryContainer, Icons.refresh),
       StatusBadgeVariant.pending => (scheme.surfaceContainerHigh, scheme.onSurfaceVariant, Icons.access_time),
-      StatusBadgeVariant.failed => (scheme.errorContainer, scheme.onErrorContainer, Icons.cancel),
+      StatusBadgeVariant.failed => (scheme.error, scheme.onError, Icons.cancel),
       StatusBadgeVariant.neutral => (scheme.surfaceContainerHigh, scheme.onSurfaceVariant, Icons.pause),
     };
   }

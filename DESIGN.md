@@ -430,25 +430,25 @@ Always prefer these wrappers over raw Flutter widgets.
 #### Phase 1 — Existing missing molecules (priority)
 | Token | Status | Target File |
 |---|---|---|
-| FAB (54dp circular) | ❌ Missing | `baktaz_fab.dart` |
-| NotificationIconButton | ❌ Missing | `notification_icon_button.dart` |
-| StatSubCard | ❌ Missing | `stat_sub_card.dart` |
-| RankBadge | ❌ Missing | `rank_badge.dart` |
-| AvatarStack | ❌ Missing | `avatar_stack.dart` |
-| StakeReturnValue | ❌ Missing | `stake_return_value.dart` |
-| IdentityBlock | ❌ Missing | `identity_block.dart` |
+| FAB (54dp circular) | ✅ Implemented | `baktaz_fab.dart` |
+| NotificationIconButton | ✅ Implemented | `notification_icon_button.dart` |
+| StatSubCard | ✅ Implemented | `stat_sub_card.dart` |
+| RankBadge | ✅ Implemented | `rank_badge.dart` |
+| AvatarStack | ✅ Implemented | `avatar_stack.dart` |
+| StakeReturnValue | ✅ Implemented | `stake_return_value.dart` |
+| IdentityBlock | ✅ Implemented | `identity_block.dart` |
 
 #### Phase 2 — New molecules (added v3.1.2)
 | Token | Status | Target File |
 |---|---|---|
-| StageProgressBar | ❌ Missing | `baktaz_stage_progress_bar.dart` |
-| SlotsProgressRing | ❌ Missing | `baktaz_slots_progress_ring.dart` |
-| FireIcon | ❌ Missing | `baktaz_fire_icon.dart` |
-| LeadersStrip | ❌ Missing | `leaders_strip.dart` |
-| RankTrend | ❌ Missing | `rank_trend.dart` |
-| GapMeter | ❌ Missing | `gap_meter.dart` |
-| WeeklyStepsBarChart | ❌ Missing | `weekly_steps_bar_chart.dart` |
-| LeaderboardTable | ❌ Missing | `leaderboard_table.dart` |
+| StageProgressBar | ✅ Implemented | `baktaz_stage_progress_bar.dart` |
+| SlotsProgressRing | ✅ Implemented | `baktaz_slots_progress_ring.dart` |
+| FireIcon | ✅ Implemented | `baktaz_fire_icon.dart` |
+| LeadersStrip | ✅ Implemented | `leaders_strip.dart` |
+| RankTrend | ✅ Implemented | `rank_trend.dart` |
+| GapMeter | ✅ Implemented | `gap_meter.dart` |
+| WeeklyStepsBarChart | ✅ Implemented | `weekly_steps_bar_chart.dart` |
+| LeaderboardTable | ✅ Implemented | `leaderboard_table.dart` |
 
 ### 3.3 Utility Wrappers & Dialogs
 

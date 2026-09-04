@@ -75,21 +75,8 @@ Use existing shared widgets from `*_shared` before building new:
 - ConfirmationDialog
 
 ### Missing (to implement)
-- FAB (54dp circular)
-- NotificationIconButton
-- StatSubCard
-- RankBadge
-- AvatarStack
-- StakeReturnValue
-- IdentityBlock
-- StageProgressBar
-- SlotsProgressRing
-- FireIcon
-- LeadersStrip
-- RankTrend
-- GapMeter
-- WeeklyStepsBarChart
-- LeaderboardTable
+
+All components implemented ✅
 
 ## Colors
 

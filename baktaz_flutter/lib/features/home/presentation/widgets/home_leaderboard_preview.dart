@@ -1,6 +1,6 @@
 import 'package:baktaz_flutter/app/helpers/extensions/build_context_ext.dart';
 import 'package:baktaz_flutter/features/home/presentation/widgets/home_leaderboard_row.dart';
-import 'package:baktaz_shared/baktaz_shared.dart';
+import 'package:baktaz_shared/baktaz_shared.dart' hide LeaderboardEntry;
 import 'package:flutter/material.dart';
 
 class HomeLeaderboardPreview extends StatelessWidget {

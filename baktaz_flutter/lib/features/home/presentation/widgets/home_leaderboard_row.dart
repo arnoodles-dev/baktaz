@@ -1,4 +1,3 @@
-import 'package:baktaz_flutter/core/presentation/widgets/baktaz_rank_trend.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +36,7 @@ class HomeLeaderboardRow extends StatelessWidget {
           BaktazAvatar(size: BaktazAvatar.sizeXS, imageUrl: avatarUrl),
           Gap.small(),
           SizedBox(width: 70, child: BaktazText(text: username)),
-          SizedBox(width: 30, child: BaktazRankTrend(trend: trend)),
+          SizedBox(width: 30, child: RankTrend(change: trend == 'up' ? 1 : (trend == 'down' ? -1 : 0))),
           Expanded(child: LinearProgressIndicator(value: relativeProgress)),
           Gap.small(),
           SizedBox(width: 70, child: BaktazText(text: StepFormatter.formatSteps(steps, includeUnit: false))),

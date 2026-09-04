@@ -21,30 +21,23 @@ class BaktazCustomColors extends ThemeExtension<BaktazCustomColors> {
     required this.badgePendingText,
     required this.badgeNeutralBg,
     required this.badgeNeutralText,
-    // ── Other design tokens ───────────────────────────────────────────
-    required this.primaryMid,
-    required this.primaryLight,
   });
 
-  // ── Star rating ───────────────────────────────────────────────────────
+  // ── Star rating ─────────────────────────────────────────────────────
   /// Filled star color (DESIGN.md §12.12): `#EF9F27` light, `#FAC775` dark.
   final Color starFilled;
 
-  // ── Semantic tones ─────────────────────────────────────────────────────
+  // ── Semantic tones ─────────────────────────────────────────────────
   final Color warning; // warning icon/text
   final Color warningOnContainer; // text on warning container
   final Color successOnContainer; // text on success/accent container
   final Color errorOnContainer; // text on error container
 
-  // ── Badge variant extras ──────────────────────────────────────────────
+  // ── Badge variant extras ───────────────────────────────────────────
   final Color badgePendingBg;
   final Color badgePendingText;
   final Color badgeNeutralBg;
   final Color badgeNeutralText;
-
-  // ── Other design tokens ───────────────────────────────────────────────
-  final Color primaryMid;
-  final Color primaryLight;
 
   /// Light-mode instance.
   static const BaktazCustomColors light = BaktazCustomColors(
@@ -57,8 +50,6 @@ class BaktazCustomColors extends ThemeExtension<BaktazCustomColors> {
     badgePendingText: Color(0xFF854F0B),
     badgeNeutralBg: Color(0xFFF1EFE8),
     badgeNeutralText: Color(0xFF5F5E5A),
-    primaryMid: Color(0xFF378ADD),
-    primaryLight: Color(0xFFB5D4F4),
   );
 
   /// Dark-mode instance (values differ where DESIGN.md specifies dark tokens).
@@ -72,8 +63,6 @@ class BaktazCustomColors extends ThemeExtension<BaktazCustomColors> {
     badgePendingText: Color(0xFFFAC775),
     badgeNeutralBg: Color(0xFF2C2C2A),
     badgeNeutralText: Color(0xFFB4B2A9),
-    primaryMid: Color(0xFF85B7EB),
-    primaryLight: Color(0xFF0C447C),
   );
 
   @override
@@ -87,21 +76,18 @@ class BaktazCustomColors extends ThemeExtension<BaktazCustomColors> {
     Color? badgePendingText,
     Color? badgeNeutralBg,
     Color? badgeNeutralText,
-    Color? primaryMid,
-    Color? primaryLight,
-  }) => BaktazCustomColors(
-    starFilled: starFilled ?? this.starFilled,
-    warning: warning ?? this.warning,
-    warningOnContainer: warningOnContainer ?? this.warningOnContainer,
-    successOnContainer: successOnContainer ?? this.successOnContainer,
-    errorOnContainer: errorOnContainer ?? this.errorOnContainer,
-    badgePendingBg: badgePendingBg ?? this.badgePendingBg,
-    badgePendingText: badgePendingText ?? this.badgePendingText,
-    badgeNeutralBg: badgeNeutralBg ?? this.badgeNeutralBg,
-    badgeNeutralText: badgeNeutralText ?? this.badgeNeutralText,
-    primaryMid: primaryMid ?? this.primaryMid,
-    primaryLight: primaryLight ?? this.primaryLight,
-  );
+  }) =>
+      BaktazCustomColors(
+        starFilled: starFilled ?? this.starFilled,
+        warning: warning ?? this.warning,
+        warningOnContainer: warningOnContainer ?? this.warningOnContainer,
+        successOnContainer: successOnContainer ?? this.successOnContainer,
+        errorOnContainer: errorOnContainer ?? this.errorOnContainer,
+        badgePendingBg: badgePendingBg ?? this.badgePendingBg,
+        badgePendingText: badgePendingText ?? this.badgePendingText,
+        badgeNeutralBg: badgeNeutralBg ?? this.badgeNeutralBg,
+        badgeNeutralText: badgeNeutralText ?? this.badgeNeutralText,
+      );
 
   @override
   BaktazCustomColors lerp(ThemeExtension<BaktazCustomColors>? other, double t) {
@@ -109,15 +95,27 @@ class BaktazCustomColors extends ThemeExtension<BaktazCustomColors> {
     return BaktazCustomColors(
       starFilled: Color.lerp(starFilled, other.starFilled, t) ?? starFilled,
       warning: Color.lerp(warning, other.warning, t) ?? warning,
-      warningOnContainer: Color.lerp(warningOnContainer, other.warningOnContainer, t) ?? warningOnContainer,
-      successOnContainer: Color.lerp(successOnContainer, other.successOnContainer, t) ?? successOnContainer,
-      errorOnContainer: Color.lerp(errorOnContainer, other.errorOnContainer, t) ?? errorOnContainer,
-      badgePendingBg: Color.lerp(badgePendingBg, other.badgePendingBg, t) ?? badgePendingBg,
-      badgePendingText: Color.lerp(badgePendingText, other.badgePendingText, t) ?? badgePendingText,
-      badgeNeutralBg: Color.lerp(badgeNeutralBg, other.badgeNeutralBg, t) ?? badgeNeutralBg,
-      badgeNeutralText: Color.lerp(badgeNeutralText, other.badgeNeutralText, t) ?? badgeNeutralText,
-      primaryMid: Color.lerp(primaryMid, other.primaryMid, t) ?? primaryMid,
-      primaryLight: Color.lerp(primaryLight, other.primaryLight, t) ?? primaryLight,
+      warningOnContainer:
+          Color.lerp(warningOnContainer, other.warningOnContainer, t) ??
+              warningOnContainer,
+      successOnContainer:
+          Color.lerp(successOnContainer, other.successOnContainer, t) ??
+              successOnContainer,
+      errorOnContainer:
+          Color.lerp(errorOnContainer, other.errorOnContainer, t) ??
+              errorOnContainer,
+      badgePendingBg:
+          Color.lerp(badgePendingBg, other.badgePendingBg, t) ??
+              badgePendingBg,
+      badgePendingText:
+          Color.lerp(badgePendingText, other.badgePendingText, t) ??
+              badgePendingText,
+      badgeNeutralBg:
+          Color.lerp(badgeNeutralBg, other.badgeNeutralBg, t) ??
+              badgeNeutralBg,
+      badgeNeutralText:
+          Color.lerp(badgeNeutralText, other.badgeNeutralText, t) ??
+              badgeNeutralText,
     );
   }
 }
