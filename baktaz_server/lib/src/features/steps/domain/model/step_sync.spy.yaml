@@ -1,0 +1,13 @@
+class: StepSync
+table: steps_step_sync
+fields:
+  id: UuidValue?, defaultPersist=random
+  userId: UuidValue
+  sourceDeviceId: String
+  rawSteps: int
+  filteredSteps: int
+  wasUserEntered: bool
+  syncedAt: DateTime
+  date: String
+  syncStatus: String?
+  errorMessage: String?

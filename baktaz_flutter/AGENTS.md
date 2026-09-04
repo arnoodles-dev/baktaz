@@ -27,6 +27,14 @@ User-facing Flutter mobile app (iOS, Android, Web) connecting to baktaz_server v
 - HTTP: `chopper`
 - Utilities: `fpdart`, `trust_but_verify`, `envied`
 
+## Implemented Feature Modules
+
+- **`features/steps/`** (Step Telemetry & Analytics):
+  - State: `StepsAnalyticsCubit` (`StepsAnalyticsState`)
+  - Repository & Services: `IStepsAnalyticsRepository` / `StepsAnalyticsRepository`, `StepTelemetryService` (`IStepTelemetryService`)
+  - Presentation: `StepsPage` (views), `HomeStepSection` (widgets)
+  - Routing: `@TypedGoRoute<StepsAnalyticsRoute>` (`path: 'steps'`, name: `'steps'`)
+
 ## Work Guidance
 
 ### Creating a New Feature

@@ -29,15 +29,26 @@
   - `getProfile(Session)` -> `UserInfo?`
   - `updateProfile(Session, firstName?, lastName?, username?)` -> `UserInfo?`
   - `checkUsernameAvailability(Session, username)` -> `bool` (requires login)
+- StepEndpoint (`lib/src/features/steps/endpoint/step_endpoint.dart`):
+  - `registerDevice(Session, deviceModel, osVersion, appVersion)` -> `UserDevice`
+  - `updateIntegration(Session, provider, status, lastError?)` -> `StepIntegration`
+  - `syncSteps(Session, sourceDeviceId, rawSteps, date, wasUserEntered)` -> `StepSync`
+  - `getDailyTelemetry(Session, date)` -> `DailyStepTelemetry`
+  - `getWeeklyAnalytics(Session)` -> `WeeklyStepAnalytics`
 
 ---
 
 ## Data Models
 
-Defined in `.spy.yaml` files under `lib/src/features/account/domain/model/`:
+Defined in `.spy.yaml` files under `lib/src/features/*/domain/model/`:
 - `UserInfo` (`user_info` table): Core user identity, email, username (unique index), mobile, name, gender, dates.
 - `AccountSummary`: Aggregated account metric snapshot (`userId`, `isPremium`, `totalSteps`, `activeChallengeCount`).
 - `Profile`: User profile presentation model (`fullName`, `gender`, `email`, `mobileNumber`, `birthday`, `age`, `imageUrl`, `updatedAt`).
+- `UserDevice` (`user_device` table): Registered user device metadata.
+- `StepIntegration` (`step_integration` table): Connected health provider integration state.
+- `StepSync` (`step_sync` table): Batch step ingestion record.
+- `DailyStepTelemetry` (`daily_step_telemetry` table): Daily aggregated step totals.
+- `WeeklyStepAnalytics`: Weekly step telemetry summary DTO.
 - Additional entities: `Account`, `AccountState`, `Address`, `Contact`, `Wallet`.
 
 ---
@@ -46,6 +57,7 @@ Defined in `.spy.yaml` files under `lib/src/features/account/domain/model/`:
 
 - `IAccountRepository` / `AccountRepository`: Backend account data operations (summary retrieval, account deletion).
 - `IProfileRepository` / `ProfileRepository`: User profile management and username availability checks.
+- `IStepRepository` / `StepRepository`: Step ingestion, telemetry aggregation, device registration, and health integration sync.
 
 ---
 

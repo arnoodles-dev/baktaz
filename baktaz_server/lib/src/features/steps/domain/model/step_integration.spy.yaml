@@ -1,0 +1,10 @@
+class: StepIntegration
+table: steps_step_integration
+fields:
+  id: UuidValue?, defaultPersist=random
+  userId: UuidValue
+  provider: String
+  status: String
+  lastError: String?
+  connectedAt: DateTime?
+  updatedAt: DateTime

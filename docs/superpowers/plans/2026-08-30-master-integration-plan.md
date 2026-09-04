@@ -82,6 +82,7 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Rejection of manual step inputs (`HKWasUserEntered` / `WAS_MANUALLY_ENTERED`).
   - [ ] 30,000 daily step ceiling threshold (`AppConfig.maxDailyStepCeiling = 30000`), flagging steps > 30k as `onHold` for review before escrow payout.
   - [ ] 24-hour validation window after challenge completion before payout disbursement.
+  - [x] Challenge-Scoped Calculation: DailyStepTelemetry stores all daily steps to calculate AccountSummary.avgStepsPerDay and user tier rankings (RankEnum). Challenge leaderboards and escrow payouts filter steps strictly within active challenge window (startDate to endDate) after participant registration (joinedAt).
 - [ ] **Financial Webhook & Ledger Idempotency Invariants**
   - [ ] Webhook idempotency verification via `gatewayTransactionId` to reject duplicate callbacks.
   - [ ] Double-entry ledger debit/credit balance verification.
@@ -98,7 +99,7 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Endpoints validate all inputs at boundary RPC layer (e.g., step range 0–100,000, positive amounts > 0, non-empty strings) before calling repository methods.
   - [ ] Throws typed `ApiException` or `.spy.yaml` exceptions logged via `session.log()`.
 - [ ] **Server-Side Idempotency**
-  - [ ] **Step Sync**: Monotonic `max(existing, new)` DB upserts on `DailyStepTelemetry`.
+  - [x] **Step Sync**: Monotonic `max(existing, new)` DB upserts on `DailyStepTelemetry`.
   - [ ] **Webhooks**: Idempotent callback processing using `gatewayTransactionId` to prevent duplicate transaction credits.
   - [ ] **Challenge Join**: Idempotent join handling using `(challengeId, userId)` unique index.
   - [ ] **Subscription**: Transactional status checks preventing double-activations.
@@ -214,27 +215,27 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
 
 **Goal:** Implement step collection, ingestion, aggregation, health device integration, and analytics reporting, connecting directly into completed Home Screen UI widgets (`DailyStepHeroCard` step count and sync footer, `WeeklyStepsChart` telemetry display).
 
-- [ ] **2.1 Serverpod Step Models & Migration (`baktaz_server`)**
-  - [ ] Define `UserDevice` in `baktaz_server/lib/src/features/steps/domain/model/user_device.spy.yaml`.
-  - [ ] Define `HealthIntegration` in `baktaz_server/lib/src/features/steps/domain/model/health_integration.spy.yaml`.
-  - [ ] Define `StepSync` in `baktaz_server/lib/src/features/steps/domain/model/step_sync.spy.yaml`.
-  - [ ] Define `DailyStepTelemetry` in `baktaz_server/lib/src/features/steps/domain/model/daily_step_telemetry.spy.yaml`.
-- [ ] **2.2 Ingestion & Aggregation Service (`baktaz_server`)**
-  - [ ] Implement `IStepRepository` in `baktaz_server/lib/src/features/steps/domain/interface/i_step_repository.dart`.
-  - [ ] Implement `StepRepository` in `baktaz_server/lib/src/features/steps/data/repository/step_repository.dart` for batch step sync processing and daily telemetry aggregations.
-  - [ ] Expose `StepEndpoint` in `baktaz_server/lib/src/features/steps/endpoint/step_endpoint.dart` with batch upload and date-range telemetry query support.
-- [ ] **2.3 Flutter Step Tracking Integration (`baktaz_flutter`)**
-  - [ ] Build step telemetry background service / health kit sync wrapper in `baktaz_flutter/lib/features/steps/data/service/step_telemetry_service.dart`.
-  - [ ] Implement `IStepRepository` in `baktaz_flutter/lib/features/steps/domain/interface/i_step_repository.dart`.
-  - [ ] Implement `StepRepository` in `baktaz_flutter/lib/features/steps/data/repository/step_repository.dart`.
-  - [ ] Connect steps telemetry and health sync directly into completed Home Screen UI widgets (`DailyStepHeroCard` step count and sync footer, `WeeklyStepsChart` telemetry display).
-  - [ ] Create `StepAnalyticsCubit` in `baktaz_flutter/lib/features/steps/presentation/cubit/step_analytics_cubit.dart`.
-  - [ ] Build `StepAnalyticsPage` in `baktaz_flutter/lib/features/steps/presentation/views/step_analytics_page.dart` using `baktaz_shared` wrappers and `context.i18n.steps.*` keys.
-  - [ ] Register typed route `@TypedGoRoute<StepAnalyticsRoute>(path: '/account/steps')` for `StepAnalyticsPage` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
-- [ ] **2.4 Codegen & Testing**
-  - [ ] Run `serverpod generate && serverpod create-migration`.
-  - [ ] Execute Serverpod repository unit tests (`baktaz_server/test/unit/steps/step_repository_test.dart`) and endpoint integration tests (`baktaz_server/test/integration/steps/step_endpoint_test.dart`) using `withServerpod`.
-  - [ ] Execute Flutter unit tests (`baktaz_flutter/test/unit/step_repository_test.dart`, `baktaz_flutter/test/unit/step_analytics_cubit_test.dart`) and widget tests in `baktaz_flutter/test/widget/steps/`.
+- [x] **2.1 Serverpod Step Models & Migration (`baktaz_server`)**
+  - [x] Define `UserDevice` in `baktaz_server/lib/src/features/steps/domain/model/user_device.spy.yaml`.
+  - [x] Define `HealthIntegration` in `baktaz_server/lib/src/features/steps/domain/model/health_integration.spy.yaml`.
+  - [x] Define `StepSync` in `baktaz_server/lib/src/features/steps/domain/model/step_sync.spy.yaml`.
+  - [x] Define `DailyStepTelemetry` in `baktaz_server/lib/src/features/steps/domain/model/daily_step_telemetry.spy.yaml`.
+- [x] **2.2 Ingestion & Aggregation Service (`baktaz_server`)**
+  - [x] Implement `IStepRepository` in `baktaz_server/lib/src/features/steps/domain/interface/i_step_repository.dart`.
+  - [x] Implement `StepRepository` in `baktaz_server/lib/src/features/steps/data/repository/step_repository.dart` for batch step sync processing and daily telemetry aggregations.
+  - [x] Expose `StepEndpoint` in `baktaz_server/lib/src/features/steps/endpoint/step_endpoint.dart` with batch upload and date-range telemetry query support.
+- [x] **2.3 Flutter Step Tracking Integration (`baktaz_flutter`)**
+  - [x] Build step telemetry background service / health kit sync wrapper in `baktaz_flutter/lib/features/steps/data/service/step_telemetry_service.dart`.
+  - [x] Implement `IStepRepository` in `baktaz_flutter/lib/features/steps/domain/interface/i_step_repository.dart`.
+  - [x] Implement `StepRepository` in `baktaz_flutter/lib/features/steps/data/repository/step_repository.dart`.
+  - [x] Connect steps telemetry and health sync directly into completed Home Screen UI widgets (`DailyStepHeroCard` step count and sync footer, `WeeklyStepsChart` telemetry display).
+  - [x] Create `StepAnalyticsCubit` in `baktaz_flutter/lib/features/steps/presentation/cubit/step_analytics_cubit.dart`.
+  - [x] Build `StepAnalyticsPage` in `baktaz_flutter/lib/features/steps/presentation/views/step_analytics_page.dart` using `baktaz_shared` wrappers and `context.i18n.steps.*` keys.
+  - [x] Register typed route `@TypedGoRoute<StepAnalyticsRoute>(path: '/account/steps')` for `StepAnalyticsPage` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
+- [x] **2.4 Codegen & Testing**
+  - [x] Run `serverpod generate && serverpod create-migration`.
+  - [x] Execute Serverpod repository unit tests (`baktaz_server/test/unit/steps/step_repository_test.dart`) and endpoint integration tests (`baktaz_server/test/integration/steps/step_endpoint_test.dart`) using `withServerpod`.
+  - [x] Execute Flutter unit tests (`baktaz_flutter/test/unit/step_repository_test.dart`, `baktaz_flutter/test/unit/step_analytics_cubit_test.dart`) and widget tests in `baktaz_flutter/test/widget/steps/`.
 
 ---
 

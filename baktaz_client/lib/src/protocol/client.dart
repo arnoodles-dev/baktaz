@@ -41,9 +41,15 @@ import 'package:baktaz_client/src/protocol/features/remote_localization/domain/m
     as _i15;
 import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
     as _i16;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i17;
-import 'package:http/http.dart' as _i18;
-import 'protocol.dart' as _i19;
+import 'package:baktaz_client/src/protocol/features/steps/domain/model/user_device.dart'
+    as _i17;
+import 'package:baktaz_client/src/protocol/features/steps/domain/model/step_integration.dart'
+    as _i18;
+import 'package:baktaz_client/src/protocol/features/steps/domain/model/step_sync.dart'
+    as _i19;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i20;
+import 'package:http/http.dart' as _i21;
+import 'protocol.dart' as _i22;
 
 /// {@category Endpoint}
 abstract class EndpointAdminEndpointBase extends _i1.EndpointRef {
@@ -630,18 +636,84 @@ class EndpointSecurity extends EndpointAdminEndpointBase {
   );
 }
 
+/// {@category Endpoint}
+class EndpointStep extends _i1.EndpointRef {
+  EndpointStep(_i1.EndpointCaller caller) : super(caller);
+
+  @override
+  String get name => 'step';
+
+  _i2.Future<_i17.UserDevice> registerDevice(
+    String deviceModel,
+    String osVersion,
+    String appVersion,
+  ) => caller.callServerEndpoint<_i17.UserDevice>(
+    'step',
+    'registerDevice',
+    {
+      'deviceModel': deviceModel,
+      'osVersion': osVersion,
+      'appVersion': appVersion,
+    },
+  );
+
+  _i2.Future<_i18.StepIntegration> updateIntegrationStatus(
+    String provider,
+    String status,
+    String? lastError,
+  ) => caller.callServerEndpoint<_i18.StepIntegration>(
+    'step',
+    'updateIntegrationStatus',
+    {
+      'provider': provider,
+      'status': status,
+      'lastError': lastError,
+    },
+  );
+
+  _i2.Future<_i19.StepSync> syncStepData({
+    required String sourceDeviceId,
+    required int rawSteps,
+    required bool wasUserEntered,
+    required String date,
+  }) => caller.callServerEndpoint<_i19.StepSync>(
+    'step',
+    'syncStepData',
+    {
+      'sourceDeviceId': sourceDeviceId,
+      'rawSteps': rawSteps,
+      'wasUserEntered': wasUserEntered,
+      'date': date,
+    },
+  );
+
+  _i2.Future<_i9.DailyStepTelemetry> getDailyTelemetry(String date) =>
+      caller.callServerEndpoint<_i9.DailyStepTelemetry>(
+        'step',
+        'getDailyTelemetry',
+        {'date': date},
+      );
+
+  _i2.Future<_i10.WeeklyStepAnalytics> getWeeklyAnalytics() =>
+      caller.callServerEndpoint<_i10.WeeklyStepAnalytics>(
+        'step',
+        'getWeeklyAnalytics',
+        {},
+      );
+}
+
 class Modules {
   Modules(Client client) {
     auth_core = _i5.Caller(client);
     serverpod_auth_idp = _i8.Caller(client);
-    auth = _i17.Caller(client);
+    auth = _i20.Caller(client);
   }
 
   late final _i5.Caller auth_core;
 
   late final _i8.Caller serverpod_auth_idp;
 
-  late final _i17.Caller auth;
+  late final _i20.Caller auth;
 }
 
 class Client extends _i1.ServerpodClientShared {
@@ -658,10 +730,10 @@ class Client extends _i1.ServerpodClientShared {
     onFailedCall,
     Function(_i1.MethodCallContext)? onSucceededCall,
     bool? disconnectStreamsOnLostInternetConnection,
-    _i18.Client? httpClientOverride,
+    _i21.Client? httpClientOverride,
   }) : super(
          host,
-         _i19.Protocol(),
+         _i22.Protocol(),
          securityContext: securityContext,
          streamingConnectionTimeout: streamingConnectionTimeout,
          connectionTimeout: connectionTimeout,
@@ -684,6 +756,7 @@ class Client extends _i1.ServerpodClientShared {
     remoteConfig = EndpointRemoteConfig(this);
     remoteLocalization = EndpointRemoteLocalization(this);
     security = EndpointSecurity(this);
+    step = EndpointStep(this);
     modules = Modules(this);
   }
 
@@ -713,6 +786,8 @@ class Client extends _i1.ServerpodClientShared {
 
   late final EndpointSecurity security;
 
+  late final EndpointStep step;
+
   late final Modules modules;
 
   @override
@@ -730,6 +805,7 @@ class Client extends _i1.ServerpodClientShared {
     'remoteConfig': remoteConfig,
     'remoteLocalization': remoteLocalization,
     'security': security,
+    'step': step,
   };
 
   @override

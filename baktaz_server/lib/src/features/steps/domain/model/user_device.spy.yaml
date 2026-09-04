@@ -1,0 +1,10 @@
+class: UserDevice
+table: steps_user_device
+fields:
+  id: UuidValue?, defaultPersist=random
+  userId: UuidValue
+  deviceModel: String
+  osVersion: String
+  appVersion: String
+  lastActiveAt: DateTime
+  createdAt: DateTime

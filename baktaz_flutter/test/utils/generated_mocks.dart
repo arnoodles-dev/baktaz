@@ -18,6 +18,7 @@ import 'package:baktaz_flutter/features/challenge/domain/interface/i_challenge_r
 import 'package:baktaz_flutter/features/home/data/service/sync_steps_service.dart';
 import 'package:baktaz_flutter/features/home/domain/cubit/home/home_cubit.dart';
 import 'package:baktaz_flutter/features/home/domain/interface/i_steps_repository.dart';
+import 'package:baktaz_flutter/features/steps/domain/interface/i_steps_analytics_repository.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_service_core/features/analytics/i_analytics_service.dart';
@@ -40,6 +41,9 @@ export 'generated_mocks.mocks.dart';
   MockSpec<EndpointOtp>(),
   MockSpec<EndpointRemoteConfig>(),
   MockSpec<EndpointRemoteLocalization>(),
+  MockSpec<EndpointHome>(),
+  MockSpec<EndpointStep>(),
+  MockSpec<IStepsAnalyticsRepository>(),
   MockSpec<IAuthRepository>(),
   MockSpec<IAccountRepository>(),
   MockSpec<ILocalStorageRepository>(),

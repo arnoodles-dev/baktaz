@@ -25,10 +25,9 @@ class _BaktazFireIconState extends State<BaktazFireIcon> with SingleTickerProvid
   void initState() {
     super.initState();
     _controller = AnimationController(duration: BaktazElevation.animationStepPulse, vsync: this);
-    // ignore: prefer_int_literals
     _animation = Tween<double>(
       begin: 0.85,
-      end: 1.0,
+      end: 1,
     ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
     if (widget.pulse) {
       _controller.repeat(reverse: true);

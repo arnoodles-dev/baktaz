@@ -30,6 +30,7 @@ import 'package:baktaz_flutter/features/home/presentation/views/home_page.dart';
 import 'package:baktaz_flutter/features/message/presentation/views/chat_page.dart';
 import 'package:baktaz_flutter/features/message/presentation/views/message_page.dart';
 import 'package:baktaz_flutter/features/message/presentation/views/notification_page.dart';
+import 'package:baktaz_flutter/features/steps/presentation/views/steps_page.dart';
 import 'package:baktaz_shared/baktaz_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -157,6 +158,7 @@ class SelectAddressRoute extends GoRouteData with $SelectAddressRoute {
             TypedGoRoute<ShareFeedbackRoute>(path: 'shareFeedback', name: 'shareFeedback'),
             TypedGoRoute<LanguageRoute>(path: 'language', name: 'language'),
             TypedGoRoute<DarkModeRoute>(path: 'darkMode', name: 'darkMode'),
+            TypedGoRoute<StepsAnalyticsRoute>(path: 'steps', name: 'steps'),
           ],
         ),
       ],
@@ -356,6 +358,14 @@ class DarkModeRoute extends GoRouteData with $DarkModeRoute {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) =>
       SlideTransitionPage(key: state.pageKey, child: const DarkModeScreen());
+}
+
+class StepsAnalyticsRoute extends GoRouteData with $StepsAnalyticsRoute {
+  const StepsAnalyticsRoute();
+  static final GlobalKey<NavigatorState> $parentNavigatorKey = RouteNavigatorKeys.root;
+  @override
+  Page<void> buildPage(BuildContext context, GoRouterState state) =>
+      SlideTransitionPage(key: state.pageKey, child: const StepsPage());
 }
 
 abstract final class AppRoutes {

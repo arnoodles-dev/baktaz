@@ -49,17 +49,20 @@ import 'features/remote_localization/domain/model/remote_localization_release.da
 import 'features/remote_localization/domain/model/remote_localization_response.dart'
     as _i31;
 import 'features/security/domain/models/security_event.dart' as _i32;
-import 'features/wallet/domain/model/wallet.dart' as _i33;
-import 'features/wallet/domain/model/wallet_transactions.dart' as _i34;
+import 'features/steps/domain/model/step_integration.dart' as _i33;
+import 'features/steps/domain/model/step_sync.dart' as _i34;
+import 'features/steps/domain/model/user_device.dart' as _i35;
+import 'features/wallet/domain/model/wallet.dart' as _i36;
+import 'features/wallet/domain/model/wallet_transactions.dart' as _i37;
 import 'package:serverpod_auth_core_client/serverpod_auth_core_client.dart'
-    as _i35;
-import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
-    as _i36;
-import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
-    as _i37;
-import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
     as _i38;
-import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i39;
+import 'package:baktaz_client/src/protocol/features/home/domain/model/home_leaderboard_entry.dart'
+    as _i39;
+import 'package:baktaz_client/src/protocol/features/security/domain/models/security_event.dart'
+    as _i40;
+import 'package:serverpod_auth_idp_client/serverpod_auth_idp_client.dart'
+    as _i41;
+import 'package:serverpod_auth_client/serverpod_auth_client.dart' as _i42;
 export 'core/domain/model/enum/gender.dart';
 export 'core/domain/model/enum/transaction_type.dart';
 export 'core/domain/model/exception/api_exception.dart';
@@ -91,6 +94,9 @@ export 'features/remote_localization/domain/model/remote_localization_audit_log.
 export 'features/remote_localization/domain/model/remote_localization_release.dart';
 export 'features/remote_localization/domain/model/remote_localization_response.dart';
 export 'features/security/domain/models/security_event.dart';
+export 'features/steps/domain/model/step_integration.dart';
+export 'features/steps/domain/model/step_sync.dart';
+export 'features/steps/domain/model/user_device.dart';
 export 'features/wallet/domain/model/wallet.dart';
 export 'features/wallet/domain/model/wallet_transactions.dart';
 export 'client.dart';
@@ -222,11 +228,20 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i32.SecurityEvent) {
       return _i32.SecurityEvent.fromJson(data) as T;
     }
-    if (t == _i33.Wallet) {
-      return _i33.Wallet.fromJson(data) as T;
+    if (t == _i33.StepIntegration) {
+      return _i33.StepIntegration.fromJson(data) as T;
     }
-    if (t == _i34.WalletTransactions) {
-      return _i34.WalletTransactions.fromJson(data) as T;
+    if (t == _i34.StepSync) {
+      return _i34.StepSync.fromJson(data) as T;
+    }
+    if (t == _i35.UserDevice) {
+      return _i35.UserDevice.fromJson(data) as T;
+    }
+    if (t == _i36.Wallet) {
+      return _i36.Wallet.fromJson(data) as T;
+    }
+    if (t == _i37.WalletTransactions) {
+      return _i37.WalletTransactions.fromJson(data) as T;
     }
     if (t == _i1.getType<_i2.Gender?>()) {
       return (data != null ? _i2.Gender.fromJson(data) : null) as T;
@@ -341,11 +356,20 @@ class Protocol extends _i1.SerializationManager {
     if (t == _i1.getType<_i32.SecurityEvent?>()) {
       return (data != null ? _i32.SecurityEvent.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i33.Wallet?>()) {
-      return (data != null ? _i33.Wallet.fromJson(data) : null) as T;
+    if (t == _i1.getType<_i33.StepIntegration?>()) {
+      return (data != null ? _i33.StepIntegration.fromJson(data) : null) as T;
     }
-    if (t == _i1.getType<_i34.WalletTransactions?>()) {
-      return (data != null ? _i34.WalletTransactions.fromJson(data) : null)
+    if (t == _i1.getType<_i34.StepSync?>()) {
+      return (data != null ? _i34.StepSync.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i35.UserDevice?>()) {
+      return (data != null ? _i35.UserDevice.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i36.Wallet?>()) {
+      return (data != null ? _i36.Wallet.fromJson(data) : null) as T;
+    }
+    if (t == _i1.getType<_i37.WalletTransactions?>()) {
+      return (data != null ? _i37.WalletTransactions.fromJson(data) : null)
           as T;
     }
     if (t == List<String>) {
@@ -369,31 +393,31 @@ class Protocol extends _i1.SerializationManager {
           )
           as T;
     }
-    if (t == List<_i34.WalletTransactions>) {
+    if (t == List<_i37.WalletTransactions>) {
       return (data as List)
-              .map((e) => deserialize<_i34.WalletTransactions>(e))
+              .map((e) => deserialize<_i37.WalletTransactions>(e))
               .toList()
           as T;
     }
-    if (t == _i1.getType<List<_i34.WalletTransactions>?>()) {
+    if (t == _i1.getType<List<_i37.WalletTransactions>?>()) {
       return (data != null
               ? (data as List)
-                    .map((e) => deserialize<_i34.WalletTransactions>(e))
+                    .map((e) => deserialize<_i37.WalletTransactions>(e))
                     .toList()
               : null)
           as T;
     }
     if (t ==
         List<
-          ({_i35.AuthUserModel authUser, _i35.UserProfileModel userProfile})
+          ({_i38.AuthUserModel authUser, _i38.UserProfileModel userProfile})
         >) {
       return (data as List)
               .map(
                 (e) =>
                     deserialize<
                       ({
-                        _i35.AuthUserModel authUser,
-                        _i35.UserProfileModel userProfile,
+                        _i38.AuthUserModel authUser,
+                        _i38.UserProfileModel userProfile,
                       })
                     >(e),
               )
@@ -403,13 +427,13 @@ class Protocol extends _i1.SerializationManager {
     if (t ==
         _i1
             .getType<
-              ({_i35.AuthUserModel authUser, _i35.UserProfileModel userProfile})
+              ({_i38.AuthUserModel authUser, _i38.UserProfileModel userProfile})
             >()) {
       return (
-            authUser: deserialize<_i35.AuthUserModel>(
+            authUser: deserialize<_i38.AuthUserModel>(
               ((data as Map)['n'] as Map)['authUser'],
             ),
-            userProfile: deserialize<_i35.UserProfileModel>(
+            userProfile: deserialize<_i38.UserProfileModel>(
               data['n']['userProfile'],
             ),
           )
@@ -418,47 +442,47 @@ class Protocol extends _i1.SerializationManager {
     if (t ==
         _i1
             .getType<
-              ({_i35.AuthUserModel authUser, _i35.UserProfileModel userProfile})
+              ({_i38.AuthUserModel authUser, _i38.UserProfileModel userProfile})
             >()) {
       return (
-            authUser: deserialize<_i35.AuthUserModel>(
+            authUser: deserialize<_i38.AuthUserModel>(
               ((data as Map)['n'] as Map)['authUser'],
             ),
-            userProfile: deserialize<_i35.UserProfileModel>(
+            userProfile: deserialize<_i38.UserProfileModel>(
               data['n']['userProfile'],
             ),
           )
           as T;
     }
-    if (t == List<_i35.AuthUserModel>) {
+    if (t == List<_i38.AuthUserModel>) {
       return (data as List)
-              .map((e) => deserialize<_i35.AuthUserModel>(e))
+              .map((e) => deserialize<_i38.AuthUserModel>(e))
               .toList()
           as T;
     }
     if (t == List<String>) {
       return (data as List).map((e) => deserialize<String>(e)).toList() as T;
     }
-    if (t == List<_i36.HomeLeaderboardEntry>) {
+    if (t == List<_i39.HomeLeaderboardEntry>) {
       return (data as List)
-              .map((e) => deserialize<_i36.HomeLeaderboardEntry>(e))
+              .map((e) => deserialize<_i39.HomeLeaderboardEntry>(e))
               .toList()
           as T;
     }
-    if (t == List<_i37.SecurityEvent>) {
+    if (t == List<_i40.SecurityEvent>) {
       return (data as List)
-              .map((e) => deserialize<_i37.SecurityEvent>(e))
+              .map((e) => deserialize<_i40.SecurityEvent>(e))
               .toList()
           as T;
     }
-    try {
-      return _i35.Protocol().deserialize<T>(data, t);
-    } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
       return _i38.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     try {
-      return _i39.Protocol().deserialize<T>(data, t);
+      return _i41.Protocol().deserialize<T>(data, t);
+    } on _i1.DeserializationTypeNotFoundException catch (_) {}
+    try {
+      return _i42.Protocol().deserialize<T>(data, t);
     } on _i1.DeserializationTypeNotFoundException catch (_) {}
     return super.deserialize<T>(data, t);
   }
@@ -496,8 +520,11 @@ class Protocol extends _i1.SerializationManager {
       _i30.RemoteLocalizationRelease => 'RemoteLocalizationRelease',
       _i31.RemoteLocalizationResponse => 'RemoteLocalizationResponse',
       _i32.SecurityEvent => 'SecurityEvent',
-      _i33.Wallet => 'Wallet',
-      _i34.WalletTransactions => 'WalletTransactions',
+      _i33.StepIntegration => 'StepIntegration',
+      _i34.StepSync => 'StepSync',
+      _i35.UserDevice => 'UserDevice',
+      _i36.Wallet => 'Wallet',
+      _i37.WalletTransactions => 'WalletTransactions',
       _ => null,
     };
   }
@@ -574,24 +601,30 @@ class Protocol extends _i1.SerializationManager {
         return 'RemoteLocalizationResponse';
       case _i32.SecurityEvent():
         return 'SecurityEvent';
-      case _i33.Wallet():
+      case _i33.StepIntegration():
+        return 'StepIntegration';
+      case _i34.StepSync():
+        return 'StepSync';
+      case _i35.UserDevice():
+        return 'UserDevice';
+      case _i36.Wallet():
         return 'Wallet';
-      case _i34.WalletTransactions():
+      case _i37.WalletTransactions():
         return 'WalletTransactions';
-    }
-    className = _i35.Protocol().getClassNameForObject(data);
-    if (className != null) {
-      return className.contains('.')
-          ? className
-          : 'serverpod_auth_core.$className';
     }
     className = _i38.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.')
           ? className
+          : 'serverpod_auth_core.$className';
+    }
+    className = _i41.Protocol().getClassNameForObject(data);
+    if (className != null) {
+      return className.contains('.')
+          ? className
           : 'serverpod_auth_idp.$className';
     }
-    className = _i39.Protocol().getClassNameForObject(data);
+    className = _i42.Protocol().getClassNameForObject(data);
     if (className != null) {
       return className.contains('.') ? className : 'serverpod_auth.$className';
     }
@@ -697,31 +730,40 @@ class Protocol extends _i1.SerializationManager {
     if (dataClassName == 'SecurityEvent') {
       return deserialize<_i32.SecurityEvent>(data['data']);
     }
+    if (dataClassName == 'StepIntegration') {
+      return deserialize<_i33.StepIntegration>(data['data']);
+    }
+    if (dataClassName == 'StepSync') {
+      return deserialize<_i34.StepSync>(data['data']);
+    }
+    if (dataClassName == 'UserDevice') {
+      return deserialize<_i35.UserDevice>(data['data']);
+    }
     if (dataClassName == 'Wallet') {
-      return deserialize<_i33.Wallet>(data['data']);
+      return deserialize<_i36.Wallet>(data['data']);
     }
     if (dataClassName == 'WalletTransactions') {
-      return deserialize<_i34.WalletTransactions>(data['data']);
+      return deserialize<_i37.WalletTransactions>(data['data']);
     }
     if (dataClassName.startsWith('serverpod_auth_core.')) {
       data['className'] = dataClassName.substring(20);
-      return _i35.Protocol().deserializeByClassName(data);
+      return _i38.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth_idp.')) {
       data['className'] = dataClassName.substring(19);
-      return _i38.Protocol().deserializeByClassName(data);
+      return _i41.Protocol().deserializeByClassName(data);
     }
     if (dataClassName.startsWith('serverpod_auth.')) {
       data['className'] = dataClassName.substring(15);
-      return _i39.Protocol().deserializeByClassName(data);
+      return _i42.Protocol().deserializeByClassName(data);
     }
     return super.deserializeByClassName(data);
   }
 
   void _registerHostProtocols() {
-    _i35.Protocol().registerHostProtocol('baktaz', this);
     _i38.Protocol().registerHostProtocol('baktaz', this);
-    _i39.Protocol().registerHostProtocol('baktaz', this);
+    _i41.Protocol().registerHostProtocol('baktaz', this);
+    _i42.Protocol().registerHostProtocol('baktaz', this);
   }
 
   @override
@@ -737,7 +779,7 @@ class Protocol extends _i1.SerializationManager {
       return null;
     }
     if (record
-        is ({_i35.AuthUserModel authUser, _i35.UserProfileModel userProfile})) {
+        is ({_i38.AuthUserModel authUser, _i38.UserProfileModel userProfile})) {
       return {
         "n": {
           "authUser": record.authUser.toJson(),
@@ -746,13 +788,13 @@ class Protocol extends _i1.SerializationManager {
       };
     }
     try {
-      return _i35.Protocol().mapRecordToJson(record);
-    } catch (_) {}
-    try {
       return _i38.Protocol().mapRecordToJson(record);
     } catch (_) {}
     try {
-      return _i39.Protocol().mapRecordToJson(record);
+      return _i41.Protocol().mapRecordToJson(record);
+    } catch (_) {}
+    try {
+      return _i42.Protocol().mapRecordToJson(record);
     } catch (_) {}
     throw Exception('Unsupported record type ${record.runtimeType}');
   }

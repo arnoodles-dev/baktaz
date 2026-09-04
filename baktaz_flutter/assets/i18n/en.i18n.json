@@ -246,5 +246,37 @@
     "find_chats": "Find your chats here!",
     "notifications_placeholder": "Notifications will appear here",
     "notifications_subtitle": "Watch this space for offers, updates, and more."
+  },
+  "steps": {
+    "title": "Step Analytics",
+    "todays_steps": "Today's Steps",
+    "weekly_analytics": "Weekly Step Analytics",
+    "sync_now": "Sync Steps Now",
+    "connect_health": "Connect Health Provider",
+    "connect_desc": "Connect Apple Health or Health Connect to auto-sync daily step telemetry.",
+    "permission_granted": "Health permission granted",
+    "permission_denied": "Health permission denied",
+    "status_connected": "Connected to ${provider: String}",
+    "status_disconnected": "Not Connected",
+    "daily_goal": "${current: Object} / ${goal: Object} steps",
+    "weekly_total": "7-Day Total: ${total: Object} steps",
+    "weekly_avg": "Daily Avg: ${avg: Object} steps",
+    "sync_success": "Steps synced successfully",
+    "sync_error": "Failed to sync steps",
+    "checklist": {
+      "title": "Daily Step Checklist",
+      "morning_walk": "Morning Walk (2,000 steps)",
+      "lunch_break": "Lunch Break Stroll (1,500 steps)",
+      "evening_goal": "Reach Daily Goal (10,000 steps)"
+    },
+    "telemetry": {
+      "last_synced": "Last synced: ${time: String}",
+      "source": "Source: ${source: String}"
+    },
+    "connect": {
+      "title": "Step Tracker Disconnected",
+      "subtitle": "Connect Apple Health or Health Connect to track your daily steps automatically.",
+      "button": "Connect Provider"
+    }
   }
 }
