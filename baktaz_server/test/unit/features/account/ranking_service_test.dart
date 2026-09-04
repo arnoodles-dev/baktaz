@@ -1,4 +1,4 @@
-import 'package:baktaz_server/src/features/account/domain/service/ranking_service.dart';
+import 'package:baktaz_server/src/features/account/data/service/ranking_service.dart';
 import 'package:baktaz_server/src/generated/features/account/domain/model/rank.dart';
 import 'package:test/test.dart';
 

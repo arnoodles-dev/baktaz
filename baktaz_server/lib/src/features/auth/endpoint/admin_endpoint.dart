@@ -8,28 +8,28 @@ import 'package:serverpod/serverpod.dart';
 import 'package:serverpod_auth_idp_server/core.dart';
 
 class AdminEndpoint extends AdminEndpointBase {
-  AdminEndpoint([IAdminRepository? adminService])
-    : _adminService =
-          adminService ??
+  AdminEndpoint([IAdminRepository? adminRepository])
+    : _adminRepository =
+          adminRepository ??
           (getIt.isRegistered<IAdminRepository>()
               ? getIt<IAdminRepository>()
               : AdminRepository(getIt.isRegistered<SecurityLogger>() ? getIt<SecurityLogger>() : SecurityLogger()));
 
-  final IAdminRepository _adminService;
+  final IAdminRepository _adminRepository;
 
-  Future<List<AdminUser>> listAdminUsers(Session session) async => _adminService.listAdminUsers(session);
+  Future<List<AdminUser>> listAdminUsers(Session session) async => _adminRepository.listAdminUsers(session);
 
-  Future<List<AuthUserModel>> listAuthUsers(Session session) async => _adminService.listAuthUsers(session);
+  Future<List<AuthUserModel>> listAuthUsers(Session session) async => _adminRepository.listAuthUsers(session);
 
-  Future<void> blockUser(Session session, UuidValue authUserId) async => _adminService.blockUser(session, authUserId);
+  Future<void> blockUser(Session session, UuidValue authUserId) async => _adminRepository.blockUser(session, authUserId);
 
   Future<void> unblockUser(Session session, UuidValue authUserId) async =>
-      _adminService.unblockUser(session, authUserId);
+      _adminRepository.unblockUser(session, authUserId);
 
   Future<void> updateUserScope(Session session, UuidValue authUserId, List<String> scopeNames) async {
     if (scopeNames.isEmpty) {
       throw ApiException(message: 'Scope names list cannot be empty', code: ApiExceptionCode.badRequest);
     }
-    return _adminService.updateUserScope(session, authUserId, scopeNames.map(Scope.new).toSet());
+    return _adminRepository.updateUserScope(session, authUserId, scopeNames.map(Scope.new).toSet());
   }
 }

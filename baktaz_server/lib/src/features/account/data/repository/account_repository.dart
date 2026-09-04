@@ -1,6 +1,6 @@
 import 'package:baktaz_server/src/app/config/app_config.dart';
+import 'package:baktaz_server/src/features/account/data/service/ranking_service.dart';
 import 'package:baktaz_server/src/features/account/domain/interface/i_account_repository.dart';
-import 'package:baktaz_server/src/features/account/domain/service/ranking_service.dart';
 import 'package:baktaz_server/src/features/home/domain/interface/i_challenge_repository.dart';
 import 'package:baktaz_server/src/features/remote_config/domain/interface/i_remote_config_repository.dart';
 import 'package:baktaz_server/src/features/security/data/service/security_logger.dart';

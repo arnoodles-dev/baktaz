@@ -1,6 +1,6 @@
 import 'package:baktaz_server/src/generated/features/account/domain/model/rank.dart';
 
-class RankingService {
+final class RankingService {
   RankingService(this.configValues);
 
   final Map<String, String> configValues;
