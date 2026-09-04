@@ -48,7 +48,7 @@ class ChallengeStatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-    padding: Paddings.horizontalMedium,
+    padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.md),
     child: Skeletonizer(
       enabled: isLoading,
       child: Row(
@@ -59,21 +59,21 @@ class ChallengeStatsGrid extends StatelessWidget {
               label: context.i18n.account.total_challenge_steps,
             ),
           ),
-          Gap.xSmall(),
+          const SizedBox(width: BaktazSpacing.xs),
           Expanded(
             child: _StatCard(
               value: '$challengesJoined',
               label: context.i18n.account.challenges_joined,
             ),
           ),
-          Gap.xSmall(),
+          const SizedBox(width: BaktazSpacing.xs),
           Expanded(
             child: _StatCard(
               value: '$challengesWon',
               label: context.i18n.account.challenges_won,
             ),
           ),
-          Gap.xSmall(),
+          const SizedBox(width: BaktazSpacing.xs),
           Expanded(
             child: _StatCard(
               value: '${winRatePercentage.toStringAsFixed(1)}%',
@@ -95,13 +95,13 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BaktazCard(
     child: Padding(
-      padding: Paddings.allSmall,
+      padding: const EdgeInsets.all(BaktazSpacing.xs),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           BaktazText(
             text: value,
-            style: context.textTheme.titleMedium?.copyWith(fontWeight: AppFontWeight.bold),
+            style: context.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
           ),
           Gap.x2Small(),
           BaktazText(

@@ -228,7 +228,7 @@ When user has no active steps integration, display `StepConnectCTABanner` on `Ho
 When user IS connected, home page shows inline sync button that calls `StepsRepository.getTodaySteps()` + `StepsRepository.syncSteps()` without navigation.
 
 ### Account Page Tile
-Add `AccountMenuTile` with icon `Icons.directions_walk` to `AccountPage` menu list. Label: `context.l10n.stepsTitle`. Navigates to `/account/steps`.
+Add `AccountMenuTile` with icon `Icons.directions_walk` to `AccountPage` menu list. Label: `context.i18n.steps.steps_title`. Navigates to `/account/steps`.
 
 ### Steps Page
 Accessible via `/account/steps` route (under account shell). Shows:

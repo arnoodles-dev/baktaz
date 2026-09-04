@@ -6,26 +6,26 @@
 
 ## 5.3 Presentation Layer Design & Theme Tokens
 
-- **Typography Tokens**: Standardized text styles across components (`AppTextStyle.headlineMedium`, `displayMedium`, `mono`, `bodyMedium`):
-  - Header / Section Titles: `AppTextStyle.headlineMedium`
-  - Big Counters / Metric Displays: `AppTextStyle.displayMedium` (or `displayMedium`)
-  - Invite Codes / Step Counts / Rank Numbers: `AppTextStyle.mono` (or `mono`)
-  - General Body Text & Labels: `AppTextStyle.bodyMedium` (or `bodyMedium`)
-- **Spacing Tokens**: Consistent layouts using predefined tokens (`AppSizes.screenMarginH`, `Gap.medium()`, `Gap.large()`):
-  - Horizontal Screen Margin: `AppSizes.screenMarginH`
-  - Standard Item Gaps: `Gap.medium()` between cards/elements, `Gap.large()` between major sections
-- **Border Radius Tokens**:
-  - Cards & Containers: `radiusSmall` (12dp for cards)
-  - Dialogs & Bottom Sheets: `radiusXLarge` (24dp for dialogs/bottom sheets)
-  - Badges & Action Buttons: `radiusFull` (999dp for badges/buttons)
+- **Typography Tokens**: Standardized text styles across components using `Theme.of(context).textTheme.*` for common styles and `BaktazType.*` strictly for display styles (`displayHero`, `metricHero`, `headlineTitle`, `subheadingUppercase`, `labelRanking`):
+  - Header / Section Titles: `Theme.of(context).textTheme.headlineLarge`
+  - Big Counters / Metric Displays: `BaktazType.metricHero(scheme.onSurface)`
+  - Invite Codes / Step Counts / Rank Numbers: `BaktazType.labelRanking(scheme.onSurface)`
+  - General Body Text & Labels: `Theme.of(context).textTheme.bodyMedium`
+- **Spacing Tokens**: Consistent layouts using `BaktazSpacing.*` (xs2=4, xs=8, sm=12, md=16, lg=20, xl=24, xl2=32, xl3=40) and `BaktazRadius.*` (card, row, chip, pill):
+  - Horizontal Screen Margin: `BaktazSpacing.xl`
+  - Standard Item Gaps: `BaktazSpacing.md` between cards/elements, `BaktazSpacing.lg` between major sections
+- **Border Radius Tokens**: `BaktazRadius.*`
+  - Cards & Containers: `BaktazRadius.card` (12dp for cards)
+  - Dialogs & Bottom Sheets: `BaktazRadius.chip` (24dp for dialogs/bottom sheets)
+  - Badges & Action Buttons: `BaktazRadius.pill` (999dp for badges/buttons)
 - **Color Palette & Theme Extensions**:
-  - Surface Containers: `context.colorScheme.surfaceContainer`
-  - Custom Brand / Accent Colors: `context.baktazColors`
-  - **Dynamic Brand Primary Gradient Headers**: Prize Pool Card and main Dashboard cards feature dynamic brand primary gradient headers (`LinearGradient` using `colorScheme.primary` and `colorScheme.primaryContainer` or theme secondary variants) for strong visual hierarchy.
-  - **Metallic Podium Rank Badges**: Top-3 leaderboard entries feature metallic podium rank badges:
-    - 🥇 **Gold (1st Place)**: `#FFD700`
-    - 🥈 **Silver (2nd Place)**: `#C0C0C0`
-    - 🥉 **Bronze (3rd Place)**: `#CD7F32`
+  - Surface Containers: `scheme.surfaceContainer`
+  - Custom Brand / Accent Colors: `BaktazCustomColors.*` (ThemeExtension)
+  - **Dynamic Brand Primary Gradient Headers**: Prize Pool Card and main Dashboard cards feature dynamic brand primary gradient headers (`LinearGradient` using `scheme.primary` `#10B981`/`#34D399` and `scheme.primaryContainer`) for strong visual hierarchy.
+  - **Metallic Podium Rank Badges**: Top-3 leaderboard entries feature metallic podium rank badges via `BaktazCustomColors.*`:
+    - 🥇 **Gold (1st Place)**: `BaktazCustomColors.gold`
+    - 🥈 **Silver (2nd Place)**: `BaktazCustomColors.silver`
+    - 🥉 **Bronze (3rd Place)**: `BaktazCustomColors.bronze`
   - **Zero Layout Shift Shimmer Skeletons**: During the `loading` state, custom `Shimmer` skeleton placeholders (imported from `*_shared`) mirror the exact card dimensions and flex layouts of `ChallengeRegisteredView` and `ChallengeDefaultView` to eliminate layout shift upon data resolve.
 
 ## Challenge Entity Fields (Server & Client)

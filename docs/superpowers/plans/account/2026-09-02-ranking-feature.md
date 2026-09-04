@@ -831,16 +831,16 @@ class LifetimeStatsGrid extends StatelessWidget {
   Widget build(BuildContext context) => Skeletonizer(
     enabled: isLoading,
     child: Padding(
-      padding: Paddings.screenMarginH,
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xl),
       child: Row(
         children: <Widget>[
-          Expanded(child: _StatCard(value: _formatNumber(challengeStepsTotal), label: context.l10n.lifetime_stats_grid.challenge_steps)),
-          Gap.medium(),
-          Expanded(child: _StatCard(value: _formatNumber(challengesJoined), label: context.l10n.lifetime_stats_grid.challenges_joined)),
-          Gap.medium(),
-          Expanded(child: _StatCard(value: _formatNumber(challengesWon), label: context.l10n.lifetime_stats_grid.challenges_won)),
-          Gap.medium(),
-          Expanded(child: _StatCard(value: _formatNumber(avgStepsPerDay), label: context.l10n.lifetime_stats_grid.avg_steps_per_day)),
+          Expanded(child: _StatCard(value: _formatNumber(challengeStepsTotal), label: context.i18n.lifetime_stats_grid.challenge_steps)),
+          const SizedBox(width: BaktazSpacing.md),
+          Expanded(child: _StatCard(value: _formatNumber(challengesJoined), label: context.i18n.lifetime_stats_grid.challenges_joined)),
+          const SizedBox(width: BaktazSpacing.md),
+          Expanded(child: _StatCard(value: _formatNumber(challengesWon), label: context.i18n.lifetime_stats_grid.challenges_won)),
+          const SizedBox(width: BaktazSpacing.md),
+          Expanded(child: _StatCard(value: _formatNumber(avgStepsPerDay), label: context.i18n.lifetime_stats_grid.avg_steps_per_day)),
         ],
       ),
     ),
@@ -862,13 +862,13 @@ class _StatCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) => BaktazCard(
     body: Padding(
-      padding: Paddings.allMedium,
+      padding: const EdgeInsets.all(BaktazSpacing.md),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           BaktazText(
             text: value,
-            style: context.textTheme.headlineMedium?.copyWith(fontWeight: AppFontWeight.bold, color: context.colorScheme.onSurface),
+            style: context.textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold, color: context.colorScheme.onSurface),
           ),
           Gap.xSmall(),
           BaktazText(
@@ -884,7 +884,7 @@ class _StatCard extends StatelessWidget {
 
 - [ ] **Step 4: Add localization key**
 
-Add to existing l10n file: `avg_steps_per_day`
+Add to existing i18n JSON file: `avg_steps_per_day`
 
 Run: `cd /Users/Arnold/Projects/baktaz/baktaz_flutter && fvm flutter pub run flutter_localizations:generate`
 
@@ -997,26 +997,26 @@ class AccountHeaderCard extends StatelessWidget {
   Widget build(BuildContext context) => Skeletonizer(
     enabled: isLoading,
     child: Padding(
-      padding: Paddings.screenMarginH,
+      padding: const EdgeInsets.symmetric(horizontal: BaktazSpacing.xl),
       child: BaktazCard(
         headerTitle: fullName,
         headerIcon: Icons.person,
         headerAction: BaktazButton(
-          text: context.l10n.account_header_card.edit_profile,
+          text: context.i18n.account_header_card.edit_profile,
           onPressed: onEditProfile,
           buttonType: ButtonType.outlined,
           isEnabled: !isLoading,
         ),
         body: Padding(
-          padding: Paddings.verticalMedium,
+          padding: const EdgeInsets.symmetric(vertical: BaktazSpacing.md),
           child: Row(
             children: <Widget>[
               BaktazAvatar(
-                size: AppSizes.avatarLG,
+                size: 64,
                 imageUrl: imageUrl,
                 initials: AccountHeaderCard.initialsFromFullName(fullName),
               ),
-              Gap.medium(),
+              const SizedBox(width: BaktazSpacing.md),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1029,16 +1029,16 @@ class AccountHeaderCard extends StatelessWidget {
                             style: context.textTheme.bodyMedium?.copyWith(color: context.colorScheme.onSurfaceVariant),
                           ),
                           if (rank != null) ...<Widget>[
-                            Gap.small(),
+                            const SizedBox(width: BaktazSpacing.xs),
                             RankBadge(rank: rank!),
                           ],
                         ],
                       ),
                     ],
-                    Gap.xSmall(),
+                    const SizedBox(height: BaktazSpacing.xs2),
                     if (memberSince case final DateTime effectiveMemberSince)
                       BaktazText(
-                        text: context.l10n.account_header_card.member_since(date: effectiveMemberSince.year.toString()),
+                        text: context.i18n.account_header_card.member_since(date: effectiveMemberSince.year.toString()),
                         style: context.textTheme.bodySmall?.copyWith(color: context.colorScheme.onSurfaceVariant),
                       ),
                   ],

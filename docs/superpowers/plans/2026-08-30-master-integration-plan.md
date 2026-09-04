@@ -74,7 +74,7 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
 
 ### 6. Typed Navigation & UI Design System Invariants
 - All Flutter navigation MUST use `go_router_builder` `@TypedGoRoute` or `@TypedShellRoute` classes registered in `baktaz_flutter/lib/app/routes/app_routes.dart`.
-- All UI widgets/views MUST exclusively use `baktaz_shared` UI components (`BaktazText`, `BaktazButton`, `BaktazCard`, `BaktazTextField`, `BaktazAvatar`, `BaktazStatusBadge`, `BaktazSectionHeader`, `ConfirmationDialog`), `AppSizes.*` spacing, and `context.l10n.*` slang localization.
+- All UI widgets/views MUST exclusively use `baktaz_shared` UI components (`BaktazText`, `BaktazButton`, `BaktazCard`, `BaktazTextField`, `BaktazAvatar`, `BaktazStatusBadge`, `BaktazSectionHeader`, `ConfirmationDialog`, `StageProgressBar`, `SlotsProgressRing`, `FireIcon`, `LeadersStrip`, `RankTrend`, `GapMeter`, `WeeklyStepsBarChart`, `LeaderboardTable`, `BaktazFAB`, `NotificationIconButton`, `StatSubCard`, `RankBadge`, `AvatarStack`, `StakeReturnValue`, `IdentityBlock`), M3 `ColorScheme` roles (`scheme.primary` `#10B981`/`#34D399`, `scheme.surface`, `scheme.primaryContainer`, `scheme.inverseSurface`, `scheme.tertiary`), `Theme.of(context).textTheme.*` for standard text styles (reserving `BaktazType` strictly for display styles: `displayHero`, `metricHero`, `headlineTitle`, `subheadingUppercase`, `labelRanking`), `BaktazSpacing.*` and `BaktazRadius.*` tokens, and `context.i18n.<feature>.<key>` (snake_case) Slang localization. `baktaz_shared` widgets MUST receive localized `String` parameters/props from caller screens and NOT access `context.i18n` directly.
 
 ### 7. Defensive Architecture & Anti-Bug Invariants
 - [ ] **Step Ingestion & Anti-Cheat Invariants**
@@ -197,11 +197,11 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Implement `IAccountRepository` in `baktaz_flutter/lib/features/account/domain/interface/i_account_repository.dart`.
   - [ ] Implement `AccountRepository` in `baktaz_flutter/lib/features/account/data/repository/account_repository.dart`.
   - [ ] Create `AccountCubit` in `baktaz_flutter/lib/features/account/presentation/cubit/account_cubit.dart`.
-  - [ ] Build `AccountPage` in `baktaz_flutter/lib/features/account/presentation/views/account_page.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
+  - [ ] Build `AccountPage` in `baktaz_flutter/lib/features/account/presentation/views/account_page.dart` using `baktaz_shared` wrappers and `context.i18n.account.*` keys.
   - [ ] Implement `IProfileRepository` in `baktaz_flutter/lib/features/profile/domain/interface/i_profile_repository.dart`.
   - [ ] Implement `ProfileRepository` in `baktaz_flutter/lib/features/profile/data/repository/profile_repository.dart`.
   - [ ] Create `ProfileCubit` in `baktaz_flutter/lib/features/profile/presentation/cubit/profile_cubit.dart`.
-  - [ ] Build `ProfileEditScreen` in `baktaz_flutter/lib/features/profile/presentation/views/profile_edit_screen.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
+  - [ ] Build `ProfileEditScreen` in `baktaz_flutter/lib/features/profile/presentation/views/profile_edit_screen.dart` using `baktaz_shared` wrappers and `context.i18n.profile.*` keys.
   - [ ] Register typed routes `@TypedGoRoute<AccountRoute>(path: '/account')` for `AccountPage` and `@TypedGoRoute<ProfileRoute>(path: '/account/profile')` for `ProfileEditScreen` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
 - [ ] **1.5 Codegen & Testing**
   - [ ] Run `serverpod generate && serverpod create-migration`.
@@ -229,7 +229,7 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Implement `StepRepository` in `baktaz_flutter/lib/features/steps/data/repository/step_repository.dart`.
   - [ ] Connect steps telemetry and health sync directly into completed Home Screen UI widgets (`DailyStepHeroCard` step count and sync footer, `WeeklyStepsChart` telemetry display).
   - [ ] Create `StepAnalyticsCubit` in `baktaz_flutter/lib/features/steps/presentation/cubit/step_analytics_cubit.dart`.
-  - [ ] Build `StepAnalyticsPage` in `baktaz_flutter/lib/features/steps/presentation/views/step_analytics_page.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
+  - [ ] Build `StepAnalyticsPage` in `baktaz_flutter/lib/features/steps/presentation/views/step_analytics_page.dart` using `baktaz_shared` wrappers and `context.i18n.steps.*` keys.
   - [ ] Register typed route `@TypedGoRoute<StepAnalyticsRoute>(path: '/account/steps')` for `StepAnalyticsPage` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
 - [ ] **2.4 Codegen & Testing**
   - [ ] Run `serverpod generate && serverpod create-migration`.
@@ -264,9 +264,9 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Create `ChallengeDiscoveryCubit` in `baktaz_flutter/lib/features/challenge/presentation/cubit/challenge_discovery_cubit.dart`.
   - [ ] Create `ChallengeDetailCubit` in `baktaz_flutter/lib/features/challenge/presentation/cubit/challenge_detail_cubit.dart`.
   - [ ] Create `ChallengeCreateCubit` in `baktaz_flutter/lib/features/challenge/presentation/cubit/challenge_create_cubit.dart`.
-  - [ ] Build `ChallengePage` in `baktaz_flutter/lib/features/challenge/presentation/views/challenge_page.dart` (bottom nav tab) using `baktaz_shared` wrappers and `context.l10n.*` keys.
-  - [ ] Build `ChallengeCreateScreen` in `baktaz_flutter/lib/features/challenge/presentation/views/challenge_create_screen.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
-  - [ ] Build `ChallengeLeaderboardPage` in `baktaz_flutter/lib/features/challenge/presentation/views/challenge_leaderboard_page.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
+  - [ ] Build `ChallengePage` in `baktaz_flutter/lib/features/challenge/presentation/views/challenge_page.dart` (bottom nav tab) using `baktaz_shared` wrappers and `context.i18n.challenge.*` keys.
+  - [ ] Build `ChallengeCreateScreen` in `baktaz_flutter/lib/features/challenge/presentation/views/challenge_create_screen.dart` using `baktaz_shared` wrappers and `context.i18n.challenge.*` keys.
+  - [ ] Build `ChallengeLeaderboardPage` in `baktaz_flutter/lib/features/challenge/presentation/views/challenge_leaderboard_page.dart` using `baktaz_shared` wrappers and `context.i18n.challenge.*` keys.
   - [ ] Register typed routes `@TypedGoRoute<ChallengeRoute>(path: '/challenge')` for `ChallengePage`, `@TypedGoRoute<ChallengeCreateRoute>(path: '/challenge/create')` for `ChallengeCreateScreen`, and `@TypedGoRoute<ChallengeLeaderboardRoute>(path: '/challenge/:id/leaderboard')` for `ChallengeLeaderboardPage` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
 - [ ] **3.5 Codegen & Testing**
   - [ ] Run `serverpod generate && serverpod create-migration`.
@@ -306,7 +306,7 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Replace `StubPaymentRepository` with concrete `PaymentRepository` in `GetIt` / dependency container.
 - [ ] **4.5 Flutter Payment Flow (`baktaz_flutter`)**
   - [ ] Create `PaymentCheckoutCubit` in `baktaz_flutter/lib/features/payment/presentation/cubit/payment_checkout_cubit.dart`.
-  - [ ] Build `PaymentWebViewScreen` in `baktaz_flutter/lib/features/payment/presentation/views/payment_web_view_screen.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
+  - [ ] Build `PaymentWebViewScreen` in `baktaz_flutter/lib/features/payment/presentation/views/payment_web_view_screen.dart` using `baktaz_shared` wrappers and `context.i18n.payment.*` keys.
   - [ ] Register typed route `@TypedGoRoute<PaymentCheckoutRoute>(path: '/payment/checkout')` for `PaymentWebViewScreen` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
 - [ ] **4.6 Codegen & Testing**
   - [ ] Run `serverpod generate && serverpod create-migration`.
@@ -337,7 +337,7 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Implement `IChatRepository` in `baktaz_flutter/lib/features/chat/domain/interface/i_chat_repository.dart`.
   - [ ] Implement `ChatRepository` in `baktaz_flutter/lib/features/chat/data/repository/chat_repository.dart`.
   - [ ] Build `ChatCubit` in `baktaz_flutter/lib/features/chat/presentation/cubit/chat_cubit.dart` managing streaming message history, attachments, system events, and connection state.
-  - [ ] Create `ChatRoomScreen` in `baktaz_flutter/lib/features/chat/presentation/views/chat_room_screen.dart` with optimistic message insertion, photo attachment support, system event feeds, and status indicators using `baktaz_shared` wrappers and `context.l10n.*` keys.
+  - [ ] Create `ChatRoomScreen` in `baktaz_flutter/lib/features/chat/presentation/views/chat_room_screen.dart` with optimistic message insertion, photo attachment support, system event feeds, and status indicators using `baktaz_shared` wrappers and `context.i18n.chat.*` keys.
   - [ ] Register typed route `@TypedGoRoute<ChatRoomRoute>(path: '/challenge/:id/chat')` for `ChatRoomScreen` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
 - [ ] **5.5 Codegen & Testing**
   - [ ] Run `serverpod generate && serverpod create-migration`.
@@ -365,10 +365,10 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Implement `IPayoutRepository` in `baktaz_flutter/lib/features/manage_payment/domain/interface/i_payout_repository.dart`.
   - [ ] Implement `PayoutRepository` in `baktaz_flutter/lib/features/manage_payment/data/repository/payout_repository.dart`.
   - [ ] Create `ManagePaymentCubit` in `baktaz_flutter/lib/features/manage_payment/presentation/cubit/manage_payment_cubit.dart`.
-  - [ ] Build `ManagePaymentScreen` in `baktaz_flutter/lib/features/manage_payment/presentation/views/manage_payment_screen.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
-  - [ ] Build `PaymentMethodTile` in `baktaz_flutter/lib/features/manage_payment/presentation/widgets/payment_method_tile.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
-  - [ ] Build `AddPaymentMethodDialog` in `baktaz_flutter/lib/features/manage_payment/presentation/widgets/dialogs/add_payment_method_dialog.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
-  - [ ] Build `AddPayoutDestinationDialog` in `baktaz_flutter/lib/features/manage_payment/presentation/widgets/dialogs/add_payout_destination_dialog.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
+  - [ ] Build `ManagePaymentScreen` in `baktaz_flutter/lib/features/manage_payment/presentation/views/manage_payment_screen.dart` using `baktaz_shared` wrappers and `context.i18n.manage_payment.*` keys.
+  - [ ] Build `PaymentMethodTile` in `baktaz_flutter/lib/features/manage_payment/presentation/widgets/payment_method_tile.dart` using `baktaz_shared` wrappers and `context.i18n.manage_payment.*` keys.
+  - [ ] Build `AddPaymentMethodDialog` in `baktaz_flutter/lib/features/manage_payment/presentation/widgets/dialogs/add_payment_method_dialog.dart` using `baktaz_shared` wrappers and `context.i18n.manage_payment.*` keys.
+  - [ ] Build `AddPayoutDestinationDialog` in `baktaz_flutter/lib/features/manage_payment/presentation/widgets/dialogs/add_payout_destination_dialog.dart` using `baktaz_shared` wrappers and `context.i18n.manage_payment.*` keys.
   - [ ] Register typed route `@TypedGoRoute<ManagePaymentRoute>(path: '/account/payment')` for `ManagePaymentScreen` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
 - [ ] **6.3 Codegen & Testing**
   - [ ] Run `serverpod generate && serverpod create-migration`.
@@ -397,8 +397,8 @@ Per monorepo `.agents/rules/flutter-architecture.md`, `state-management-architec
   - [ ] Replace `StubHostSubscriptionRepository` with concrete `SubscriptionRepository` in DI container.
   - [ ] Create `SubscriptionCubit` in `baktaz_flutter/lib/features/subscription/presentation/cubit/subscription_cubit.dart`.
   - [ ] Create `VoucherCubit` in `baktaz_flutter/lib/features/subscription/presentation/cubit/voucher_cubit.dart`.
-  - [ ] Build `SubscriptionPaywallScreen` in `baktaz_flutter/lib/features/subscription/presentation/views/subscription_paywall_screen.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
-  - [ ] Build `VoucherRedeemDialog` in `baktaz_flutter/lib/features/subscription/presentation/widgets/dialogs/voucher_redeem_dialog.dart` using `baktaz_shared` wrappers and `context.l10n.*` keys.
+  - [ ] Build `SubscriptionPaywallScreen` in `baktaz_flutter/lib/features/subscription/presentation/views/subscription_paywall_screen.dart` using `baktaz_shared` wrappers and `context.i18n.subscription.*` keys.
+  - [ ] Build `VoucherRedeemDialog` in `baktaz_flutter/lib/features/subscription/presentation/widgets/dialogs/voucher_redeem_dialog.dart` using `baktaz_shared` wrappers and `context.i18n.subscription.*` keys.
   - [ ] Register typed route `@TypedGoRoute<SubscriptionPaywallRoute>(path: '/subscription')` for `SubscriptionPaywallScreen` in `baktaz_flutter/lib/app/routes/app_routes.dart`.
 - [ ] **7.4 Codegen & Verification**
   - [ ] Run `serverpod generate && serverpod create-migration`.

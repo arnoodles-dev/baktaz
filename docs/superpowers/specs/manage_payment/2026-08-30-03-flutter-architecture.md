@@ -48,7 +48,7 @@ class ManagePaymentState with _$ManagePaymentState {
 
 Per `.agents/rules/design-system.md`:
 - **Component Wrappers**: Built using `baktaz_shared` wrappers (`BaktazCard`, `BaktazButton`, `BaktazStatusBadge`, `BaktazTextField`, `BaktazSectionHeader`, `ConfirmationDialog`).
-- **Localization**: All text elements use `context.l10n.*` translation keys. Zero hardcoded user-facing strings.
+- **Localization**: All text elements use `context.i18n.manage_payment.*` translation keys. Zero hardcoded user-facing strings.
 - **HitPay Tokenization Webview (`HitPayTokenizeWebview`)**:
   - Intercepts `onNavigationRequest` for redirect URL `https://baktaz.app/payment/token-callback?token=...&type=...&last4=...&brand=...`.
   - Extracts parameters and pops result tuple `(token, type, last4, brand)` back to caller before invoking `ManagePaymentCubit.savePaymentMethodToken(...)`.
@@ -58,7 +58,7 @@ Per `.agents/rules/design-system.md`:
   - Overwrite confirmation: Prompts an explicit `ConfirmationDialog` before submitting replacement payout destination if `payoutDestination` already exists.
 - **Screen & Dialog Naming**: File suffix `_screen.dart` (`lib/features/account/presentation/views/screens/manage_payment_screen.dart`) for full-page route views; file suffix `_dialog.dart` (`lib/features/account/presentation/widgets/dialogs/edit_payout_destination_dialog.dart`).
 - **"Add Payment Method" Button State**:
-  - Renders as disabled with a `BaktazStatusBadge` reading `"Max 5 methods"` (`context.l10n.maxSavedMethodsReached`) when `savedMethods.length >= AppConfig.maxSavedPaymentMethods`.
+  - Renders as disabled with a `BaktazStatusBadge` reading `"Max 5 methods"` (`context.i18n.manage_payment.max_saved_methods_reached`) when `savedMethods.length >= AppConfig.maxSavedPaymentMethods`.
   - Validated client-side prior to triggering the webview flow.
 
 ---
@@ -67,4 +67,4 @@ Per `.agents/rules/design-system.md`:
 
 - **File**: `lib/features/account/domain/cubit/payment/manage_payment_cubit.dart` / relevant challenge cubits.
 - `ChallengeJoinCubit` and `ChallengeCreateCubit` check `PayoutDestination` presence via summary fetching.
-- **Action if missing**: Blocks the operation (join/create) and immediately calls `GoRouter.of(context).go('/account/payment')` paired with a popup warning dialog (`context.l10n.payoutDestinationRequiredForPaidChallenge`): *"You must set up a payout destination before joining or creating a paid challenge."*
+- **Action if missing**: Blocks the operation (join/create) and immediately calls `GoRouter.of(context).go('/account/payment')` paired with a popup warning dialog (`context.i18n.manage_payment.payout_destination_required_for_paid_challenge`): *"You must set up a payout destination before joining or creating a paid challenge."*

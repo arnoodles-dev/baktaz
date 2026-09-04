@@ -23,7 +23,7 @@
 - Max saved payment methods limit: 5 (`AppConfig.maxSavedPaymentMethods = 5` in `lib/src/app/config/app_config.dart`)
 - **Pattern B Error Handling**: `ManagePaymentCubit` wraps repo calls in `safeRun(onException:)`. `FailureHandler` triggers UI side effects; `ManagePaymentState` never holds `Failure` objects (`.agents/rules/error-handling-architecture.md`)
 - **Flutter Cubit**: `CubitSignal<ManagePaymentState>` with `initialState:` named constructor. No god methods (`.agents/rules/flutter-architecture.md`, `state-management-architecture.md`)
-- **Design System**: Exclusive use of `baktaz_shared` wrappers (`BaktazCard`, `BaktazButton`, `BaktazStatusBadge`, `BaktazTextField`, `BaktazSectionHeader`, `ConfirmationDialog`). User-facing text via `context.l10n.*` (`.agents/rules/design-system.md`)
+- **Design System**: Exclusive use of `baktaz_shared` wrappers (`BaktazCard`, `BaktazButton`, `BaktazStatusBadge`, `BaktazTextField`, `BaktazSectionHeader`, `ConfirmationDialog`). User-facing text via `context.i18n.manage_payment.*` (`.agents/rules/design-system.md`)
 - **Server Repository Pattern**: `@LazySingleton(as: Interface)` repositories (`IPaymentRepository`, `IPayoutRepository`) in `domain/interface/`. `HitPayService` isolated in `data/service/`. Endpoints depend on repos only (`.agents/rules/serverpod-architecture.md`)
 - **Implementation-First Workflow**: All tasks are executed sequentially; codegen, migrations, and cross-package build must complete before any tests are written or run (`.agents/rules/testing.md`)
 

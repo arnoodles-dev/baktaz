@@ -16,7 +16,7 @@
   - Wrap async repository calls in `safeRun(onException: _failureHandler.handleException)`.
   - Expose single-action methods: `loadSummary()`, `savePaymentMethodToken(...)`, `setDefaultPaymentMethod(...)`, `deletePaymentMethod(...)`, `upsertPayoutDestination(...)`, `deletePayoutDestination()`.
 - [ ] **Step 3: Add hard block logic to `ChallengeJoinCubit` and `ChallengeCreateCubit`**
-  Validate `PayoutDestination` presence before joining/creating paid challenge; if missing, block action and trigger route redirect to `/account/payment` with warning dialog (`context.l10n.payoutDestinationRequiredForPaidChallenge`).
+  Validate `PayoutDestination` presence before joining/creating paid challenge; if missing, block action and trigger route redirect to `/account/payment` with warning dialog (`context.i18n.manage_payment.payout_destination_required_for_paid_challenge`).
 - [ ] **Step 4: Implementation-First Requirement & Cubit Unit Tests**
   *Note: Implementation and codegen MUST be complete before running unit tests (`.agents/rules/testing.md`).*
   Write unit tests in `test/unit/manage_payment_cubit_test.dart` using `mockito` mocks (`@GenerateMocks` in `test/utils/generated_mocks.dart`):

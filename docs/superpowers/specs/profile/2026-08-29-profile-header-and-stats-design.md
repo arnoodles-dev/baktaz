@@ -751,7 +751,7 @@ class _AccountAppBar extends StatelessWidget {
           size: avatarSize,
           imageUrl: imageUrl?.getValue(),
           isCachedSize: false,
-          maxSize: AppSizes.size80.toInt(),
+          maxSize: 80,
           isLoading: isLoading,
         ),
         Gap.xSmall(),
@@ -1713,7 +1713,7 @@ void main() {
 
 ## 8. i18n Keys Required
 
-Add to `l10n arb` files:
+Add to Slang `i18n.json` files:
 
 ```json
 {

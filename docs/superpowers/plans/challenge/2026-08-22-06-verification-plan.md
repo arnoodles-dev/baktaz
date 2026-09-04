@@ -77,7 +77,7 @@
 
 - [ ] **Task 9: Design System Compliance**
   - Verify no hardcoded colors/text/styles
-  - Verify AppSizes, Paddings, Gap usage
+  - Verify BaktazSpacing, BaktazRadius usage
   - Verify Baktaz* shared widgets
 
 - [ ] **Task 10: Documentation Consistency**

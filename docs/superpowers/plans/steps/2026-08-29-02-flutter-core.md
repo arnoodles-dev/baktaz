@@ -17,7 +17,7 @@
 - Repository contracts: All methods MUST return `TaskResult<T>` (`Either<Failure, T>`). Never throw exceptions.
 - Error handling: Pattern B (side effects via events, not state).
 - Cubit pattern: Extend `CubitSignal<S>`, single-action methods, `safeRun` for async.
-- i18n: No hardcoded user-facing strings — use `context.l10n.*`.
+- i18n: No hardcoded user-facing strings — use `context.i18n.steps.*`.
 - Generated code: Use `@freezed` for entities, `build_runner` for codegen.
 
 ---
